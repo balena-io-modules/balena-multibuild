@@ -1,0 +1,9 @@
+jobs:
+  build:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: npm install
+      - run: npm test
