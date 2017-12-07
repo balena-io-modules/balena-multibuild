@@ -27,11 +27,13 @@ export function pullExternal(task: BuildTask, docker: Dockerode): Promise<LocalI
 		imageName += ':latest';
 	}
 
+	const opts = task.dockerOpts || { };
+
 	const startTime = Date.now();
 	return dockerProgress.pull(
 		imageName,
 		progressHook,
-		{}
+		opts,
 	)
 	.then(() => {
 		const image = new LocalImage(docker, imageName, task.serviceName, { external: true, successful: true });
