@@ -6,7 +6,7 @@
   "types": "lib/index.ts",
   "scripts": {
     "prepublish": "npm run build && npm run test",
-    "precommit": "npm run lint && npm run test",
+    "precommit": "npm run lint && npm run build && npm run test",
     "lint": "tslint '{src,typings}/**/*.ts'",
     "build": "tsc --project .",
     "docgen": "typedoc --ignoreCompilerErrors --out docs --name resin-multibuild --readme README.md lib/",
