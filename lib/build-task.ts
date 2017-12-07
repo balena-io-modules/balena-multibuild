@@ -1,4 +1,3 @@
-import * as Dockerode from 'dockerode';
 import { ProgressCallback } from 'docker-progress';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
