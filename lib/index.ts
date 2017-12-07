@@ -54,12 +54,13 @@ export function splitBuildStream(
 
 			if (matchingTask != null) {
 				const newHeader = header;
-				newHeader.name = PathUtils.resolve(matchingTask.context, header.name);
+				newHeader.name = PathUtils.relative(matchingTask.context!, header.name);
 
 				TarUtils.streamToBuffer(stream)
 				.then((buf) => {
 					matchingTask.buildStream!.entry(newHeader, buf);
 					next();
+					return null;
 				})
 				.catch((e) => {
 					reject(new TarError(e));
@@ -70,6 +71,7 @@ export function splitBuildStream(
 				Utils.drainStream(stream)
 				.then(() => {
 					next();
+					return null;
 				})
 				.catch((e) => {
 					reject(new TarError(e));
