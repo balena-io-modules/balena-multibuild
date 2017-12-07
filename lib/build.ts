@@ -14,6 +14,7 @@ function taskHooks(
 	docker: Dockerode,
 	resolve: (image: LocalImage) => void,
 ): BuildHooks {
+	let startTime: number;
 	return {
 		buildSuccess: (imageId: string, layers: string[]) => {
 			Promise.try(() => {
@@ -27,6 +28,8 @@ function taskHooks(
 			.then((tag) => {
 				const image = new LocalImage(docker, tag, task.serviceName, { external: false, successful: true });
 				image.layers = layers;
+				image.startTime = startTime;
+				image.endTime = Date.now();
 
 				resolve(image);
 			});
@@ -40,10 +43,13 @@ function taskHooks(
 			);
 			image.layers = layers;
 			image.error = error;
+			image.startTime = startTime;
+			image.endTime = Date.now();
 
 			resolve(image);
 		},
 		buildStream: (stream: Stream.Duplex) => {
+			startTime = Date.now();
 			if (_.isFunction(task.streamHook)) {
 				task.streamHook(stream);
 			}

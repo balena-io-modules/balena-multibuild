@@ -63,6 +63,19 @@ export class LocalImage {
 	 */
 	public error?: Error;
 
+	/**
+	 * This field will be the time at which the build started. The
+	 * start time is recorded just before the stream is sent to the
+	 * docker daemon.
+	 */
+	public startTime?: number;
+
+	/**
+	 * This field will be the time at which the build finished. Finished
+	 * here is classified as when the docker daemon closes the connection.
+	 */
+	public endTime?: number;
+
 	public constructor(
 		daemon: Dockerode,
 		name: string | null,
