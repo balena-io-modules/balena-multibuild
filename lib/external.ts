@@ -27,17 +27,23 @@ export function pullExternal(task: BuildTask, docker: Dockerode): Promise<LocalI
 		imageName += ':latest';
 	}
 
+	const startTime = Date.now();
 	return dockerProgress.pull(
 		imageName,
 		progressHook,
 		{}
 	)
 	.then(() => {
-		return new LocalImage(docker, imageName, task.serviceName, { external: true, successful: true });
+		const image = new LocalImage(docker, imageName, task.serviceName, { external: true, successful: true });
+		image.startTime = startTime;
+		image.endTime = Date.now();
+		return image;
 	})
 	.catch((e) => {
 		const image = new LocalImage(docker, null, task.serviceName, { external: true, successful: false });
 		image.error = e;
+		image.startTime = startTime;
+		image.endTime = Date.now();
 		return image;
 	});
 }

@@ -117,6 +117,51 @@ describe('Project building', () => {
 			return checkExists('resin-multibuild-tag');
 		});
 	});
+
+	it('should correctly set the start and end time', () => {
+		const task = {
+			external: false,
+			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+		};
+
+		return runBuildTask(task, docker)
+		.then((image) => {
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
+		});
+	});
+
+	it('should set start and end time for a failed build', () => {
+		const task = {
+			external: false,
+			buildStream: fs.createReadStream(require.resolve('./test-files/failingProject.tar')),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+		};
+
+		return runBuildTask(task, docker)
+		.then((image) => {
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
+		});
+	});
+
+	it('should set the start and end time for a build with a missing base image', () => {
+		const task = {
+			external: false,
+			buildStream: fs.createReadStream(require.resolve('./test-files/missingBaseImageProject.tar')),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+		};
+
+		return runBuildTask(task, docker)
+		.then((image) => {
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
+		});
+	});
 });
 
 describe('Resolved project building', () => {
@@ -167,6 +212,8 @@ describe('External images', () => {
 		return runBuildTask(task, docker)
 		.then((image) => {
 			expect(image).to.have.property('successful').that.equals(true);
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 			return checkExists(image.name);
 		});
 	});
@@ -183,7 +230,9 @@ describe('External images', () => {
 			expect(image).to.have.property('successful').that.equals(false);
 			expect(image).to.not.have.property('name');
 			expect(image).to.have.property('error').that.is.not.null;
-		})
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
+		});
 	});
 
 	it('should call the progress hook', () => {
@@ -215,6 +264,8 @@ describe('External images', () => {
 		return runBuildTask(task, docker)
 		.then((image) => {
 			expect(image).to.have.property('name').that.equals('alpine:latest');
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 			return checkExists(image.name);
 		});
 	});
