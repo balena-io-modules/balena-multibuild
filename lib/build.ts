@@ -30,6 +30,8 @@ function taskHooks(
 				image.layers = layers;
 				image.startTime = startTime;
 				image.endTime = Date.now();
+				image.dockerfile = task.dockerfile;
+				image.projectType = task.projectType;
 
 				resolve(image);
 			});
@@ -45,6 +47,8 @@ function taskHooks(
 			image.error = error;
 			image.startTime = startTime;
 			image.endTime = Date.now();
+			image.dockerfile = task.dockerfile;
+			image.projectType = task.projectType;
 
 			resolve(image);
 		},

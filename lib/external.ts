@@ -39,6 +39,7 @@ export function pullExternal(task: BuildTask, docker: Dockerode): Promise<LocalI
 		const image = new LocalImage(docker, imageName, task.serviceName, { external: true, successful: true });
 		image.startTime = startTime;
 		image.endTime = Date.now();
+		image.projectType = 'external service';
 		return image;
 	})
 	.catch((e) => {
@@ -46,6 +47,7 @@ export function pullExternal(task: BuildTask, docker: Dockerode): Promise<LocalI
 		image.error = e;
 		image.startTime = startTime;
 		image.endTime = Date.now();
+		image.projectType = 'external service';
 		return image;
 	});
 }

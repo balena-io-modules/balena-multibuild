@@ -76,6 +76,12 @@ export class LocalImage {
 	 */
 	public endTime?: number;
 
+	/**
+	 * This is the type of project that was resolved by this module, for
+	 * example Dockerfile.template or Dockerfile.arch.
+	 */
+	public projectType?: string;
+
 	public constructor(
 		daemon: Dockerode,
 		name: string | null,

@@ -1,12 +1,12 @@
 {
   "name": "resin-multibuild",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Build a docker composition",
   "main": "build/index.js",
   "types": "lib/index.ts",
   "scripts": {
     "prepublish": "npm run build && npm run test",
-    "precommit": "npm run lint && npm run test",
+    "precommit": "npm run lint && npm run build && npm run test",
     "lint": "tslint '{src,typings}/**/*.ts'",
     "build": "tsc --project .",
     "docgen": "typedoc --ignoreCompilerErrors --out docs --name resin-multibuild --readme README.md lib/",
