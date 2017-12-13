@@ -45,37 +45,38 @@ export function splitBuildStream(
 			next: () => void,
 		): void => {
 			// Find the build context that this file should belong to
-			const matchingTask = _.find(tasks, (task) => {
+			const matchingTasks = _.filter(tasks, (task) => {
 				if (task.external) {
 					return false;
 				}
 				return PathUtils.contains(task.context!, header.name);
 			});
 
-			if (matchingTask != null) {
-				const newHeader = header;
-				newHeader.name = PathUtils.relative(matchingTask.context!, header.name);
+			if (matchingTasks.length > 0) {
+				// Use the first matching context here, as the array must have at least one
+				// entry, and the context by definition is the same
+				header.name = PathUtils.relative(matchingTasks[0].context!, header.name);
 
+				// Add the file to every matching context
 				TarUtils.streamToBuffer(stream)
 				.then((buf) => {
-					matchingTask.buildStream!.entry(newHeader, buf);
-					next();
-					return null;
+					matchingTasks.forEach((task) => {
+						task.buildStream!.entry(header, buf);
+					});
 				})
-				.catch((e) => {
-					reject(new TarError(e));
-				});
-			} else {
-				// To work around bugs in tar-stream, we need to drain the input
-				// stream here, and drop the output
-				Utils.drainStream(stream)
 				.then(() => {
 					next();
 					return null;
 				})
-				.catch((e) => {
-					reject(new TarError(e));
-				});
+				.catch((e) => reject(new TarError(e)));
+			} else {
+				Utils.drainStream(stream)
+				.then(() => {
+					next();
+					// return null here to keep bluebird happy
+					return null;
+				})
+				.catch((e) => reject(new TarError(e)));
 			}
 		};
 

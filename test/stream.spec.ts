@@ -52,4 +52,22 @@ describe('Steam splitting', () => {
 			});
 		});
 	});
+
+	it('should allow the sharing of build contexts', () => {
+		const composeObj = require('./test-files/stream/docker-compose-shared');
+		const comp = Compose.normalize(composeObj);
+
+		const stream = fs.createReadStream(require.resolve('./test-files/stream/project.tar'));
+
+		return splitBuildStream(comp, stream)
+		.then((tasks) => {
+			expect(tasks).to.have.length(2);
+			return Promise.map(tasks, (task) => {
+				return checkIsInStream(task.buildStream, 'Dockerfile')
+				.then((found) => {
+					expect(found).to.equal(true);
+				});
+			});
+		});
+	});
 });
