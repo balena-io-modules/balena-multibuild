@@ -54,6 +54,7 @@ const streamPrinter = (stream: Stream.Readable) => {
 describe('Project building', () => {
 	it('should correctly build a standard dockerfile project', () => {
 		const task = {
+			resolved: false,
 			external: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
 			serviceName: 'test',
@@ -71,6 +72,7 @@ describe('Project building', () => {
 	it('should correctly return an image with a build error', () => {
 		const task = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/failingProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -89,6 +91,7 @@ describe('Project building', () => {
 	it('should correctly return no layers or name when a base image cannot be downloaded', () => {
 		const task = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/missingBaseImageProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -105,6 +108,7 @@ describe('Project building', () => {
 	it('should correctly tag an image', () => {
 		const task = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -121,6 +125,7 @@ describe('Project building', () => {
 	it('should correctly set the start and end time', () => {
 		const task = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -136,6 +141,7 @@ describe('Project building', () => {
 	it('should set start and end time for a failed build', () => {
 		const task = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/failingProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -151,6 +157,7 @@ describe('Project building', () => {
 	it('should set the start and end time for a build with a missing base image', () => {
 		const task = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/missingBaseImageProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -168,6 +175,7 @@ describe('Resolved project building', () => {
 	it('should correctly build a resolved project', () => {
 		const task: BuildTask = {
 			external: false,
+			resolved: false,
 			buildStream: fs.createReadStream(require.resolve('./test-files/templateProject.tar')),
 			serviceName: 'test',
 			streamHook: streamPrinter,
@@ -186,6 +194,7 @@ describe('Invalid build input', () => {
 	it('should throw a BuildProcessError on incorrect input', () => {
 		const task: BuildTask = {
 			external: false,
+			resolved: false,
 			serviceName: 'test',
 		};
 		return runBuildTask(task, docker)
@@ -205,6 +214,7 @@ describe('External images', () => {
 	it('should correctly pull down external images', () => {
 		const task: BuildTask = {
 			external: true,
+			resolved: false,
 			imageName: 'alpine:3.1',
 			serviceName: 'test',
 		};
@@ -221,6 +231,7 @@ describe('External images', () => {
 	it('should correctly report an external image that could not be downloaded', () => {
 		const task: BuildTask = {
 			external: true,
+			resolved: false,
 			imageName: 'does-not-exist',
 			serviceName: 'test',
 		};
@@ -239,6 +250,7 @@ describe('External images', () => {
 		let called = false;
 		const task: BuildTask = {
 			external: true,
+			resolved: false,
 			imageName: 'alpine:3.1',
 			serviceName: 'test',
 			progressHook: (data) => {
@@ -257,6 +269,7 @@ describe('External images', () => {
 	it('should default to latest when a tag is not provided', () => {
 		const task: BuildTask = {
 			external: true,
+			resolved: false,
 			imageName: 'alpine',
 			serviceName: 'test',
 		};

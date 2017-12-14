@@ -83,4 +83,8 @@ export interface BuildTask {
 	 * the composition
 	 */
 	serviceName: string;
+	/**
+	 * Has this task failed to be resolved?
+	 */
+	resolved: boolean;
 }

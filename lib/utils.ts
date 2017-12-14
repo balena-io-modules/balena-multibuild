@@ -42,12 +42,14 @@ export function generateBuildTasks(composition: Composition): BuildTask[] {
 				external: true,
 				imageName: img.image,
 				serviceName: img.serviceName,
+				resolved: false,
 			};
 		} else {
 			return _.merge({
 				external: false,
 				serviceName: img.serviceName,
 				buildStream: tar.pack(),
+				resolved: false,
 			}, img.image);
 		}
 	});
