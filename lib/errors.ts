@@ -13,12 +13,6 @@ export class ImageRemovalError extends TypedError { }
 export class TarError extends TypedError { }
 
 /**
- * This error is thrown when a resin project cannot be resolved
- * to a docker build project.
- */
-export class ProjectResolutionError extends TypedError { }
-
-/**
  * This error is thrown in the case of a build not being able to complete
  * properly, due to a non-project error (e.g. docker daemon issues).
  *

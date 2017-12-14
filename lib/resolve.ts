@@ -3,7 +3,6 @@ import * as Resolve from 'resin-bundle-resolve';
 import * as Stream from 'stream';
 
 import { BuildTask } from './build-task';
-import { ProjectResolutionError } from './errors';
 
 /**
  * Given a BuildTask, resolve the project type to something that
@@ -44,10 +43,12 @@ export function resolveTask(
 	.then((res: Resolve.ResolvedBundle) => {
 		task.projectType = res.projectType;
 		task.buildStream = res.tarStream;
+		task.resolved = true;
 		return task;
 	})
-	.catch((e: Error) => {
-		throw new ProjectResolutionError(e);
+	.catch(() => {
+		task.projectType = 'Could not be detected';
+		return task;
 	});
 
 }
