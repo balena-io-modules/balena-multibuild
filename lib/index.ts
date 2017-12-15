@@ -32,10 +32,18 @@ export function splitBuildStream(
 	composition: Compose.Composition,
 	buildStream: Stream.Readable,
 ): Promise<BuildTask[]> {
+	const images = Compose.parse(composition);
+	return fromImageDescriptors(images, buildStream);
+}
+
+export function fromImageDescriptors(
+	images: Compose.ImageDescriptor[],
+	buildStream: Stream.Readable
+): Promise<BuildTask[]> {
 
 	return new Promise((resolve, reject) => {
 		// Firstly create a list of BuildTasks based on the composition
-		const tasks = Utils.generateBuildTasks(composition);
+		const tasks = Utils.generateBuildTasks(images);
 
 		const extract = tar.extract();
 

@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import { Readable } from 'stream';
 import * as tar from 'tar-stream';
-import { Composition, parse } from 'resin-compose-parse';
+import { ImageDescriptor } from 'resin-compose-parse';
 
 import { BuildTask } from './build-task';
 
@@ -32,10 +32,7 @@ export function drainStream(stream: Readable): Promise<void> {
  * @param composition The composition from resin-compose-parse
  * @returns An array of tasks which make up this multicontainer build
  */
-export function generateBuildTasks(composition: Composition): BuildTask[] {
-
-	const images = parse(composition);
-
+export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
 	return _.map(images, (img) => {
 		if (_.isString(img.image)) {
 			return {
