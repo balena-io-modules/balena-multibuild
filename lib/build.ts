@@ -17,24 +17,15 @@ function taskHooks(
 	let startTime: number;
 	return {
 		buildSuccess: (imageId: string, layers: string[]) => {
-			Promise.try(() => {
-				if (task.tag != null) {
-					return Promise.resolve(docker.getImage(imageId).tag({ repo: task.tag, force: true }))
-						.return(task.tag);
-				} else {
-					return imageId;
-				}
-			})
-			.then((tag) => {
-				const image = new LocalImage(docker, tag, task.serviceName, { external: false, successful: true });
-				image.layers = layers;
-				image.startTime = startTime;
-				image.endTime = Date.now();
-				image.dockerfile = task.dockerfile;
-				image.projectType = task.projectType;
+			const tag = task.tag != null ? task.tag : imageId;
+			const image = new LocalImage(docker, tag, task.serviceName, { external: false, successful: true });
+			image.layers = layers;
+			image.startTime = startTime;
+			image.endTime = Date.now();
+			image.dockerfile = task.dockerfile;
+			image.projectType = task.projectType;
 
-				resolve(image);
-			});
+			resolve(image);
 		},
 		buildFailure: (error: Error, layers: string[]) => {
 			const image = new LocalImage(
@@ -98,6 +89,10 @@ export function runBuildTask(task: BuildTask, docker: Dockerode): Promise<LocalI
 
 		let dockerOpts = task.dockerOpts || { };
 		dockerOpts = _.merge(dockerOpts, generateBuildArgs(task), generateLabels(task));
+
+		if (task.tag != null) {
+			dockerOpts = _.merge(dockerOpts, { t: task.tag });
+		}
 
 		const builder = new Builder(docker);
 		const hooks = taskHooks(task, docker, resolve);
