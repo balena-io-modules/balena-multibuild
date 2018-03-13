@@ -26,7 +26,7 @@ const checkIsInStream = (tarStream: Stream.Readable, filename: string): Promise<
 			stream.on('error', reject);
 		});
 		extract.on('finish', () => {
-			resolve(true);
+			resolve(found);
 		});
 
 		extract.on('error', reject);
