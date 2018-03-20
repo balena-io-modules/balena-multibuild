@@ -36,6 +36,6 @@ describe('Project resolution', () => {
 		return resolveTask(task, 'test', 'test')
 		.then((newTask) => {
 			expect(newTask).to.have.property('resolved').that.equals(false);
-		})
+		});
 	});
 });

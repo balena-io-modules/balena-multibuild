@@ -38,7 +38,7 @@ export function splitBuildStream(
 
 export function fromImageDescriptors(
 	images: Compose.ImageDescriptor[],
-	buildStream: Stream.Readable
+	buildStream: Stream.Readable,
 ): Promise<BuildTask[]> {
 
 	return new Promise((resolve, reject) => {

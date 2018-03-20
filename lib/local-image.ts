@@ -5,7 +5,7 @@ import { ImageRemovalError } from './errors';
 export interface ImageInfo {
 	external: boolean;
 	successful: boolean;
-};
+}
 
 /**
  * LocalImage
