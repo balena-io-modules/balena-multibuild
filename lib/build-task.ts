@@ -45,9 +45,13 @@ export interface BuildTask {
 	 */
 	tag?: string;
 	/**
-	 * This field will be set to the dockerfile after resolution.
+	 * This field will be set to the Dockerfile path in the context.
 	 */
 	dockerfile?: string;
+	/**
+	 * This field will be set to the Dockerfile contents after resolution.
+	 */
+	dockerfileContent?: string;
 	/**
 	 * An object which will be forwarded to the docker daemon, with options
 	 * for the build or pull

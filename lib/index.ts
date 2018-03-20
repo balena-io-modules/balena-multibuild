@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as Stream from 'stream';
@@ -19,6 +19,7 @@ export * from './build-task';
 export * from './errors';
 export * from './local-image';
 
+const ALTERNATE_DOCKERFILE_PATH = '.resin/Dockerfile';
 /**
  * Given a composition and stream which will output a valid tar archive,
  * split this stream into it's constiuent tasks, which may be a docker build,
@@ -31,64 +32,82 @@ export * from './local-image';
 export function splitBuildStream(
 	composition: Compose.Composition,
 	buildStream: Stream.Readable,
-): Promise<BuildTask[]> {
+): Bluebird<BuildTask[]> {
 	const images = Compose.parse(composition);
 	return fromImageDescriptors(images, buildStream);
 }
 
-export function fromImageDescriptors(
-	images: Compose.ImageDescriptor[],
-	buildStream: Stream.Readable,
-): Promise<BuildTask[]> {
+function setDefault<T>(obj: { [ k: string ]: T }, key: string, defaultValue: T): T {
+	// setDefault(obj, k, v) -> obj[k] || v, also set obj[k]=v if k not in obj
+	const value = obj[key];
+	if (_.isUndefined(value)) {
+		obj[key] = defaultValue;
+		return defaultValue;
+	}
+	return value;
+}
 
-	return new Promise((resolve, reject) => {
+function getAlternateDockerfiles(tasks: BuildTask[]): { [s: string]: BuildTask[] } {
+	const result: { [s: string]: BuildTask[] } = {};
+	for (const task of tasks) {
+		if (task.dockerfile) {
+			setDefault(result, task.dockerfile, []).push(task);
+			task.dockerfile = ALTERNATE_DOCKERFILE_PATH;
+		}
+	}
+	return result;
+}
+
+function copyToTasksBuildStreams(tasks: BuildTask[], buffer: Buffer, header: tar.TarHeader, name: string) {
+	// Adds the file to all tasks build streams as name.
+	const updatedHeader = _.merge(header, { name });
+	tasks.forEach((task) => {
+		task.buildStream!.entry(updatedHeader, buffer);
+	});
+}
+
+export function fromImageDescriptors(images: Compose.ImageDescriptor[], buildStream: Stream.Readable): Bluebird<BuildTask[]> {
+	return new Bluebird((resolve, reject) => {
 		// Firstly create a list of BuildTasks based on the composition
 		const tasks = Utils.generateBuildTasks(images);
 
+		// Dict of { filename: BuildTask } for all alternate Dockerfiles
+		const alternateDockerfiles = getAlternateDockerfiles(tasks);
+
 		const extract = tar.extract();
 
-		const entryFn = (
-			header: tar.TarHeader,
-			stream: Stream.Readable,
-			next: () => void,
-		): void => {
+		extract.on('entry', async (header: tar.TarHeader, stream: Stream.Readable, next: () => void): Promise<void> => {
+			const tasksMatchingAlternateDockerfile = alternateDockerfiles[PathUtils.normalize(header.name)] || [];
+
 			// Find the build context that this file should belong to
 			const matchingTasks = _.filter(tasks, (task) => {
-				if (task.external) {
-					return false;
-				}
-				return PathUtils.contains(task.context!, header.name);
+				return !task.external || PathUtils.contains(task.context!, header.name);
 			});
 
-			if (matchingTasks.length > 0) {
+			let buf;
+			try {
+				if (matchingTasks.length || tasksMatchingAlternateDockerfile.length) {
+					buf = await TarUtils.streamToBuffer(stream);
+				} else {
+					await Utils.drainStream(stream);
+				}
+			} catch (e) {
+				reject(new TarError(e));
+			}
+
+
+			if (buf) {
 				// Use the first matching context here, as the array must have at least one
 				// entry, and the context by definition is the same
-				header.name = PathUtils.relative(matchingTasks[0].context!, header.name);
+				copyToTasksBuildStreams(matchingTasks, buf, header, PathUtils.relative(matchingTasks[0].context!, header.name));
 
-				// Add the file to every matching context
-				TarUtils.streamToBuffer(stream)
-				.then((buf) => {
-					matchingTasks.forEach((task) => {
-						task.buildStream!.entry(header, buf);
-					});
-				})
-				.then(() => {
-					next();
-					return null;
-				})
-				.catch((e) => reject(new TarError(e)));
-			} else {
-				Utils.drainStream(stream)
-				.then(() => {
-					next();
-					// return null here to keep bluebird happy
-					return null;
-				})
-				.catch((e) => reject(new TarError(e)));
+				// Copy the alternate Dockerfile to all the tasks needing it.
+				copyToTasksBuildStreams(tasksMatchingAlternateDockerfile, buf, header, ALTERNATE_DOCKERFILE_PATH);
 			}
-		};
 
-		extract.on('entry', entryFn);
+			next();
+		});
+
 		extract.on('finish', () => {
 			_.each(tasks, (task) => {
 				if (!task.external) {
@@ -97,6 +116,7 @@ export function fromImageDescriptors(
 			});
 			resolve(tasks);
 		});
+
 		extract.on('error', (e) => {
 			reject(new TarError(e));
 		});
@@ -123,8 +143,8 @@ export function performResolution(
 	tasks: BuildTask[],
 	architecture: string,
 	deviceType: string,
-): Promise<BuildTask[]> {
-	return Promise.map(tasks, (task: BuildTask) => {
+): Bluebird<BuildTask[]> {
+	return Bluebird.map(tasks, (task: BuildTask) => {
 		return resolveTask(task, architecture, deviceType);
 	});
 }
@@ -141,8 +161,8 @@ export function performResolution(
 export function performBuilds(
 	tasks: BuildTask[],
 	docker: Dockerode,
-): Promise<LocalImage[]> {
-	return Promise.map(tasks, (task: BuildTask) => {
+): Bluebird<LocalImage[]> {
+	return Bluebird.map(tasks, (task: BuildTask) => {
 		return runBuildTask(task, docker)
 		.catch((e) => {
 			throw new BuildProcessError(e);

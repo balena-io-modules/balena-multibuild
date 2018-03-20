@@ -22,7 +22,7 @@ function taskHooks(
 			image.layers = layers;
 			image.startTime = startTime;
 			image.endTime = Date.now();
-			image.dockerfile = task.dockerfile;
+			image.dockerfileContent = task.dockerfileContent;
 			image.projectType = task.projectType;
 
 			resolve(image);
@@ -38,7 +38,7 @@ function taskHooks(
 			image.error = error;
 			image.startTime = startTime;
 			image.endTime = Date.now();
-			image.dockerfile = task.dockerfile;
+			image.dockerfileContent = task.dockerfileContent;
 			image.projectType = task.projectType;
 
 			resolve(image);
@@ -54,10 +54,12 @@ function taskHooks(
 	};
 }
 
-const generateBuildArgs = (task: BuildTask): { buildargs?: Dict<string> } => {
-	return {
+export const generateBuildArgs = (task: BuildTask): { buildargs?: Dict<string>, dockerfile?: string } => {
+	const result = {
 		buildargs: task.args,
+		dockerfile: task.dockerfile,
 	};
+	return _.omitBy(result, _.isUndefined);
 };
 
 const generateLabels = (task: BuildTask): { labels?: Dict<string> } => {

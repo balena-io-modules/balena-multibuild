@@ -26,7 +26,7 @@ export function resolveTask(
 	}
 
 	const dockerfileHook = (content: string): Promise<void> => {
-		task.dockerfile = content;
+		task.dockerfileContent = content;
 		return Promise.resolve();
 	};
 

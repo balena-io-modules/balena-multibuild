@@ -1,0 +1,14 @@
+{
+	"version": "2",
+	"services": {
+		"test1": {
+			"build": "test1"
+		},
+		"test2": {
+			"build": {
+				"context": "test2",
+				"dockerfile": "test2/Dockerfile-alternate"
+			}
+		}
+	}
+}

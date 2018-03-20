@@ -15,9 +15,9 @@ export interface ImageInfo {
  */
 export class LocalImage {
 	/**
-	 * The dockerfile which was used to build this image, if one exists
+	 * The Dockerfile contents which was used to build this image, if one exists
 	 */
-	public dockerfile?: string;
+	public dockerfileContent?: string;
 
 	/**
 	 * Was this image built locally or imported into the docker daemon
