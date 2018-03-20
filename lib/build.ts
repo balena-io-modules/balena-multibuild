@@ -58,13 +58,13 @@ const generateBuildArgs = (task: BuildTask): { buildargs?: Dict<string> } => {
 	return {
 		buildargs: task.args,
 	};
-}
+};
 
 const generateLabels = (task: BuildTask): { labels?: Dict<string> } => {
 	return {
 		labels: task.labels,
 	};
-}
+};
 
 /**
  * Given a build task which is primed with the necessary input, perform either

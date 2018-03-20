@@ -1,13 +1,13 @@
 {
   "name": "resin-multibuild",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Build a docker composition",
   "main": "build/index.js",
   "types": "lib/index.ts",
   "scripts": {
     "prepublish": "npm run build && npm run test",
     "precommit": "npm run lint && npm run build && npm run test",
-    "lint": "tslint '{src,typings}/**/*.ts'",
+    "lint": "resin-lint --typescript 1 lib/*.ts typings/*.ts test/*.ts",
     "build": "tsc --project .",
     "docgen": "typedoc --ignoreCompilerErrors --out docs --name resin-multibuild --readme README.md lib/",
     "test": "npm run lint && ts-mocha test/*.ts --timeout 60000"
@@ -22,14 +22,20 @@
     "url": "https://github.com/resin-io-modules/resin-multibuild/issues"
   },
   "homepage": "https://github.com/resin-io-modules/resin-multibuild#readme",
+  "files": [
+    "build/*.js",
+    "build/*.js.map",
+    "CHANGELOG.md",
+    "README.md"
+  ],
   "devDependencies": {
     "@types/mocha": "^2.2.44",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "husky": "^0.14.3",
     "mocha": "^3.2.0",
+    "resin-lint": "^1.5.0",
     "ts-mocha": "^1.0.3",
-    "tslint": "^5.8.0",
     "typedoc": "^0.9.0",
     "typescript": "^2.6.2"
   },
