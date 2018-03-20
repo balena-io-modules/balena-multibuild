@@ -22,6 +22,7 @@
     "url": "https://github.com/resin-io-modules/resin-multibuild/issues"
   },
   "homepage": "https://github.com/resin-io-modules/resin-multibuild#readme",
+  "files": ["build/*.js", "build/*.js.map", "CHANGELOG.md", "README.md"],
   "devDependencies": {
     "@types/mocha": "^2.2.44",
     "chai": "^4.1.2",
