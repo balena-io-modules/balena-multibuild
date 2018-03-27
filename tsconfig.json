@@ -10,7 +10,8 @@
 		"preserveConstEnums": true,
 		"pretty": true,
 		"removeComments": true,
-		"sourceMap": true
+		"sourceMap": true,
+		"declaration": true
 	},
 	"include": [
 		"lib/**/*.ts",
