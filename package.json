@@ -8,7 +8,7 @@
     "prepublish": "npm run build && npm run test",
     "precommit": "npm run lint && npm run build && npm run test",
     "lint": "resin-lint --typescript 1 lib/*.ts typings/*.ts test/*.ts",
-    "build": "tsc",
+    "build": "tsc --project .",
     "docgen": "typedoc --ignoreCompilerErrors --out docs --name resin-multibuild --readme README.md lib/",
     "test": "npm run lint && ts-mocha test/*.ts --timeout 60000"
   },
@@ -25,7 +25,6 @@
   "files": [
     "build/*.js",
     "build/*.js.map",
-    "build/*.d.ts",
     "CHANGELOG.md",
     "README.md"
   ],
