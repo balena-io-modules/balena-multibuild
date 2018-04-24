@@ -12,21 +12,24 @@ import { splitBuildStream } from '../lib/index';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const checkIsInStream = (tarStream: Stream.Readable, filename: string): Promise<boolean> => {
+const checkIsInStream = (tarStream: Stream.Readable, filenames: string | string[]): Promise<boolean> => {
+
+	if (!_.isArray(filenames)) {
+		filenames = [ filenames ];
+	}
+
 	return new Promise((resolve, reject) => {
 		const extract = tar.extract();
-		let found = false;
 
 		extract.on('entry', (header, stream, next) => {
-			if (header.name === filename) {
-				found = true;
-			}
+			_.remove(filenames, (f) => f === header.name);
+
 			stream.on('data', _.noop);
 			stream.on('end', next);
 			stream.on('error', reject);
 		});
 		extract.on('finish', () => {
-			resolve(true);
+			resolve(filenames.length === 0);
 		});
 
 		extract.on('error', reject);
@@ -70,4 +73,28 @@ describe('Steam splitting', () => {
 			});
 		});
 	});
+
+	it('should allow the sharing of the root build context', () => {
+		const composeObj = require('./test-files/stream/docker-compose-shared-root');
+		const comp = Compose.normalize(composeObj);
+
+		const stream = fs.createReadStream(require.resolve('./test-files/stream/shared-root-context.tar'));
+
+		return splitBuildStream(comp, stream)
+		.then((tasks) => {
+			expect(tasks).to.have.length(2);
+
+			return Promise.map(tasks, (task) => {
+
+				if (task.context === './') {
+					return checkIsInStream(task.buildStream, [ 'Dockerfile', 'test1/Dockerfile' ])
+						.then((found) => expect(found).to.equal(true));
+				} else {
+					return checkIsInStream(task.buildStream, 'Dockerfile')
+						.then((found) => expect(found).to.equal(true));
+				}
+			});
+		});
+	});
+
 });

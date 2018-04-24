@@ -61,15 +61,13 @@ export function fromImageDescriptors(
 			});
 
 			if (matchingTasks.length > 0) {
-				// Use the first matching context here, as the array must have at least one
-				// entry, and the context by definition is the same
-				header.name = PathUtils.relative(matchingTasks[0].context!, header.name);
-
 				// Add the file to every matching context
 				TarUtils.streamToBuffer(stream)
 				.then((buf) => {
 					matchingTasks.forEach((task) => {
-						task.buildStream!.entry(header, buf);
+						const newHeader = _.cloneDeep(header);
+						newHeader.name = PathUtils.relative(task.context!, header.name);
+						task.buildStream!.entry(newHeader, buf);
 					});
 				})
 				.then(() => {
