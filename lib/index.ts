@@ -18,6 +18,7 @@ import * as Utils from './utils';
 export * from './build-task';
 export * from './errors';
 export * from './local-image';
+export { PathUtils };
 
 /**
  * Given a composition and stream which will output a valid tar archive,
