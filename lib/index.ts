@@ -142,9 +142,25 @@ export function performBuilds(
 	docker: Dockerode,
 ): Promise<LocalImage[]> {
 	return Promise.map(tasks, (task: BuildTask) => {
-		return runBuildTask(task, docker)
+		return performSingleBuild(task, docker);
+	});
+}
+
+/**
+ * This function allows a caller to perform builds individually,
+ * returning a LocalImage, representing an image present on the
+ * docker daemon provided.
+ *
+ * @param task A build task to be performed
+ * @param docker A handle to a docker daemon, retrieved from Dockerode
+ * @return A promise which resolves to a LocalImage
+ */
+export function performSingleBuild(
+	task: BuildTask,
+	docker: Dockerode,
+): Promise<LocalImage> {
+	return runBuildTask(task, docker)
 		.catch((e) => {
 			throw new BuildProcessError(e);
 		});
-	});
 }
