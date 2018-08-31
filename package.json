@@ -48,6 +48,6 @@
     "resin-docker-build": "^0.6.2",
     "tar-stream": "^1.5.5",
     "tar-utils": "^1.0.2",
-    "typed-error": "^2.0.0"
+    "typed-error": "^3.0.0"
   }
 }

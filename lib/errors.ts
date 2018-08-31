@@ -1,4 +1,4 @@
-import TypedError = require('typed-error');
+import { TypedError } from 'typed-error';
 
 /**
  * This error is thrown when a requested removal of an image
