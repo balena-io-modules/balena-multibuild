@@ -49,7 +49,7 @@ export function fromImageDescriptors(
 		const extract = tar.extract();
 
 		const entryFn = (
-			header: tar.TarHeader,
+			header: tar.Headers,
 			stream: Stream.Readable,
 			next: () => void,
 		): void => {
