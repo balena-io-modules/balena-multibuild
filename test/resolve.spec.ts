@@ -2,6 +2,7 @@ import * as Promise from 'bluebird';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
+import { Pack } from 'tar-stream';
 
 import { BuildTask } from '../lib/build-task';
 import { resolveTask } from '../lib/resolve';
@@ -14,7 +15,7 @@ describe('Project resolution', () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/templateProject.tar')),
+			buildStream: fs.createReadStream('test/test-files/templateProject.tar') as any as Pack,
 			serviceName: 'test',
 		};
 
@@ -30,7 +31,7 @@ describe('Project resolution', () => {
 			external: false,
 			resolved: false,
 			serviceName: 'test',
-			buildStream: fs.createReadStream(require.resolve('./test-files/failedProject.tar')),
+			buildStream: fs.createReadStream('test/test-files/failedProject.tar') as any as Pack,
 		};
 
 		return resolveTask(task, 'test', 'test')

@@ -3,13 +3,14 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Dockerode from 'dockerode';
 import * as fs from 'fs';
-import * as Stream from 'stream';
-import * as Url from 'url';
 import * as Path from 'path';
+import * as Stream from 'stream';
+import * as tar from 'tar-stream';
+import * as Url from 'url';
 
 import { runBuildTask } from '../lib/build';
 import { BuildTask } from '../lib/build-task';
-import { BuildProcessError, DockerCommunicationError } from '../lib/errors';
+import { BuildProcessError } from '../lib/errors';
 import { LocalImage } from '../lib/local-image';
 import { resolveTask } from '../lib/resolve';
 
@@ -22,9 +23,9 @@ if (process.env.CIRCLECI != null) {
 	let cert: string;
 	let key: string;
 
-	const certs = ['ca.pem', 'cert.pem', 'key.pem'].map((f) => Path.join(process.env.DOCKER_CERT_PATH, f));
-	[ca, cert, key ] = certs.map((c) => fs.readFileSync(c));
-	let parsed = Url.parse(process.env.DOCKER_HOST);
+	const certs = ['ca.pem', 'cert.pem', 'key.pem'].map((f) => Path.join(process.env.DOCKER_CERT_PATH!, f));
+	[ca, cert, key ] = certs.map((c) => fs.readFileSync(c, 'utf-8'));
+	const parsed = Url.parse(process.env.DOCKER_HOST!);
 
 	dockerOpts = {
 		host: 'https://' + parsed.hostname,
@@ -39,6 +40,11 @@ if (process.env.CIRCLECI != null) {
 }
 
 const docker = new Dockerode(dockerOpts);
+
+const fileToTarPack = (filename: string): tar.Pack => {
+	// A little hacky, but it's fine for the tests
+	return fs.createReadStream(filename) as any as tar.Pack;
+};
 
 const checkExists = (name: string) => {
 	return docker.getImage(name).inspect();
@@ -56,7 +62,7 @@ describe('Project building', () => {
 		const task = {
 			resolved: false,
 			external: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
+			buildStream: fileToTarPack('test/test-files/standardProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -65,7 +71,7 @@ describe('Project building', () => {
 		.then((image: LocalImage) => {
 			expect(image).to.have.property('successful').that.equals(true);
 			expect(image).to.have.property('layers').that.is.an('array');
-			return checkExists(image.name);
+			return checkExists(image.name!);
 		});
 	});
 
@@ -73,7 +79,7 @@ describe('Project building', () => {
 		const task = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/failingProject.tar')),
+			buildStream: fileToTarPack('test/test-files/failingProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -84,7 +90,7 @@ describe('Project building', () => {
 			expect(image).to.have.property('layers').that.is.an('array').and.have.length(1);
 
 			expect(image).to.have.property('error').that.is.not.null;
-			return checkExists(image.name);
+			return checkExists(image.name!);
 		});
 	});
 
@@ -92,7 +98,7 @@ describe('Project building', () => {
 		const task = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/missingBaseImageProject.tar')),
+			buildStream: fileToTarPack('test/test-files/missingBaseImageProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -109,7 +115,7 @@ describe('Project building', () => {
 		const task = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
+			buildStream: fileToTarPack('test/test-files/standardProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 			tag: 'resin-multibuild-tag',
@@ -126,7 +132,7 @@ describe('Project building', () => {
 		const task = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/standardProject.tar')),
+			buildStream: fileToTarPack('test/test-files/standardProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -142,7 +148,7 @@ describe('Project building', () => {
 		const task = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/failingProject.tar')),
+			buildStream: fileToTarPack('test/test-files/failingProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -158,7 +164,7 @@ describe('Project building', () => {
 		const task = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/missingBaseImageProject.tar')),
+			buildStream: fileToTarPack('test/test-files/missingBaseImageProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -176,7 +182,7 @@ describe('Resolved project building', () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream(require.resolve('./test-files/templateProject.tar')),
+			buildStream: fileToTarPack('test/test-files/templateProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
@@ -185,7 +191,7 @@ describe('Resolved project building', () => {
 		.then((newTask) => runBuildTask(newTask, docker))
 		.then((image) => {
 			expect(image).to.have.property('successful').that.equals(true);
-			return checkExists(image.name);
+			return checkExists(image.name!);
 		});
 	});
 });
@@ -201,7 +207,7 @@ describe('Invalid build input', () => {
 		.then(() => {
 			throw new Error('Error not thrown on null buildStream input');
 		})
-		.catch(BuildProcessError, (e) => {
+		.catch(BuildProcessError, () => {
 			// This is what we want
 		})
 		.catch((e) => {
@@ -224,7 +230,7 @@ describe('External images', () => {
 			expect(image).to.have.property('successful').that.equals(true);
 			expect(image).to.have.property('startTime').that.is.a('number');
 			expect(image).to.have.property('endTime').that.is.a('number');
-			return checkExists(image.name);
+			return checkExists(image.name!);
 		});
 	});
 
@@ -253,7 +259,7 @@ describe('External images', () => {
 			resolved: false,
 			imageName: 'alpine:3.1',
 			serviceName: 'test',
-			progressHook: (data) => {
+			progressHook: () => {
 				called = true;
 			},
 		};
@@ -279,7 +285,7 @@ describe('External images', () => {
 			expect(image).to.have.property('name').that.equals('alpine:latest');
 			expect(image).to.have.property('startTime').that.is.a('number');
 			expect(image).to.have.property('endTime').that.is.a('number');
-			return checkExists(image.name);
+			return checkExists(image.name!);
 		});
 	});
 });
