@@ -1,10 +1,10 @@
 import * as Promise from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
+import * as Compose from 'resin-compose-parse';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
-import * as Compose from 'resin-compose-parse';
 
 import { runBuildTask } from './build';
 import { BuildTask } from './build-task';
@@ -49,7 +49,7 @@ export function fromImageDescriptors(
 		const extract = tar.extract();
 
 		const entryFn = (
-			header: tar.TarHeader,
+			header: tar.Headers,
 			stream: Stream.Readable,
 			next: () => void,
 		): void => {

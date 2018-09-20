@@ -39,10 +39,10 @@ const checkIsInStream = (tarStream: Stream.Readable, filenames: string | string[
 
 describe('Steam splitting', () => {
 	it('should correctly split a stream', () => {
-		const composeObj = require('./test-files/stream/docker-compose');
+		const composeObj = require('../../test/test-files/stream/docker-compose');
 		const comp = Compose.normalize(composeObj);
 
-		const stream = fs.createReadStream(require.resolve('./test-files/stream/project.tar'));
+		const stream = fs.createReadStream('test/test-files/stream/project.tar');
 
 		return splitBuildStream(comp, stream)
 		.then((tasks) => {
@@ -57,10 +57,10 @@ describe('Steam splitting', () => {
 	});
 
 	it('should allow the sharing of build contexts', () => {
-		const composeObj = require('./test-files/stream/docker-compose-shared');
+		const composeObj = require('../../test/test-files/stream/docker-compose-shared.json');
 		const comp = Compose.normalize(composeObj);
 
-		const stream = fs.createReadStream(require.resolve('./test-files/stream/project.tar'));
+		const stream = fs.createReadStream('test/test-files/stream/project.tar');
 
 		return splitBuildStream(comp, stream)
 		.then((tasks) => {
@@ -75,10 +75,10 @@ describe('Steam splitting', () => {
 	});
 
 	it('should allow the sharing of the root build context', () => {
-		const composeObj = require('./test-files/stream/docker-compose-shared-root');
+		const composeObj = require('../../test/test-files/stream/docker-compose-shared-root');
 		const comp = Compose.normalize(composeObj);
 
-		const stream = fs.createReadStream(require.resolve('./test-files/stream/shared-root-context.tar'));
+		const stream = fs.createReadStream('test/test-files/stream/shared-root-context.tar');
 
 		return splitBuildStream(comp, stream)
 		.then((tasks) => {
