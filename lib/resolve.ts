@@ -1,6 +1,6 @@
-import * as Promise from 'bluebird';
 import * as Resolve from 'resin-bundle-resolve';
 import * as Stream from 'stream';
+import * as tar from 'tar-stream';
 
 import { BuildTask } from './build-task';
 
@@ -18,15 +18,14 @@ export function resolveTask(
 	task: BuildTask,
 	architecture: string,
 	deviceType: string,
-): Promise<BuildTask> {
+): BuildTask {
 	if (task.external) {
 		// No resolution needs to be performed for external images
-		return Promise.resolve(task);
+		return task;
 	}
 
-	const dockerfileHook = (content: string): Promise<void> => {
+	const dockerfileHook = (content: string) => {
 		task.dockerfile = content;
-		return Promise.resolve();
 	};
 
 	const bundle = new Resolve.Bundle(
@@ -38,15 +37,19 @@ export function resolveTask(
 
 	const resolvers = Resolve.getDefaultResolvers();
 
-	return Resolve.resolveBundle(bundle, resolvers)
-		.then((res: Resolve.ResolvedBundle) => {
-			task.projectType = res.projectType;
-			task.buildStream = res.tarStream;
-			task.resolved = true;
-			return task;
-		})
-		.catch(() => {
-			task.projectType = 'Could not be detected';
-			return task;
-		});
+	const outStream = Resolve.resolveInput(
+		bundle,
+		resolvers,
+		task.dockerfilePath,
+	);
+	task.buildStream = outStream as tar.Pack;
+	outStream.on('resolver', r => {
+		task.projectType = r;
+		task.resolved = true;
+	});
+	outStream.on('resolved-name', name => {
+		task.dockerfilePath = name;
+	});
+
+	return task;
 }

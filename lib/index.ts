@@ -139,10 +139,8 @@ export function performResolution(
 	tasks: BuildTask[],
 	architecture: string,
 	deviceType: string,
-): Promise<BuildTask[]> {
-	return Promise.map(tasks, (task: BuildTask) => {
-		return resolveTask(task, architecture, deviceType);
-	});
+): BuildTask[] {
+	return tasks.map(task => resolveTask(task, architecture, deviceType));
 }
 
 /**

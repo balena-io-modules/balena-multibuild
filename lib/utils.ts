@@ -42,6 +42,10 @@ export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
 				resolved: false,
 			};
 		} else {
+			// Check that if a dockerfile is specified, that we also have a context
+			if (img.image.context == null) {
+				throw new Error('Must have a context specified with a Dockerfile');
+			}
 			return _.merge(
 				{
 					external: false,
@@ -49,6 +53,10 @@ export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
 					buildStream: tar.pack(),
 					resolved: false,
 				},
+				// Add the dockerfile path if we have one
+				img.image.dockerfile != null
+					? { dockerfilePath: img.image.dockerfile }
+					: {},
 				img.image,
 			);
 		}

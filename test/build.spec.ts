@@ -1,13 +1,15 @@
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Dockerode from 'dockerode';
 import * as fs from 'fs';
 import * as Path from 'path';
+import * as Compose from 'resin-compose-parse';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as Url from 'url';
 
+import { splitBuildStream } from '../lib/';
 import { runBuildTask } from '../lib/build';
 import { BuildTask } from '../lib/build-task';
 import { BuildProcessError } from '../lib/errors';
@@ -35,10 +37,10 @@ if (process.env.CIRCLECI != null) {
 		ca,
 		cert,
 		key,
-		Promise,
+		Promise: Bluebird,
 	};
 } else {
-	dockerOpts = { socketPath: '/var/run/docker.sock', Promise };
+	dockerOpts = { socketPath: '/var/run/docker.sock', Promise: Bluebird };
 }
 
 const docker = new Dockerode(dockerOpts);
@@ -207,14 +209,13 @@ describe('Resolved project building', () => {
 			streamHook: streamPrinter,
 		};
 
-		return resolveTask(task, 'x86', 'intel-nuc')
-			.then(newTask => runBuildTask(newTask, docker))
-			.then(image => {
-				expect(image)
-					.to.have.property('successful')
-					.that.equals(true);
-				return checkExists(image.name!);
-			});
+		const newTask = resolveTask(task, 'x86', 'intel-nuc');
+		return runBuildTask(newTask, docker).then(image => {
+			expect(image)
+				.to.have.property('successful')
+				.that.equals(true);
+			return checkExists(image.name!);
+		});
 	});
 });
 
@@ -325,5 +326,66 @@ describe('External images', () => {
 				.that.is.a('number');
 			return checkExists(image.name!);
 		});
+	});
+});
+
+describe('Specifying a dockerfile', () => {
+	it('should allow specifying a dockerfile', async () => {
+		const composeObj = require('../../test/test-files/stream/docker-compose-specified-dockerfile.json');
+		const comp = Compose.normalize(composeObj);
+
+		const stream = fs.createReadStream(
+			'test/test-files/stream/specified-dockerfile.tar',
+		);
+
+		const tasks = await splitBuildStream(comp, stream);
+		expect(tasks).to.have.length(1);
+
+		const newTask = await resolveTask(tasks[0], 'test', 'test');
+
+		newTask.buildStream.on('end', () => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask).to.have.property('projectType', 'Standard Dockerfile');
+			expect(newTask).to.have.property('dockerfilePath', 'test/Dockerfile');
+			expect(newTask).to.have.property('dockerfile', 'correct\n');
+		});
+		const image = await runBuildTask(tasks[0], docker);
+
+		expect(image)
+			.to.have.property('error')
+			.that.has.property('message')
+			.that.equals(
+				'(HTTP code 400) unexpected - Dockerfile parse error line 1: unknown instruction: CORRECT ',
+			);
+	});
+
+	it('should allow specifying a dockerfile.template', async () => {
+		const composeObj = require('../../test/test-files/stream/docker-compose-specified-dockerfile-template.json');
+		const comp = Compose.normalize(composeObj);
+
+		const stream = fs.createReadStream(
+			'test/test-files/stream/specified-dockerfile-template.tar',
+		);
+
+		const tasks = await splitBuildStream(comp, stream);
+		expect(tasks).to.have.length(1);
+
+		const newTask = await resolveTask(tasks[0], 'test', 'test');
+
+		newTask.buildStream.on('end', () => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask).to.have.property('projectType', 'Dockerfile.template');
+			expect(newTask).to.have.property('dockerfilePath', 'test/Dockerfile');
+			expect(newTask).to.have.property('dockerfile', 'correct\n');
+		});
+
+		const image = await runBuildTask(tasks[0], docker);
+
+		expect(image)
+			.to.have.property('error')
+			.that.has.property('message')
+			.that.equals(
+				'(HTTP code 400) unexpected - Dockerfile parse error line 1: unknown instruction: CORRECT ',
+			);
 	});
 });
