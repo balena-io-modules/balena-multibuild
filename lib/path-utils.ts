@@ -11,7 +11,6 @@ export * from 'path';
  * @return A boolean indicating whether `path1` contains `path2`
  */
 export const contains = (path1: string, path2: string): boolean => {
-
 	// First normalise the input, to remove any path weirdness
 	path1 = normalize(path1);
 	path2 = normalize(path2);

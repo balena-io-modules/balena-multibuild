@@ -19,7 +19,6 @@ export function resolveTask(
 	architecture: string,
 	deviceType: string,
 ): Promise<BuildTask> {
-
 	if (task.external) {
 		// No resolution needs to be performed for external images
 		return Promise.resolve(task);
@@ -40,15 +39,14 @@ export function resolveTask(
 	const resolvers = Resolve.getDefaultResolvers();
 
 	return Resolve.resolveBundle(bundle, resolvers)
-	.then((res: Resolve.ResolvedBundle) => {
-		task.projectType = res.projectType;
-		task.buildStream = res.tarStream;
-		task.resolved = true;
-		return task;
-	})
-	.catch(() => {
-		task.projectType = 'Could not be detected';
-		return task;
-	});
-
+		.then((res: Resolve.ResolvedBundle) => {
+			task.projectType = res.projectType;
+			task.buildStream = res.tarStream;
+			task.resolved = true;
+			return task;
+		})
+		.catch(() => {
+			task.projectType = 'Could not be detected';
+			return task;
+		});
 }

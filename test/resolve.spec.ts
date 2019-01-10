@@ -15,12 +15,13 @@ describe('Project resolution', () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: fs.createReadStream('test/test-files/templateProject.tar') as any as Pack,
+			buildStream: (fs.createReadStream(
+				'test/test-files/templateProject.tar',
+			) as any) as Pack,
 			serviceName: 'test',
 		};
 
-		return resolveTask(task, 'test', 'test')
-		.then((newTask) => {
+		return resolveTask(task, 'test', 'test').then(newTask => {
 			expect(newTask.projectType).to.equal('Dockerfile.template');
 			expect(newTask.resolved).to.equal(true);
 		});
@@ -31,12 +32,15 @@ describe('Project resolution', () => {
 			external: false,
 			resolved: false,
 			serviceName: 'test',
-			buildStream: fs.createReadStream('test/test-files/failedProject.tar') as any as Pack,
+			buildStream: (fs.createReadStream(
+				'test/test-files/failedProject.tar',
+			) as any) as Pack,
 		};
 
-		return resolveTask(task, 'test', 'test')
-		.then((newTask) => {
-			expect(newTask).to.have.property('resolved').that.equals(false);
+		return resolveTask(task, 'test', 'test').then(newTask => {
+			expect(newTask)
+				.to.have.property('resolved')
+				.that.equals(false);
 		});
 	});
 });

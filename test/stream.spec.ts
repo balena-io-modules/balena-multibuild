@@ -12,17 +12,19 @@ import { splitBuildStream } from '../lib/index';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const checkIsInStream = (tarStream: Stream.Readable, filenames: string | string[]): Promise<boolean> => {
-
+const checkIsInStream = (
+	tarStream: Stream.Readable,
+	filenames: string | string[],
+): Promise<boolean> => {
 	if (!_.isArray(filenames)) {
-		filenames = [ filenames ];
+		filenames = [filenames];
 	}
 
 	return new Promise((resolve, reject) => {
 		const extract = tar.extract();
 
 		extract.on('entry', (header, stream, next) => {
-			_.remove(filenames, (f) => f === header.name);
+			_.remove(filenames, f => f === header.name);
 
 			stream.on('data', _.noop);
 			stream.on('end', next);
@@ -44,12 +46,10 @@ describe('Steam splitting', () => {
 
 		const stream = fs.createReadStream('test/test-files/stream/project.tar');
 
-		return splitBuildStream(comp, stream)
-		.then((tasks) => {
+		return splitBuildStream(comp, stream).then(tasks => {
 			expect(tasks).to.have.length(2);
-			return Promise.map(tasks, (task) => {
-				return checkIsInStream(task.buildStream, 'Dockerfile')
-				.then((found) => {
+			return Promise.map(tasks, task => {
+				return checkIsInStream(task.buildStream, 'Dockerfile').then(found => {
 					expect(found).to.equal(true);
 				});
 			});
@@ -62,12 +62,10 @@ describe('Steam splitting', () => {
 
 		const stream = fs.createReadStream('test/test-files/stream/project.tar');
 
-		return splitBuildStream(comp, stream)
-		.then((tasks) => {
+		return splitBuildStream(comp, stream).then(tasks => {
 			expect(tasks).to.have.length(2);
-			return Promise.map(tasks, (task) => {
-				return checkIsInStream(task.buildStream, 'Dockerfile')
-				.then((found) => {
+			return Promise.map(tasks, task => {
+				return checkIsInStream(task.buildStream, 'Dockerfile').then(found => {
 					expect(found).to.equal(true);
 				});
 			});
@@ -78,23 +76,25 @@ describe('Steam splitting', () => {
 		const composeObj = require('../../test/test-files/stream/docker-compose-shared-root');
 		const comp = Compose.normalize(composeObj);
 
-		const stream = fs.createReadStream('test/test-files/stream/shared-root-context.tar');
+		const stream = fs.createReadStream(
+			'test/test-files/stream/shared-root-context.tar',
+		);
 
-		return splitBuildStream(comp, stream)
-		.then((tasks) => {
+		return splitBuildStream(comp, stream).then(tasks => {
 			expect(tasks).to.have.length(2);
 
-			return Promise.map(tasks, (task) => {
-
+			return Promise.map(tasks, task => {
 				if (task.context === './') {
-					return checkIsInStream(task.buildStream, [ 'Dockerfile', 'test1/Dockerfile' ])
-						.then((found) => expect(found).to.equal(true));
+					return checkIsInStream(task.buildStream, [
+						'Dockerfile',
+						'test1/Dockerfile',
+					]).then(found => expect(found).to.equal(true));
 				} else {
-					return checkIsInStream(task.buildStream, 'Dockerfile')
-						.then((found) => expect(found).to.equal(true));
+					return checkIsInStream(task.buildStream, 'Dockerfile').then(found =>
+						expect(found).to.equal(true),
+					);
 				}
 			});
 		});
 	});
-
 });

@@ -18,7 +18,10 @@ function taskHooks(
 	return {
 		buildSuccess: (imageId: string, layers: string[]) => {
 			const tag = task.tag != null ? task.tag : imageId;
-			const image = new LocalImage(docker, tag, task.serviceName, { external: false, successful: true });
+			const image = new LocalImage(docker, tag, task.serviceName, {
+				external: false,
+				successful: true,
+			});
 			image.layers = layers;
 			image.startTime = startTime;
 			image.endTime = Date.now();
@@ -30,7 +33,7 @@ function taskHooks(
 		buildFailure: (error: Error, layers: string[]) => {
 			const image = new LocalImage(
 				docker,
-				layers[layers.length  - 1],
+				layers[layers.length - 1],
 				task.serviceName,
 				{ external: false, successful: false },
 			);
@@ -74,8 +77,10 @@ const generateLabels = (task: BuildTask): { labels?: Dict<string> } => {
  * @param docker The handle to the docker daemon
  * @return a promise which resolves to a LocalImage which points to the produced image
  */
-export function runBuildTask(task: BuildTask, docker: Dockerode): Promise<LocalImage> {
-
+export function runBuildTask(
+	task: BuildTask,
+	docker: Dockerode,
+): Promise<LocalImage> {
 	if (task.external) {
 		// Handle this separately
 		return pullExternal(task, docker);
@@ -87,8 +92,12 @@ export function runBuildTask(task: BuildTask, docker: Dockerode): Promise<LocalI
 			return;
 		}
 
-		let dockerOpts = task.dockerOpts || { };
-		dockerOpts = _.merge(dockerOpts, generateBuildArgs(task), generateLabels(task));
+		let dockerOpts = task.dockerOpts || {};
+		dockerOpts = _.merge(
+			dockerOpts,
+			generateBuildArgs(task),
+			generateLabels(task),
+		);
 
 		if (task.tag != null) {
 			dockerOpts = _.merge(dockerOpts, { t: task.tag });
@@ -99,5 +108,4 @@ export function runBuildTask(task: BuildTask, docker: Dockerode): Promise<LocalI
 
 		builder.createBuildStream(dockerOpts, hooks, reject);
 	});
-
 }

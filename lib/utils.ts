@@ -33,7 +33,7 @@ export function drainStream(stream: Readable): Promise<void> {
  * @returns An array of tasks which make up this multicontainer build
  */
 export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
-	return _.map(images, (img) => {
+	return _.map(images, img => {
 		if (_.isString(img.image)) {
 			return {
 				external: true,
@@ -42,12 +42,15 @@ export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
 				resolved: false,
 			};
 		} else {
-			return _.merge({
-				external: false,
-				serviceName: img.serviceName,
-				buildStream: tar.pack(),
-				resolved: false,
-			}, img.image);
+			return _.merge(
+				{
+					external: false,
+					serviceName: img.serviceName,
+					buildStream: tar.pack(),
+					resolved: false,
+				},
+				img.image,
+			);
 		}
 	});
 }
