@@ -12,11 +12,16 @@ const hasImageTag = (name: string): boolean => {
 	return tagRegex.test(name);
 };
 
-export function pullExternal(task: BuildTask, docker: Dockerode): Promise<LocalImage> {
+export function pullExternal(
+	task: BuildTask,
+	docker: Dockerode,
+): Promise<LocalImage> {
 	const dockerProgress = new DockerProgress();
 	dockerProgress.docker.modem = docker.modem;
 
-	const progressHook = _.isFunction(task.progressHook) ? task.progressHook : _.noop;
+	const progressHook = _.isFunction(task.progressHook)
+		? task.progressHook
+		: _.noop;
 
 	if (task.imageName == null) {
 		throw new BuildProcessError('No image name given for an external image');
@@ -27,27 +32,30 @@ export function pullExternal(task: BuildTask, docker: Dockerode): Promise<LocalI
 		imageName += ':latest';
 	}
 
-	const opts = task.dockerOpts || { };
+	const opts = task.dockerOpts || {};
 
 	const startTime = Date.now();
-	return dockerProgress.pull(
-		imageName,
-		progressHook,
-		opts,
-	)
-	.then(() => {
-		const image = new LocalImage(docker, imageName, task.serviceName, { external: true, successful: true });
-		image.startTime = startTime;
-		image.endTime = Date.now();
-		image.projectType = 'external service';
-		return image;
-	})
-	.catch((e) => {
-		const image = new LocalImage(docker, null, task.serviceName, { external: true, successful: false });
-		image.error = e;
-		image.startTime = startTime;
-		image.endTime = Date.now();
-		image.projectType = 'external service';
-		return image;
-	});
+	return dockerProgress
+		.pull(imageName, progressHook, opts)
+		.then(() => {
+			const image = new LocalImage(docker, imageName, task.serviceName, {
+				external: true,
+				successful: true,
+			});
+			image.startTime = startTime;
+			image.endTime = Date.now();
+			image.projectType = 'external service';
+			return image;
+		})
+		.catch(e => {
+			const image = new LocalImage(docker, null, task.serviceName, {
+				external: true,
+				successful: false,
+			});
+			image.error = e;
+			image.startTime = startTime;
+			image.endTime = Date.now();
+			image.projectType = 'external service';
+			return image;
+		});
 }

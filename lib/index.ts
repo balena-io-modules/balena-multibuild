@@ -59,7 +59,6 @@ export function fromImageDescriptors(
 	images: Compose.ImageDescriptor[],
 	buildStream: Stream.Readable,
 ): Promise<BuildTask[]> {
-
 	return new Promise((resolve, reject) => {
 		// Firstly create a list of BuildTasks based on the composition
 		const tasks = Utils.generateBuildTasks(images);
@@ -72,7 +71,7 @@ export function fromImageDescriptors(
 			next: () => void,
 		): void => {
 			// Find the build context that this file should belong to
-			const matchingTasks = _.filter(tasks, (task) => {
+			const matchingTasks = _.filter(tasks, task => {
 				if (task.external) {
 					return false;
 				}
@@ -82,39 +81,39 @@ export function fromImageDescriptors(
 			if (matchingTasks.length > 0) {
 				// Add the file to every matching context
 				TarUtils.streamToBuffer(stream)
-				.then((buf) => {
-					matchingTasks.forEach((task) => {
-						const newHeader = _.cloneDeep(header);
-						newHeader.name = PathUtils.relative(task.context!, header.name);
-						task.buildStream!.entry(newHeader, buf);
-					});
-				})
-				.then(() => {
-					next();
-					return null;
-				})
-				.catch((e) => reject(new TarError(e)));
+					.then(buf => {
+						matchingTasks.forEach(task => {
+							const newHeader = _.cloneDeep(header);
+							newHeader.name = PathUtils.relative(task.context!, header.name);
+							task.buildStream!.entry(newHeader, buf);
+						});
+					})
+					.then(() => {
+						next();
+						return null;
+					})
+					.catch(e => reject(new TarError(e)));
 			} else {
 				Utils.drainStream(stream)
-				.then(() => {
-					next();
-					// return null here to keep bluebird happy
-					return null;
-				})
-				.catch((e) => reject(new TarError(e)));
+					.then(() => {
+						next();
+						// return null here to keep bluebird happy
+						return null;
+					})
+					.catch(e => reject(new TarError(e)));
 			}
 		};
 
 		extract.on('entry', entryFn);
 		extract.on('finish', () => {
-			_.each(tasks, (task) => {
+			_.each(tasks, task => {
 				if (!task.external) {
 					task.buildStream!.finalize();
 				}
 			});
 			resolve(tasks);
 		});
-		extract.on('error', (e) => {
+		extract.on('error', e => {
 			reject(new TarError(e));
 		});
 
@@ -177,8 +176,7 @@ export function performSingleBuild(
 	task: BuildTask,
 	docker: Dockerode,
 ): Promise<LocalImage> {
-	return runBuildTask(task, docker)
-		.catch((e) => {
-			throw new BuildProcessError(e);
-		});
+	return runBuildTask(task, docker).catch(e => {
+		throw new BuildProcessError(e);
+	});
 }
