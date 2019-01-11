@@ -21,9 +21,14 @@ describe('Project resolution', () => {
 			serviceName: 'test',
 		};
 
-		return resolveTask(task, 'test', 'test').then(newTask => {
-			expect(newTask.projectType).to.equal('Dockerfile.template');
-			expect(newTask.resolved).to.equal(true);
+		const newTask = resolveTask(task, 'test', 'test');
+		return new Promise(resolve => {
+			newTask.buildStream.resume();
+			newTask.buildStream.on('end', () => {
+				expect(newTask.projectType).to.equal('Dockerfile.template');
+				expect(newTask.resolved).to.equal(true);
+				resolve();
+			});
 		});
 	});
 
@@ -37,10 +42,15 @@ describe('Project resolution', () => {
 			) as any) as Pack,
 		};
 
-		return resolveTask(task, 'test', 'test').then(newTask => {
-			expect(newTask)
-				.to.have.property('resolved')
-				.that.equals(false);
+		const newTask = resolveTask(task, 'test', 'test');
+		return new Promise((resolve, reject) => {
+			newTask.buildStream.resume();
+			newTask.buildStream.on('end', () => {
+				reject(new Error('No error thrown on resolution failure'));
+			});
+			newTask.buildStream.on('error', () => {
+				resolve();
+			});
 		});
 	});
 });

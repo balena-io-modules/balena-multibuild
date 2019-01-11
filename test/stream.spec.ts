@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
@@ -10,17 +10,18 @@ import * as tar from 'tar-stream';
 import { splitBuildStream } from '../lib/index';
 
 chai.use(chaiAsPromised);
+chai.should();
 const expect = chai.expect;
 
 const checkIsInStream = (
 	tarStream: Stream.Readable,
 	filenames: string | string[],
-): Promise<boolean> => {
+): Bluebird<boolean> => {
 	if (!_.isArray(filenames)) {
-		filenames = [filenames];
+		filenames = [filenames as string];
 	}
 
-	return new Promise((resolve, reject) => {
+	return new Bluebird((resolve, reject) => {
 		const extract = tar.extract();
 
 		extract.on('entry', (header, stream, next) => {
@@ -48,7 +49,7 @@ describe('Steam splitting', () => {
 
 		return splitBuildStream(comp, stream).then(tasks => {
 			expect(tasks).to.have.length(2);
-			return Promise.map(tasks, task => {
+			return Bluebird.map(tasks, task => {
 				return checkIsInStream(task.buildStream, 'Dockerfile').then(found => {
 					expect(found).to.equal(true);
 				});
@@ -64,7 +65,7 @@ describe('Steam splitting', () => {
 
 		return splitBuildStream(comp, stream).then(tasks => {
 			expect(tasks).to.have.length(2);
-			return Promise.map(tasks, task => {
+			return Bluebird.map(tasks, task => {
 				return checkIsInStream(task.buildStream, 'Dockerfile').then(found => {
 					expect(found).to.equal(true);
 				});
@@ -83,7 +84,7 @@ describe('Steam splitting', () => {
 		return splitBuildStream(comp, stream).then(tasks => {
 			expect(tasks).to.have.length(2);
 
-			return Promise.map(tasks, task => {
+			return Bluebird.map(tasks, task => {
 				if (task.context === './') {
 					return checkIsInStream(task.buildStream, [
 						'Dockerfile',
@@ -95,6 +96,33 @@ describe('Steam splitting', () => {
 					);
 				}
 			});
+		});
+	});
+
+	describe('Specifying a Dockerfile', () => {
+		it('should throw an error when a build object does not contain a context and dockerfile', done => {
+			const composeObj = require('../../test/test-files/stream/docker-compose-specified-dockerfile-no-context.json');
+			const comp = Compose.normalize(composeObj);
+
+			const stream = fs.createReadStream(
+				'test/test-files/stream/specified-dockerfile.tar',
+			);
+
+			Promise.resolve(
+				splitBuildStream(comp, stream),
+			).should.be.rejected.and.notify(done);
+		});
+
+		it('should allow specifying a dockerfile in the composition', async () => {
+			const composeObj = require('../../test/test-files/stream/docker-compose-specified-dockerfile.json');
+			const comp = Compose.normalize(composeObj);
+
+			const stream = fs.createReadStream(
+				'test/test-files/stream/specified-dockerfile.tar',
+			);
+
+			const tasks = await splitBuildStream(comp, stream);
+			expect(tasks).to.have.length(1);
 		});
 	});
 });

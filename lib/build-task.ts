@@ -49,6 +49,10 @@ export interface BuildTask {
 	 */
 	dockerfile?: string;
 	/**
+	 * This will be the path of the dockerfile if specified
+	 */
+	dockerfilePath?: string;
+	/**
 	 * An object which will be forwarded to the docker daemon, with options
 	 * for the build or pull
 	 */
