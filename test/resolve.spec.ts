@@ -21,14 +21,23 @@ describe('Project resolution', () => {
 			serviceName: 'test',
 		};
 
-		const newTask = resolveTask(task, 'test', 'test');
-		return new Promise(resolve => {
+		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+				end: [
+					() => {
+						try {
+							expect(newTask.projectType).to.equal('Dockerfile.template');
+							expect(newTask.resolved).to.equal(true);
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					},
+				],
+			};
+			const newTask = resolveTask(task, 'test', 'test', resolveListeners);
 			newTask.buildStream.resume();
-			newTask.buildStream.on('end', () => {
-				expect(newTask.projectType).to.equal('Dockerfile.template');
-				expect(newTask.resolved).to.equal(true);
-				resolve();
-			});
 		});
 	});
 
@@ -42,15 +51,17 @@ describe('Project resolution', () => {
 			) as any) as Pack,
 		};
 
-		const newTask = resolveTask(task, 'test', 'test');
 		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [resolve],
+				end: [
+					() => {
+						reject(new Error('No error thrown on resolution failure'));
+					},
+				],
+			};
+			const newTask = resolveTask(task, 'test', 'test', resolveListeners);
 			newTask.buildStream.resume();
-			newTask.buildStream.on('end', () => {
-				reject(new Error('No error thrown on resolution failure'));
-			});
-			newTask.buildStream.on('error', () => {
-				resolve();
-			});
 		});
 	});
 });

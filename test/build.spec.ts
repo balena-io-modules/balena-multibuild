@@ -1,3 +1,19 @@
+/**
+ * @license
+ * Copyright 2019 Balena Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as Bluebird from 'bluebird';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -208,9 +224,13 @@ describe('Resolved project building', () => {
 			serviceName: 'test',
 			streamHook: streamPrinter,
 		};
-
-		const newTask = resolveTask(task, 'x86', 'intel-nuc');
-		return runBuildTask(newTask, docker).then(image => {
+		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			const newTask = resolveTask(task, 'x86', 'intel-nuc', resolveListeners);
+			resolve(runBuildTask(newTask, docker));
+		}).then((image: LocalImage) => {
 			expect(image)
 				.to.have.property('successful')
 				.that.equals(true);
@@ -341,22 +361,26 @@ describe('Specifying a dockerfile', () => {
 		const tasks = await splitBuildStream(comp, stream);
 		expect(tasks).to.have.length(1);
 
-		const newTask = await resolveTask(tasks[0], 'test', 'test');
-
-		newTask.buildStream.on('end', () => {
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
+			resolve(runBuildTask(tasks[0], docker));
+		}).then((image: LocalImage) => {
 			expect(newTask).to.have.property('resolved', true);
 			expect(newTask).to.have.property('projectType', 'Standard Dockerfile');
 			expect(newTask).to.have.property('dockerfilePath', 'test/Dockerfile');
 			expect(newTask).to.have.property('dockerfile', 'correct\n');
-		});
-		const image = await runBuildTask(tasks[0], docker);
 
-		expect(image)
-			.to.have.property('error')
-			.that.has.property('message')
-			.that.equals(
-				'(HTTP code 400) unexpected - Dockerfile parse error line 1: unknown instruction: CORRECT ',
-			);
+			expect(image)
+				.to.have.property('error')
+				.that.has.property('message')
+				.that.matches(
+					/Dockerfile parse error line 1: unknown instruction: CORRECT/i,
+				);
+		});
 	});
 
 	it('should allow specifying a dockerfile.template', async () => {
@@ -370,22 +394,25 @@ describe('Specifying a dockerfile', () => {
 		const tasks = await splitBuildStream(comp, stream);
 		expect(tasks).to.have.length(1);
 
-		const newTask = await resolveTask(tasks[0], 'test', 'test');
-
-		newTask.buildStream.on('end', () => {
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
+			resolve(runBuildTask(tasks[0], docker));
+		}).then((image: LocalImage) => {
 			expect(newTask).to.have.property('resolved', true);
 			expect(newTask).to.have.property('projectType', 'Dockerfile.template');
 			expect(newTask).to.have.property('dockerfilePath', 'test/Dockerfile');
 			expect(newTask).to.have.property('dockerfile', 'correct\n');
+
+			expect(image)
+				.to.have.property('error')
+				.that.has.property('message')
+				.that.matches(
+					/Dockerfile parse error line 1: unknown instruction: CORRECT/i,
+				);
 		});
-
-		const image = await runBuildTask(tasks[0], docker);
-
-		expect(image)
-			.to.have.property('error')
-			.that.has.property('message')
-			.that.equals(
-				'(HTTP code 400) unexpected - Dockerfile parse error line 1: unknown instruction: CORRECT ',
-			);
 	});
 });

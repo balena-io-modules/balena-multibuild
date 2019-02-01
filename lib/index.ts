@@ -28,7 +28,7 @@ import { BuildTask } from './build-task';
 import { BuildProcessError, TarError } from './errors';
 import { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
-import { resolveTask } from './resolve';
+import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 
 // Export external types
@@ -37,6 +37,7 @@ export * from './errors';
 export * from './local-image';
 export * from './registry-secrets';
 export { PathUtils };
+export { ResolveListeners };
 
 /**
  * Given a composition and stream which will output a valid tar archive,
@@ -94,7 +95,7 @@ export function fromImageDescriptors(
 					})
 					.catch(e => reject(new TarError(e)));
 			} else {
-				Utils.drainStream(stream)
+				TarUtils.drainStream(stream)
 					.then(() => {
 						next();
 						// return null here to keep bluebird happy
@@ -132,15 +133,20 @@ export function fromImageDescriptors(
  * @param tasks The build tasks to resolve
  * @param architecture The architecture to resolve for
  * @param deviceType The device type to resolve for
+ * @param resolveListeners Event listeners for tar stream resolution.
+ * You should always add at least an 'error' handler, or uncaught errors
+ * may crash the app.
  * @returns A list of resolved build tasks
- * @throws ProjectResolutionError
  */
 export function performResolution(
 	tasks: BuildTask[],
 	architecture: string,
 	deviceType: string,
+	resolveListeners: ResolveListeners,
 ): BuildTask[] {
-	return tasks.map(task => resolveTask(task, architecture, deviceType));
+	return tasks.map(task =>
+		resolveTask(task, architecture, deviceType, resolveListeners),
+	);
 }
 
 /**
