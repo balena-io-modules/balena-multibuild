@@ -18,16 +18,22 @@
 /**
  * Tests for the registry-secrets.ts module
  */
-
 import { expect } from 'chai';
+import * as _ from 'lodash';
+
 import { RegistrySecretValidationError } from '../lib/errors';
-import { RegistrySecretValidator } from '../lib/registry-secrets';
+import {
+	addCanonicalDockerHubEntry,
+	RegistrySecrets,
+	RegistrySecretValidator,
+} from '../lib/registry-secrets';
 
 describe('Registry secret JSON validation', () => {
 	const validator = new RegistrySecretValidator();
 
 	it('should pass when given a valid JSON string', () => {
 		const validSecrets = {
+			'': { username: 'bob', password: 'dog' },
 			'docker.example.com': { username: 'ann', password: 'hunter2' },
 			'https://idx.docker.io/v1/': { username: 'mck', password: 'cze14' },
 		};
@@ -71,5 +77,47 @@ describe('Registry secret JSON validation', () => {
 			RegistrySecretValidationError,
 			"data['hostname'] should NOT have additional properties",
 		);
+	});
+});
+
+describe('RegistrySecretValidator.addCanonicalDockerHubEntry', () => {
+	const canonicalEntry = 'https://index.docker.io/v1/';
+	const c = { 'https://index.docker.io/v1/': 0 };
+	const e1 = { 'index.docker.io': 1 };
+	const e2 = { 'https://idx.docker.io/v1/': 2 };
+	const e3 = { 'https://docker.io/v9/': 3 };
+	const e4 = { 'cloud.docker.com/v1': 4 };
+	const e5 = { 'docker.com': 5 };
+	const e6 = { '/docker.com': 6 };
+	const e7 = { 'eu.gcr.io': 7 };
+	const e8 = { '': 8 }; // empty domain also means Docker Hub
+
+	it('should only add a canonical entry when required', () => {
+		const testCases: Array<[object[], number, number | undefined]> = [
+			[[], 0, undefined],
+			[[c], 1, 0],
+			[[e1], 2, 1],
+			[[e2], 2, 2],
+			[[e3], 2, 3],
+			[[e4], 2, 4],
+			[[e5], 2, 5],
+			[[e6], 1, undefined],
+			[[e7], 1, undefined],
+			[[e8], 2, 8],
+			[[e1, e2], 3, 1],
+			[[e2, e3], 3, 2],
+			[[e5, e6], 3, 5],
+			[[e6, e7], 2, undefined],
+			[[e7, e8], 3, 8],
+			[[e1, e2, e3, e4, e5, e6, e7, e8], 9, 1],
+		];
+
+		for (const [entries, expectedLength, expectedValue] of testCases) {
+			const registrySecrets: RegistrySecrets = {};
+			_.assign(registrySecrets, ...entries);
+			addCanonicalDockerHubEntry(registrySecrets);
+			expect(Object.keys(registrySecrets)).to.have.lengthOf(expectedLength);
+			expect(registrySecrets[canonicalEntry]).to.equal(expectedValue);
+		}
 	});
 });
