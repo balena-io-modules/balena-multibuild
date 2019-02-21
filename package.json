@@ -46,6 +46,7 @@
     "ajv": "^6.6.1",
     "bluebird": "^3.5.1",
     "docker-progress": "^3.0.1",
+    "docker-toolbelt": "^3.3.7",
     "dockerode": "^2.5.5",
     "lodash": "^4.17.4",
     "resin-bundle-resolve": "^3.0.0",
