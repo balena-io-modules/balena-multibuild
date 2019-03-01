@@ -126,6 +126,7 @@ export function addCanonicalDockerHubEntry(registryconfig: RegistrySecrets) {
 		'idx.docker.io',
 		'docker.io',
 		'cloud.docker.com',
+		'hub.docker.com',
 		'docker.com',
 	];
 	outer: for (const hubDomain of hubDomains) {
