@@ -49,7 +49,7 @@
     "docker-toolbelt": "^3.3.7",
     "dockerode": "^2.5.5",
     "lodash": "^4.17.4",
-    "resin-bundle-resolve": "^3.0.0",
+    "resin-bundle-resolve": "^3.0.1",
     "resin-compose-parse": "^2.0.1",
     "resin-docker-build": "^0.7.1",
     "tar-stream": "^1.6.2",
