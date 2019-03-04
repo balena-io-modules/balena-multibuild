@@ -1,7 +1,6 @@
 import * as Promise from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
-import * as path from 'path';
 import { Builder, BuildHooks } from 'resin-docker-build';
 import * as Stream from 'stream';
 
@@ -106,11 +105,11 @@ export function runBuildTask(
 
 		if (task.dockerfilePath != null) {
 			dockerOpts = _.merge(dockerOpts, {
-				dockerfile: path.relative(task.context!, task.dockerfilePath),
+				dockerfile: task.dockerfilePath,
 			});
 		}
 
-		const builder = new Builder(docker);
+		const builder = Builder.fromDockerode(docker);
 		const hooks = taskHooks(task, docker, resolve);
 
 		builder.createBuildStream(dockerOpts, hooks, reject);
