@@ -109,7 +109,7 @@ export function runBuildTask(
 			});
 		}
 
-		const builder = new Builder(docker);
+		const builder = Builder.fromDockerode(docker);
 		const hooks = taskHooks(task, docker, resolve);
 
 		builder.createBuildStream(dockerOpts, hooks, reject);
