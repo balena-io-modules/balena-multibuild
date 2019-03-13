@@ -115,7 +115,7 @@ describe('Project building', () => {
 				.to.have.property('layers')
 				.that.is.an('array')
 				.and.have.length(1);
-
+			// tslint:disable-next-line:no-unused-expression
 			expect(image).to.have.property('error').that.is.not.null;
 			return checkExists(image.name!);
 		});
@@ -135,6 +135,7 @@ describe('Project building', () => {
 			expect(image)
 				.to.have.property('layers')
 				.that.has.length(0);
+			// tslint:disable-next-line:no-unused-expression
 			expect(image).to.have.property('error').that.is.not.null;
 		});
 	});
@@ -297,6 +298,7 @@ describe('External images', () => {
 				.to.have.property('successful')
 				.that.equals(false);
 			expect(image).to.not.have.property('name');
+			// tslint:disable-next-line:no-unused-expression
 			expect(image).to.have.property('error').that.is.not.null;
 			expect(image)
 				.to.have.property('startTime')
