@@ -45,7 +45,7 @@
     "@types/tar-stream": "1.6.0",
     "ajv": "^6.6.1",
     "bluebird": "^3.5.3",
-    "docker-progress": "^3.0.4",
+    "docker-progress": "^4.0.0",
     "docker-toolbelt": "^3.3.7",
     "dockerode": "^2.5.5",
     "lodash": "^4.17.4",
