@@ -1,6 +1,6 @@
 {
   "name": "resin-multibuild",
-  "version": "2.1.6",
+  "version": "3.0.0",
   "description": "Build a docker composition",
   "main": "build/index.js",
   "types": "build/index.d.ts",
