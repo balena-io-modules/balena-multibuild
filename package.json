@@ -48,11 +48,11 @@
     "docker-toolbelt": "^3.3.7",
     "dockerode": "^2.5.8",
     "lodash": "^4.17.4",
-    "resin-bundle-resolve": "^4.0.0",
+    "resin-bundle-resolve": "^4.1.0-35-alternative-template-names-dba0ecea12671ab1793e3d6d3b40ca44418dbb26",
     "resin-compose-parse": "^2.0.4",
     "resin-docker-build": "^1.0.1",
     "tar-stream": "^2.0.1",
-    "tar-utils": "^1.1.0",
+    "tar-utils": "^2.0.0",
     "typed-error": "^3.1.0"
   },
   "husky": {
