@@ -28,6 +28,7 @@ import { BuildTask } from './build-task';
 import { BuildProcessError, TarError } from './errors';
 import { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
+import { posix, posixContains } from './path-utils';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 
@@ -76,7 +77,7 @@ export function fromImageDescriptors(
 				if (task.external) {
 					return false;
 				}
-				return PathUtils.contains(task.context!, header.name);
+				return posixContains(task.context!, header.name);
 			});
 
 			if (matchingTasks.length > 0) {
@@ -85,7 +86,7 @@ export function fromImageDescriptors(
 					.then(buf => {
 						matchingTasks.forEach(task => {
 							const newHeader = _.cloneDeep(header);
-							newHeader.name = PathUtils.relative(task.context!, header.name);
+							newHeader.name = posix.relative(task.context!, header.name);
 							task.buildStream!.entry(newHeader, buf);
 						});
 					})
