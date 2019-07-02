@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 import { Builder, BuildHooks } from 'resin-docker-build';
 import * as Stream from 'stream';
 
-import { BuildTask, Dict } from './build-task';
+import { SecretsPopulationMap } from './build-secrets';
+import { BuildTask } from './build-task';
 import { BuildProcessError } from './errors';
 import { pullExternal } from './external';
 import { LocalImage } from './local-image';
@@ -57,13 +58,16 @@ function taskHooks(
 	};
 }
 
-const generateBuildArgs = (task: BuildTask): { buildargs?: Dict<string> } => {
+const generateBuildArgs = (
+	task: BuildTask,
+	userArgs?: Dictionary<string>,
+): { buildargs?: Dictionary<string> } => {
 	return {
-		buildargs: task.args,
+		buildargs: _.merge(task.args, userArgs),
 	};
 };
 
-const generateLabels = (task: BuildTask): { labels?: Dict<string> } => {
+const generateLabels = (task: BuildTask): { labels?: Dictionary<string> } => {
 	return {
 		labels: task.labels,
 	};
@@ -80,6 +84,8 @@ const generateLabels = (task: BuildTask): { labels?: Dict<string> } => {
 export function runBuildTask(
 	task: BuildTask,
 	docker: Dockerode,
+	secrets?: SecretsPopulationMap,
+	buildArgs?: Dictionary<string>,
 ): Promise<LocalImage> {
 	if (task.external) {
 		// Handle this separately
@@ -95,9 +101,18 @@ export function runBuildTask(
 		let dockerOpts = task.dockerOpts || {};
 		dockerOpts = _.merge(
 			dockerOpts,
-			generateBuildArgs(task),
+			generateBuildArgs(task, buildArgs),
 			generateLabels(task),
 		);
+
+		if (secrets != null && task.serviceName in secrets) {
+			if (dockerOpts.volumes == null) {
+				dockerOpts.volumes = [];
+			}
+			dockerOpts.volumes.push(
+				`${secrets[task.serviceName].tmpDirectory}:/run/secrets:ro`,
+			);
+		}
 
 		if (task.tag != null) {
 			dockerOpts = _.merge(dockerOpts, { t: task.tag });

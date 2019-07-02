@@ -19,14 +19,17 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Dockerode from 'dockerode';
 import * as fs from 'fs';
+import jsyaml = require('js-yaml');
+import * as os from 'os';
 import * as Path from 'path';
 import * as Compose from 'resin-compose-parse';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as Url from 'url';
 
-import { splitBuildStream } from '../lib/';
+import { performBuilds, performResolution, splitBuildStream } from '../lib/';
 import { runBuildTask } from '../lib/build';
+import BuildMetadata from '../lib/build-metadata';
 import { BuildTask } from '../lib/build-task';
 import { BuildProcessError } from '../lib/errors';
 import { LocalImage } from '../lib/local-image';
@@ -76,6 +79,13 @@ const streamPrinter = (stream: Stream.Readable) => {
 		stream.on('data', data => console.log(data));
 	}
 };
+const buildMetadata = new (BuildMetadata as any)('/tmp/');
+buildMetadata.balenaYml = {
+	buildSecrets: {},
+	buildVariables: {},
+};
+const secretMap = {};
+const buildVars = {};
 
 describe('Project building', () => {
 	it('should correctly build a standard dockerfile project', () => {
@@ -85,17 +95,20 @@ describe('Project building', () => {
 			buildStream: fileToTarPack('test/test-files/standardProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then((image: LocalImage) => {
-			expect(image)
-				.to.have.property('successful')
-				.that.equals(true);
-			expect(image)
-				.to.have.property('layers')
-				.that.is.an('array');
-			return checkExists(image.name!);
-		});
+		return runBuildTask(task, docker, secretMap, buildVars).then(
+			(image: LocalImage) => {
+				expect(image)
+					.to.have.property('successful')
+					.that.equals(true);
+				expect(image)
+					.to.have.property('layers')
+					.that.is.an('array');
+				return checkExists(image.name!);
+			},
+		);
 	});
 
 	it('should correctly return an image with a build error', () => {
@@ -105,20 +118,23 @@ describe('Project building', () => {
 			buildStream: fileToTarPack('test/test-files/failingProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then((image: LocalImage) => {
-			expect(image)
-				.to.have.property('successful')
-				.that.equals(false);
-			expect(image)
-				.to.have.property('layers')
-				.that.is.an('array')
-				.and.have.length(1);
-			// tslint:disable-next-line:no-unused-expression
-			expect(image).to.have.property('error').that.is.not.null;
-			return checkExists(image.name!);
-		});
+		return runBuildTask(task, docker, secretMap, buildVars).then(
+			(image: LocalImage) => {
+				expect(image)
+					.to.have.property('successful')
+					.that.equals(false);
+				expect(image)
+					.to.have.property('layers')
+					.that.is.an('array')
+					.and.have.length(1);
+				// tslint:disable-next-line:no-unused-expression
+				expect(image).to.have.property('error').that.is.not.null;
+				return checkExists(image.name!);
+			},
+		);
 	});
 
 	it('should correctly return no layers or name when a base image cannot be downloaded', () => {
@@ -128,16 +144,19 @@ describe('Project building', () => {
 			buildStream: fileToTarPack('test/test-files/missingBaseImageProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then((image: LocalImage) => {
-			expect(image).to.not.have.property('name');
-			expect(image)
-				.to.have.property('layers')
-				.that.has.length(0);
-			// tslint:disable-next-line:no-unused-expression
-			expect(image).to.have.property('error').that.is.not.null;
-		});
+		return runBuildTask(task, docker, secretMap, buildVars).then(
+			(image: LocalImage) => {
+				expect(image).to.not.have.property('name');
+				expect(image)
+					.to.have.property('layers')
+					.that.has.length(0);
+				// tslint:disable-next-line:no-unused-expression
+				expect(image).to.have.property('error').that.is.not.null;
+			},
+		);
 	});
 
 	it('should correctly tag an image', () => {
@@ -148,9 +167,10 @@ describe('Project building', () => {
 			serviceName: 'test',
 			streamHook: streamPrinter,
 			tag: 'resin-multibuild-tag',
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('name')
 				.that.equals('resin-multibuild-tag');
@@ -165,9 +185,10 @@ describe('Project building', () => {
 			buildStream: fileToTarPack('test/test-files/standardProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('startTime')
 				.that.is.a('number');
@@ -184,9 +205,10 @@ describe('Project building', () => {
 			buildStream: fileToTarPack('test/test-files/failingProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('startTime')
 				.that.is.a('number');
@@ -203,9 +225,10 @@ describe('Project building', () => {
 			buildStream: fileToTarPack('test/test-files/missingBaseImageProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('startTime')
 				.that.is.a('number');
@@ -224,13 +247,14 @@ describe('Resolved project building', () => {
 			buildStream: fileToTarPack('test/test-files/templateProject.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
+			buildMetadata,
 		};
 		return new Promise((resolve, reject) => {
 			const resolveListeners = {
 				error: [reject],
 			};
 			const newTask = resolveTask(task, 'x86', 'intel-nuc', resolveListeners);
-			resolve(runBuildTask(newTask, docker));
+			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
 		}).then((image: LocalImage) => {
 			expect(image)
 				.to.have.property('successful')
@@ -246,8 +270,9 @@ describe('Invalid build input', () => {
 			external: false,
 			resolved: false,
 			serviceName: 'test',
+			buildMetadata,
 		};
-		return runBuildTask(task, docker)
+		return runBuildTask(task, docker, secretMap, buildVars)
 			.then(() => {
 				throw new Error('Error not thrown on null buildStream input');
 			})
@@ -269,9 +294,10 @@ describe('External images', () => {
 			resolved: false,
 			imageName: 'alpine:3.1',
 			serviceName: 'test',
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('successful')
 				.that.equals(true);
@@ -291,9 +317,10 @@ describe('External images', () => {
 			resolved: false,
 			imageName: 'does-not-exist',
 			serviceName: 'test',
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('successful')
 				.that.equals(false);
@@ -319,9 +346,10 @@ describe('External images', () => {
 			progressHook: () => {
 				called = true;
 			},
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(() => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(() => {
 			if (!called) {
 				throw new Error('Progress callback not called for image pull');
 			}
@@ -334,9 +362,10 @@ describe('External images', () => {
 			resolved: false,
 			imageName: 'alpine',
 			serviceName: 'test',
+			buildMetadata,
 		};
 
-		return runBuildTask(task, docker).then(image => {
+		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
 			expect(image)
 				.to.have.property('name')
 				.that.equals('alpine:latest');
@@ -369,7 +398,7 @@ describe('Specifying a dockerfile', () => {
 				error: [reject],
 			};
 			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
-			resolve(runBuildTask(tasks[0], docker));
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
 		}).then((image: LocalImage) => {
 			expect(newTask).to.have.property('resolved', true);
 			expect(newTask).to.have.property('projectType', 'Standard Dockerfile');
@@ -402,7 +431,7 @@ describe('Specifying a dockerfile', () => {
 				error: [reject],
 			};
 			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
-			resolve(runBuildTask(tasks[0], docker));
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
 		}).then((image: LocalImage) => {
 			expect(newTask).to.have.property('resolved', true);
 			expect(newTask).to.have.property('projectType', 'Dockerfile.template');

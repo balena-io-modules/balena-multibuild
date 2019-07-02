@@ -19,6 +19,7 @@ import * as tar from 'tar-stream';
 
 import { ImageDescriptor } from 'resin-compose-parse';
 
+import BuildMetadata from './build-metadata';
 import { BuildTask } from './build-task';
 
 /**
@@ -28,7 +29,10 @@ import { BuildTask } from './build-task';
  * @param composition The composition from resin-compose-parse
  * @returns An array of tasks which make up this multicontainer build
  */
-export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
+export function generateBuildTasks(
+	images: ImageDescriptor[],
+	buildMetadata: BuildMetadata,
+): BuildTask[] {
 	return _.map(images, img => {
 		if (_.isString(img.image)) {
 			return {
@@ -36,6 +40,7 @@ export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
 				imageName: img.image,
 				serviceName: img.serviceName,
 				resolved: false,
+				buildMetadata,
 			};
 		} else {
 			// Check that if a dockerfile is specified, that we also have a context
@@ -48,6 +53,7 @@ export function generateBuildTasks(images: ImageDescriptor[]): BuildTask[] {
 					serviceName: img.serviceName,
 					buildStream: tar.pack(),
 					resolved: false,
+					buildMetadata,
 				},
 				// Add the dockerfile path if we have one
 				img.image.dockerfile != null

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as Compose from 'resin-compose-parse';
@@ -24,8 +24,15 @@ import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
 import { runBuildTask } from './build';
+import BuildMetadata from './build-metadata';
+import {
+	generateSecretPopulationMap,
+	populateSecrets,
+	removeSecrets,
+	SecretsPopulationMap,
+} from './build-secrets';
 import { BuildTask } from './build-task';
-import { BuildProcessError, TarError } from './errors';
+import { BuildProcessError, SecretRemovalError, TarError } from './errors';
 import { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
 import { posix, posixContains } from './path-utils';
@@ -57,13 +64,19 @@ export function splitBuildStream(
 	return fromImageDescriptors(images, buildStream);
 }
 
-export function fromImageDescriptors(
+export async function fromImageDescriptors(
 	images: Compose.ImageDescriptor[],
 	buildStream: Stream.Readable,
+	metadataDirectory: string = '.balena/',
 ): Promise<BuildTask[]> {
-	return new Promise((resolve, reject) => {
+	// TODO: Get this value from the outside
+	const buildMetadata = new BuildMetadata(metadataDirectory);
+
+	const newStream = await buildMetadata.extractMetadata(buildStream);
+
+	return new Bluebird((resolve, reject) => {
 		// Firstly create a list of BuildTasks based on the composition
-		const tasks = Utils.generateBuildTasks(images);
+		const tasks = Utils.generateBuildTasks(images, buildMetadata);
 
 		const extract = tar.extract();
 
@@ -119,8 +132,22 @@ export function fromImageDescriptors(
 			reject(new TarError(e));
 		});
 
-		buildStream.pipe(extract);
+		newStream.pipe(extract);
 	});
+}
+
+export function buildHasSecrets(tasks: BuildTask[]): boolean {
+	if (tasks.length === 0) {
+		return false;
+	}
+
+	return !_.isEmpty(
+		generateSecretPopulationMap(
+			_.map(tasks, 'serviceName'),
+			tasks[0].buildMetadata,
+			'/tmp',
+		),
+	);
 }
 
 /**
@@ -145,9 +172,10 @@ export function performResolution(
 	deviceType: string,
 	resolveListeners: ResolveListeners,
 ): BuildTask[] {
-	return tasks.map(task =>
-		resolveTask(task, architecture, deviceType, resolveListeners),
-	);
+	return tasks.map(task => {
+		task.architecture = architecture;
+		return resolveTask(task, architecture, deviceType, resolveListeners);
+	});
 }
 
 /**
@@ -156,16 +184,51 @@ export function performResolution(
  * represent images present on the docker daemon provided.
  *
  * @param tasks A list of build tasks to be performed
- * @param docker A handle to a docker daemon, retrieved from Dockerode
+ * @param docker A handle to a docker daemon, retrieved from
+ * 	Dockerode
+ * @param tmpDir The location of the temporary directory on
+ * 	the docker host
  * @return A promise which resolves to a list of LocalImages
  */
-export function performBuilds(
+export async function performBuilds(
 	tasks: BuildTask[],
 	docker: Dockerode,
+	tmpDir: string,
 ): Promise<LocalImage[]> {
-	return Promise.map(tasks, (task: BuildTask) => {
-		return performSingleBuild(task, docker);
+	if (tasks.length === 0) {
+		return [];
+	}
+	// This feels a bit dirty, but there doesn't seem another
+	// nicer way to do it given the current setup
+	const buildMetadata = tasks[0].buildMetadata;
+	const architecture = tasks[0].architecture!;
+
+	buildMetadata.parseMetadata();
+
+	const secretMap = generateSecretPopulationMap(
+		_.map(tasks, 'serviceName'),
+		buildMetadata,
+		tmpDir,
+	);
+
+	await populateSecrets(docker, secretMap, architecture, tmpDir);
+
+	const images = await Bluebird.map(tasks, (task: BuildTask) => {
+		return performSingleBuild(
+			task,
+			docker,
+			secretMap,
+			buildMetadata.getBuildVarsForService(task.serviceName),
+		);
 	});
+
+	try {
+		await removeSecrets(docker, secretMap, architecture, tmpDir);
+	} catch (e) {
+		throw new SecretRemovalError(e);
+	}
+
+	return images;
 }
 
 /**
@@ -177,11 +240,15 @@ export function performBuilds(
  * @param docker A handle to a docker daemon, retrieved from Dockerode
  * @return A promise which resolves to a LocalImage
  */
-export function performSingleBuild(
+async function performSingleBuild(
 	task: BuildTask,
 	docker: Dockerode,
+	secretMap?: SecretsPopulationMap,
+	buildArgs?: Dictionary<string>,
 ): Promise<LocalImage> {
-	return runBuildTask(task, docker).catch(e => {
+	try {
+		return await runBuildTask(task, docker, secretMap, buildArgs);
+	} catch (e) {
 		throw new BuildProcessError(e);
-	});
+	}
 }

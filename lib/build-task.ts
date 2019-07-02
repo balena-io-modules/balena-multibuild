@@ -1,10 +1,7 @@
 import { ProgressCallback } from 'docker-progress';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
-
-export interface Dict<T> {
-	[key: string]: T;
-}
+import BuildMetadata from './build-metadata';
 
 /**
  * A structure representing a list of build tasks to be performed,
@@ -33,12 +30,12 @@ export interface BuildTask {
 	 * If this is a Docker build task, this field will be set to the build
 	 * arguments which are to passed into the daemon
 	 */
-	args?: Dict<string>;
+	args?: Dictionary<string>;
 	/**
 	 * If this is a Docker build task, this field will be set to the labels
 	 * which should be attached to the resulting image.
 	 */
-	labels?: Dict<string>;
+	labels?: Dictionary<string>;
 	/**
 	 * If this value is set, the resulting image will be tagged as this
 	 * once built (or pulled).
@@ -91,4 +88,19 @@ export interface BuildTask {
 	 * Has this task failed to be resolved?
 	 */
 	resolved: boolean;
+
+	/**
+	 * A handle to the metadata manager - note that there is
+	 * a single metadata manager per docker-compose build
+	 */
+	buildMetadata: BuildMetadata;
+
+	/**
+	 * The architecture of the build that we are performing.
+	 * This is populated in the resolution step, and used for
+	 * setting up the build secrets on the host (we need to
+	 * know the host architecture so we can build the correct
+	 * docker image for this host)
+	 */
+	architecture?: string;
 }
