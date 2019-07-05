@@ -49,7 +49,7 @@ export class BuildMetadata {
 	}
 
 	public getBalenaYml() {
-		return this.balenaYml;
+		return _.cloneDeep(this.balenaYml);
 	}
 
 	public getSecretFile(source: string): Buffer | undefined {

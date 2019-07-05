@@ -63,7 +63,7 @@ const generateBuildArgs = (
 	userArgs?: Dictionary<string>,
 ): { buildargs?: Dictionary<string> } => {
 	return {
-		buildargs: _.merge(task.args, userArgs),
+		buildargs: { ...task.args, ...userArgs },
 	};
 };
 

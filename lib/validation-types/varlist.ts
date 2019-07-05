@@ -13,7 +13,7 @@ const validate = (value: unknown): value is VarList => {
 	if (_.isArray(value)) {
 		return validateStringArray(value);
 	} else if (_.isObject(value)) {
-		return _.every(value as { [key: string]: unknown }, (v, k) => {
+		return _.every(value as Dictionary<unknown>, (v, k) => {
 			return _.isString(v) && _.isString(k);
 		});
 	}
@@ -28,9 +28,10 @@ const convert = (value: unknown): VarList | undefined => {
 		const varList: VarList = {};
 		_.each(value as string[], str => {
 			const match = str.match(stringRegex);
-			// We can assume these values exist, as the validate
-			// function above makes sure
-			varList[match![1]] = match![2];
+			if (match == null) {
+				return;
+			}
+			varList[match[1]] = match[2];
 		});
 		return varList;
 	} else {

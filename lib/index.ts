@@ -69,12 +69,11 @@ export async function fromImageDescriptors(
 	buildStream: Stream.Readable,
 	metadataDirectory: string = '.balena/',
 ): Promise<BuildTask[]> {
-	// TODO: Get this value from the outside
 	const buildMetadata = new BuildMetadata(metadataDirectory);
 
 	const newStream = await buildMetadata.extractMetadata(buildStream);
 
-	return new Bluebird((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		// Firstly create a list of BuildTasks based on the composition
 		const tasks = Utils.generateBuildTasks(images, buildMetadata);
 
