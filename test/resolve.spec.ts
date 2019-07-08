@@ -4,11 +4,18 @@ import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import { Pack } from 'tar-stream';
 
+import BuildMetadata from '../lib/build-metadata';
 import { BuildTask } from '../lib/build-task';
 import { resolveTask } from '../lib/resolve';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
+
+const buildMetadata = new (BuildMetadata as any)('/tmp');
+buildMetadata.balenaYml = {
+	buildSecrets: {},
+	buildVariables: {},
+};
 
 describe('Project resolution', () => {
 	it('should correctly resolve a project type', () => {
@@ -19,6 +26,7 @@ describe('Project resolution', () => {
 				'test/test-files/templateProject.tar',
 			) as any) as Pack,
 			serviceName: 'test',
+			buildMetadata,
 		};
 
 		return new Promise((resolve, reject) => {
@@ -49,6 +57,7 @@ describe('Project resolution', () => {
 			buildStream: (fs.createReadStream(
 				'test/test-files/failedProject.tar',
 			) as any) as Pack,
+			buildMetadata,
 		};
 
 		return new Promise((resolve, reject) => {

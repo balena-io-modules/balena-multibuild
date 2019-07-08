@@ -48,3 +48,26 @@ export class DockerCommunicationError extends TypedError {}
  * JSON schema validation error for private docker registry secrets
  */
 export class RegistrySecretValidationError extends TypedError {}
+
+/**
+ * Thrown when we cannot parse the balena.yml metadata file
+ */
+export class BalenaYMLValidationError extends TypedError {}
+
+/**
+ * Throw when a secret file is referenced inside of the
+ * balena.yml file but is not present in the secret
+ * directory itself
+ */
+export class BuildSecretMissingError extends TypedError {}
+
+/**
+ * If for whatever reason we can't populate secrets on the
+ * host, we throw this error
+ */
+export class SecretPopulationError extends TypedError {}
+/**
+ * If for any reason we cannot remove the secrets after
+ * populating them, we throw this error
+ */
+export class SecretRemovalError extends TypedError {}

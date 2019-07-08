@@ -1,0 +1,6 @@
+FROM balenalib/%%ARCH%%-alpine:3.9
+
+RUN apk update && apk add jq
+
+COPY remove.json remove.sh ./
+RUN bash remove.sh
