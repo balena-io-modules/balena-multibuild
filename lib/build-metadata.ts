@@ -20,7 +20,7 @@ export class BuildMetadata {
 	private metadataFiles: Dictionary<Buffer> = {};
 	private balenaYml: BalenaYml;
 
-	public constructor(private metadataDirectory: string) {}
+	public constructor(private metadataDirectories: string[]) {}
 
 	public async extractMetadata(
 		tarStream: Stream.Readable,
@@ -59,11 +59,14 @@ export class BuildMetadata {
 	public parseMetadata() {
 		// Yaml takes precedence over json (as our docs are in
 		// yaml), but balena takes precedence over resin
+		// .yml vs .yaml: https://stackoverflow.com/questions/21059124/is-it-yaml-or-yml/
 		const potentials = [
 			{ name: 'balena.yml', type: MetadataFileType.Yaml },
+			{ name: 'balena.yaml', type: MetadataFileType.Yaml },
 			{ name: 'balena.json', type: MetadataFileType.Json },
 			{ name: 'resin.yml', type: MetadataFileType.Yaml },
-			{ name: 'balena.json', type: MetadataFileType.Json },
+			{ name: 'resin.yaml', type: MetadataFileType.Yaml },
+			{ name: 'resin.json', type: MetadataFileType.Json },
 		];
 
 		let bufData: Buffer | undefined;
@@ -120,8 +123,10 @@ export class BuildMetadata {
 	}
 
 	private getMetadataRelativePath(path: string): string | undefined {
-		if (PathUtils.contains(this.metadataDirectory, path)) {
-			return PathUtils.relative(this.metadataDirectory, path);
+		for (const metadataDirectory of this.metadataDirectories) {
+			if (PathUtils.contains(metadataDirectory, path)) {
+				return PathUtils.relative(metadataDirectory, path);
+			}
 		}
 	}
 }

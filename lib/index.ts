@@ -26,7 +26,9 @@ import * as TarUtils from 'tar-utils';
 import { runBuildTask } from './build';
 import BuildMetadata from './build-metadata';
 import {
+	BalenaYml,
 	generateSecretPopulationMap,
+	ParsedBalenaYml,
 	populateSecrets,
 	removeSecrets,
 	SecretsPopulationMap,
@@ -44,6 +46,7 @@ export * from './build-task';
 export * from './errors';
 export * from './local-image';
 export * from './registry-secrets';
+export { BalenaYml, ParsedBalenaYml };
 export { PathUtils };
 export { ResolveListeners };
 
@@ -67,9 +70,9 @@ export function splitBuildStream(
 export async function fromImageDescriptors(
 	images: Compose.ImageDescriptor[],
 	buildStream: Stream.Readable,
-	metadataDirectory: string = '.balena/',
+	metadataDirectories = ['.balena/', '.resin/'],
 ): Promise<BuildTask[]> {
-	const buildMetadata = new BuildMetadata(metadataDirectory);
+	const buildMetadata = new BuildMetadata(metadataDirectories);
 
 	const newStream = await buildMetadata.extractMetadata(buildStream);
 
