@@ -19,15 +19,13 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as Dockerode from 'dockerode';
 import * as fs from 'fs';
-import jsyaml = require('js-yaml');
-import * as os from 'os';
 import * as Path from 'path';
 import * as Compose from 'resin-compose-parse';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as Url from 'url';
 
-import { performBuilds, performResolution, splitBuildStream } from '../lib/';
+import { splitBuildStream } from '../lib/';
 import { runBuildTask } from '../lib/build';
 import BuildMetadata from '../lib/build-metadata';
 import { BuildTask } from '../lib/build-task';

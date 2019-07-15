@@ -89,7 +89,7 @@ export function generateSecretPopulationMap(
 		secretMap[serviceName] = serviceSecret;
 	}
 
-	return _.omitBy(secretMap, v => _.isEmpty(v));
+	return _.omitBy(secretMap, v => _.isEmpty(v.files));
 }
 
 export async function populateSecrets(
