@@ -9,7 +9,11 @@ import { Builder } from 'resin-docker-build';
 import * as tar from 'tar-stream';
 
 import BuildMetadata from '../build-metadata';
-import { BuildSecretMissingError, SecretPopulationError } from '../errors';
+import {
+	BuildSecretMissingError,
+	SecretPopulationError,
+	UnsupportedDockerArchError,
+} from '../errors';
 import { PermissiveVarList, VarList } from '../validation-types/varlist';
 
 export const secretType = t.interface({
@@ -92,6 +96,22 @@ export function generateSecretPopulationMap(
 	return _.omitBy(secretMap, v => _.isEmpty(v.files));
 }
 
+function getAlpineArch(dockerArch: string) {
+	const goArchToAlpineArch: { [key: string]: string } = {
+		arm: 'arm32v7',
+		arm64: 'arm64v8',
+		386: 'i386',
+		amd64: 'amd64',
+	};
+	const alpineArch = goArchToAlpineArch[dockerArch];
+	if (!alpineArch) {
+		throw new UnsupportedDockerArchError(
+			`Unsupported Docker daemon architecuture: "${alpineArch}"`,
+		);
+	}
+	return alpineArch;
+}
+
 export async function populateSecrets(
 	docker: Dockerode,
 	secrets: SecretsPopulationMap,
@@ -116,7 +136,7 @@ export async function populateSecrets(
 	const dockerfileContent = dockerfileTemplate.process(
 		await fs.readFile(path.join(__dirname, './Dockerfile'), 'utf8'),
 		{
-			ARCH: architecture,
+			ARCH: getAlpineArch(architecture),
 		},
 	);
 	pack.entry(
@@ -176,7 +196,7 @@ export async function removeSecrets(
 	const dockerfileContent = dockerfileTemplate.process(
 		await fs.readFile(path.join(__dirname, './Dockerfile.remove'), 'utf8'),
 		{
-			ARCH: architecture,
+			ARCH: getAlpineArch(architecture),
 		},
 	);
 	pack.entry(
