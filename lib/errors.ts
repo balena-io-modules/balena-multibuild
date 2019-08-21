@@ -71,3 +71,7 @@ export class SecretPopulationError extends TypedError {}
  * populating them, we throw this error
  */
 export class SecretRemovalError extends TypedError {}
+/**
+ * dockerode.version() reported an unsupported processor architecture
+ */
+export class UnsupportedDockerArchError extends TypedError {}

@@ -41,7 +41,7 @@ import { posix, posixContains } from './path-utils';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 
-// Export external types
+export { QEMU_BIN_NAME } from './build-metadata';
 export * from './build-task';
 export * from './errors';
 export * from './local-image';
@@ -203,7 +203,7 @@ export async function performBuilds(
 	// This feels a bit dirty, but there doesn't seem another
 	// nicer way to do it given the current setup
 	const buildMetadata = tasks[0].buildMetadata;
-	const architecture = tasks[0].architecture!;
+	const architecture = (await docker.version()).Arch;
 
 	buildMetadata.parseMetadata();
 

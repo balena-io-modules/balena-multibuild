@@ -11,6 +11,8 @@ import { BalenaYml, parsedBalenaYml, ParsedBalenaYml } from './build-secrets';
 import { BalenaYMLValidationError } from './errors';
 import * as PathUtils from './path-utils';
 
+export const QEMU_BIN_NAME = 'qemu-execve';
+
 enum MetadataFileType {
 	Json,
 	Yaml,
@@ -37,10 +39,10 @@ export class BuildMetadata {
 			const buffer = await TarUtils.streamToBuffer(stream);
 			const relative = this.getMetadataRelativePath(header.name);
 
-			if (relative != null) {
-				this.addMetadataFile(relative, buffer);
-			} else {
+			if (relative == null || relative === QEMU_BIN_NAME) {
 				pack.entry(header, buffer);
+			} else {
+				this.addMetadataFile(relative, buffer);
 			}
 		};
 		return (await TarUtils.cloneTarStream(tarStream, {
