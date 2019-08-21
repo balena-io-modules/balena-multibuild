@@ -41,7 +41,7 @@ import { posix, posixContains } from './path-utils';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 
-// Export external types
+export { QEMU_BIN_NAME } from './build-metadata';
 export * from './build-task';
 export * from './errors';
 export * from './local-image';
