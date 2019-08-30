@@ -180,6 +180,16 @@ export function performResolution(
 	});
 }
 
+export function performSingleResolution(
+	task: BuildTask,
+	architecture: string,
+	deviceType: string,
+	resolveListeners: ResolveListeners,
+): BuildTask {
+	task.architecture = architecture;
+	return resolveTask(task, architecture, deviceType, resolveListeners);
+}
+
 /**
  * Given a list of build tasks, and a handle to a docker daemon, this function
  * will perform the tasks and return a list of LocalImage values, which
