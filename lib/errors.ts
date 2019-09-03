@@ -75,3 +75,5 @@ export class SecretRemovalError extends TypedError {}
  * dockerode.version() reported an unsupported processor architecture
  */
 export class UnsupportedDockerArchError extends TypedError {}
+
+export class MultipleMetadataDirectoryError extends TypedError {}

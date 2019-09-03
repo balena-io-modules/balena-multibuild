@@ -10,6 +10,7 @@ import * as TarUtils from 'tar-utils';
 import { BalenaYml, parsedBalenaYml, ParsedBalenaYml } from './build-secrets';
 import {
 	BalenaYMLValidationError,
+	MultipleMetadataDirectoryError,
 	RegistrySecretValidationError,
 } from './errors';
 import * as PathUtils from './path-utils';
@@ -36,6 +37,7 @@ export class BuildMetadata {
 	public async extractMetadata(
 		tarStream: Stream.Readable,
 	): Promise<Stream.Readable> {
+		let foundMetadataDirectory: string | null = null;
 		// Run the tar file through the extraction stream, removing
 		// anything that is a child of the metadata directory
 		// and storing it, otherwise forwarding the other files to
@@ -46,12 +48,26 @@ export class BuildMetadata {
 			stream: Stream.Readable,
 		) => {
 			const buffer = await TarUtils.streamToBuffer(stream);
-			const relative = this.getMetadataRelativePath(header.name);
 
-			if (relative == null || relative === QEMU_BIN_NAME) {
+			const entryInformation = this.getMetadataRelativePath(header.name);
+
+			if (
+				entryInformation == null ||
+				entryInformation.relativePath === QEMU_BIN_NAME
+			) {
 				pack.entry(header, buffer);
 			} else {
-				this.addMetadataFile(relative, buffer);
+				// Keep track of the different metadata directories
+				// we've found, and if there is more than one, throw
+				// an error (for example both .balena and .resin)
+				if (
+					foundMetadataDirectory != null &&
+					foundMetadataDirectory !== entryInformation.metadataDirectory
+				) {
+					throw new MultipleMetadataDirectoryError();
+				}
+				foundMetadataDirectory = entryInformation.metadataDirectory;
+				this.addMetadataFile(entryInformation.relativePath, buffer);
 			}
 		};
 		return (await TarUtils.cloneTarStream(tarStream, {
@@ -173,10 +189,15 @@ export class BuildMetadata {
 		this.metadataFiles[name] = data;
 	}
 
-	private getMetadataRelativePath(path: string): string | undefined {
+	private getMetadataRelativePath(
+		path: string,
+	): { relativePath: string; metadataDirectory: string } | undefined {
 		for (const metadataDirectory of this.metadataDirectories) {
 			if (PathUtils.contains(metadataDirectory, path)) {
-				return PathUtils.relative(metadataDirectory, path);
+				return {
+					relativePath: PathUtils.relative(metadataDirectory, path),
+					metadataDirectory,
+				};
 			}
 		}
 	}
