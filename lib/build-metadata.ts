@@ -8,8 +8,16 @@ import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
 import { BalenaYml, parsedBalenaYml, ParsedBalenaYml } from './build-secrets';
-import { BalenaYMLValidationError } from './errors';
+import {
+	BalenaYMLValidationError,
+	RegistrySecretValidationError,
+} from './errors';
 import * as PathUtils from './path-utils';
+import {
+	addCanonicalDockerHubEntry,
+	RegistrySecrets,
+	RegistrySecretValidator,
+} from './registry-secrets';
 
 export const QEMU_BIN_NAME = 'qemu-execve';
 
@@ -19,6 +27,7 @@ enum MetadataFileType {
 }
 
 export class BuildMetadata {
+	public registrySecrets: RegistrySecrets;
 	private metadataFiles: Dictionary<Buffer> = {};
 	private balenaYml: BalenaYml;
 
@@ -106,6 +115,8 @@ export class BuildMetadata {
 		} else {
 			this.balenaYml = { buildSecrets: {}, buildVariables: {} };
 		}
+
+		this.parseRegistrySecrets();
 	}
 
 	public getBuildVarsForService(serviceName: string): Dictionary<string> {
@@ -118,6 +129,44 @@ export class BuildMetadata {
 			_.assign(vars, services[serviceName]);
 		}
 		return vars;
+	}
+
+	private parseRegistrySecrets() {
+		const potentials = [
+			{ name: 'registry-secrets.json', type: MetadataFileType.Json },
+			{ name: 'registry-secrets.yml', type: MetadataFileType.Yaml },
+			{ name: 'registry-secrets.yaml', type: MetadataFileType.Yaml },
+		];
+
+		let bufData: Buffer | undefined;
+		let foundType: MetadataFileType;
+
+		for (const { name, type } of potentials) {
+			if (name in this.metadataFiles) {
+				bufData = this.metadataFiles[name];
+				foundType = type;
+			}
+		}
+
+		if (bufData != null) {
+			// Validate the registry secrets
+			const validator = new RegistrySecretValidator();
+			let secrets: Dictionary<unknown>;
+			try {
+				if (foundType! === MetadataFileType.Yaml) {
+					secrets = jsYaml.safeLoad(bufData.toString());
+				} else {
+					secrets = JSON.parse(bufData.toString());
+				}
+			} catch (e) {
+				throw new RegistrySecretValidationError(e);
+			}
+			validator.validateRegistrySecrets(secrets);
+			addCanonicalDockerHubEntry(secrets as RegistrySecrets);
+			this.registrySecrets = secrets as RegistrySecrets;
+		} else {
+			this.registrySecrets = {};
+		}
 	}
 
 	private addMetadataFile(name: string, data: Buffer) {

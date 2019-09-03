@@ -38,6 +38,7 @@ import { BuildProcessError, SecretRemovalError, TarError } from './errors';
 import { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
 import { posix, posixContains } from './path-utils';
+import { RegistrySecrets } from './registry-secrets';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 
@@ -216,6 +217,7 @@ export async function performBuilds(
 	const architecture = (await docker.version()).Arch;
 
 	buildMetadata.parseMetadata();
+	const registrySecrets = buildMetadata.registrySecrets;
 
 	const secretMap = generateSecretPopulationMap(
 		_.map(tasks, 'serviceName'),
@@ -229,6 +231,7 @@ export async function performBuilds(
 		return performSingleBuild(
 			task,
 			docker,
+			registrySecrets,
 			secretMap,
 			buildMetadata.getBuildVarsForService(task.serviceName),
 		);
@@ -255,11 +258,18 @@ export async function performBuilds(
 async function performSingleBuild(
 	task: BuildTask,
 	docker: Dockerode,
+	registrySecrets: RegistrySecrets,
 	secretMap?: SecretsPopulationMap,
 	buildArgs?: Dictionary<string>,
 ): Promise<LocalImage> {
 	try {
-		return await runBuildTask(task, docker, secretMap, buildArgs);
+		return await runBuildTask(
+			task,
+			docker,
+			registrySecrets,
+			secretMap,
+			buildArgs,
+		);
 	} catch (e) {
 		throw new BuildProcessError(e);
 	}
