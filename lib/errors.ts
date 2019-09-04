@@ -77,3 +77,9 @@ export class SecretRemovalError extends TypedError {}
 export class UnsupportedDockerArchError extends TypedError {}
 
 export class MultipleMetadataDirectoryError extends TypedError {}
+
+export class MultipleBalenaConfigFilesError extends TypedError {
+	public constructor(public filesFound: string[]) {
+		super();
+	}
+}

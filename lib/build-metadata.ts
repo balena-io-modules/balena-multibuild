@@ -10,6 +10,7 @@ import * as TarUtils from 'tar-utils';
 import { BalenaYml, parsedBalenaYml, ParsedBalenaYml } from './build-secrets';
 import {
 	BalenaYMLValidationError,
+	MultipleBalenaConfigFilesError,
 	MultipleMetadataDirectoryError,
 	RegistrySecretValidationError,
 } from './errors';
@@ -98,12 +99,19 @@ export class BuildMetadata {
 
 		let bufData: Buffer | undefined;
 		let foundType: MetadataFileType;
+		let foundName: string | undefined;
 
 		for (const { name, type } of potentials) {
 			if (name in this.metadataFiles) {
+				if (foundName != null) {
+					// We need to throw if we find multiple
+					// configuration files, as it's not clear which
+					// should be used
+					throw new MultipleBalenaConfigFilesError([foundName, name]);
+				}
+				foundName = name;
 				bufData = this.metadataFiles[name];
 				foundType = type;
-				break;
 			}
 		}
 		if (bufData != null) {
