@@ -3,6 +3,9 @@
   "version": "4.2.0",
   "description": "Build a docker composition",
   "main": "build/index.js",
+  "files": [
+    "build/*"
+  ],
   "types": "build/index.d.ts",
   "scripts": {
     "clean": "rm -rf build",
