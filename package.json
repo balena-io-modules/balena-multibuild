@@ -56,7 +56,7 @@
     "io-ts-reporters": "^1.0.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.4",
-    "resin-bundle-resolve": "^4.1.0",
+    "resin-bundle-resolve": "^4.1.3",
     "resin-compose-parse": "^2.0.4",
     "resin-docker-build": "^1.0.1",
     "tar-stream": "^2.0.1",
