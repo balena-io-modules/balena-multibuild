@@ -1,6 +1,6 @@
 import { Either, isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
-import { PathReporter } from 'io-ts/lib/PathReporter';
+import { reporter } from 'io-ts-reporters';
 import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
 import * as Stream from 'stream';
@@ -126,7 +126,7 @@ export class BuildMetadata {
 
 				result = parsedBalenaYml.decode(value);
 				if (isLeft(result)) {
-					throw new Error(PathReporter.report(result).join('\n'));
+					throw new Error(reporter(result).join('\n'));
 				}
 			} catch (e) {
 				throw new BalenaYMLValidationError(e);

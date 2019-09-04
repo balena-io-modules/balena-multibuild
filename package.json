@@ -53,6 +53,7 @@
     "dockerode": "^2.5.8",
     "fp-ts": "^2.0.0",
     "io-ts": "^2.0.0",
+    "io-ts-reporters": "^1.0.0",
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.4",
     "resin-bundle-resolve": "^4.1.0",
