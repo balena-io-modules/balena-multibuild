@@ -9,7 +9,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "clean": "rm -rf build",
-    "prepare": "npm run build && npm run lint",
+    "prepublishOnly": "npm run build && npm run lint",
     "prettify": "prettier --config ./node_modules/resin-lint/config/.prettierrc --write \"{lib,test,typings}/**/*.ts\"",
     "lint": "resin-lint --typescript lib typings test",
     "build": "npm run clean && tsc --project tsconfig.publish.json && npm run copy-secrets",
