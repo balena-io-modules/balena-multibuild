@@ -152,6 +152,7 @@ export class BuildMetadata {
 		if (services != null && serviceName in services) {
 			_.assign(vars, services[serviceName]);
 		}
+
 		return vars;
 	}
 
