@@ -1,6 +1,6 @@
 import { Either, isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
-import { PathReporter } from 'io-ts/lib/PathReporter';
+import { reporter } from 'io-ts-reporters';
 import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
 import * as Stream from 'stream';
@@ -8,8 +8,18 @@ import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
 import { BalenaYml, parsedBalenaYml, ParsedBalenaYml } from './build-secrets';
-import { BalenaYMLValidationError } from './errors';
+import {
+	BalenaYMLValidationError,
+	MultipleBalenaConfigFilesError,
+	MultipleMetadataDirectoryError,
+	RegistrySecretValidationError,
+} from './errors';
 import * as PathUtils from './path-utils';
+import {
+	addCanonicalDockerHubEntry,
+	RegistrySecrets,
+	RegistrySecretValidator,
+} from './registry-secrets';
 
 export const QEMU_BIN_NAME = 'qemu-execve';
 
@@ -19,6 +29,7 @@ enum MetadataFileType {
 }
 
 export class BuildMetadata {
+	public registrySecrets: RegistrySecrets;
 	private metadataFiles: Dictionary<Buffer> = {};
 	private balenaYml: BalenaYml;
 
@@ -27,6 +38,7 @@ export class BuildMetadata {
 	public async extractMetadata(
 		tarStream: Stream.Readable,
 	): Promise<Stream.Readable> {
+		let foundMetadataDirectory: string | null = null;
 		// Run the tar file through the extraction stream, removing
 		// anything that is a child of the metadata directory
 		// and storing it, otherwise forwarding the other files to
@@ -37,12 +49,26 @@ export class BuildMetadata {
 			stream: Stream.Readable,
 		) => {
 			const buffer = await TarUtils.streamToBuffer(stream);
-			const relative = this.getMetadataRelativePath(header.name);
 
-			if (relative == null || relative === QEMU_BIN_NAME) {
+			const entryInformation = this.getMetadataRelativePath(header.name);
+
+			if (
+				entryInformation == null ||
+				entryInformation.relativePath === QEMU_BIN_NAME
+			) {
 				pack.entry(header, buffer);
 			} else {
-				this.addMetadataFile(relative, buffer);
+				// Keep track of the different metadata directories
+				// we've found, and if there is more than one, throw
+				// an error (for example both .balena and .resin)
+				if (
+					foundMetadataDirectory != null &&
+					foundMetadataDirectory !== entryInformation.metadataDirectory
+				) {
+					throw new MultipleMetadataDirectoryError();
+				}
+				foundMetadataDirectory = entryInformation.metadataDirectory;
+				this.addMetadataFile(entryInformation.relativePath, buffer);
 			}
 		};
 		return (await TarUtils.cloneTarStream(tarStream, {
@@ -73,12 +99,19 @@ export class BuildMetadata {
 
 		let bufData: Buffer | undefined;
 		let foundType: MetadataFileType;
+		let foundName: string | undefined;
 
 		for (const { name, type } of potentials) {
 			if (name in this.metadataFiles) {
+				if (foundName != null) {
+					// We need to throw if we find multiple
+					// configuration files, as it's not clear which
+					// should be used
+					throw new MultipleBalenaConfigFilesError([foundName, name]);
+				}
+				foundName = name;
 				bufData = this.metadataFiles[name];
 				foundType = type;
-				break;
 			}
 		}
 		if (bufData != null) {
@@ -93,7 +126,7 @@ export class BuildMetadata {
 
 				result = parsedBalenaYml.decode(value);
 				if (isLeft(result)) {
-					throw new Error(PathReporter.report(result).join('\n'));
+					throw new Error(reporter(result).join('\n'));
 				}
 			} catch (e) {
 				throw new BalenaYMLValidationError(e);
@@ -106,6 +139,8 @@ export class BuildMetadata {
 		} else {
 			this.balenaYml = { buildSecrets: {}, buildVariables: {} };
 		}
+
+		this.parseRegistrySecrets();
 	}
 
 	public getBuildVarsForService(serviceName: string): Dictionary<string> {
@@ -117,17 +152,61 @@ export class BuildMetadata {
 		if (services != null && serviceName in services) {
 			_.assign(vars, services[serviceName]);
 		}
+
 		return vars;
+	}
+
+	private parseRegistrySecrets() {
+		const potentials = [
+			{ name: 'registry-secrets.json', type: MetadataFileType.Json },
+			{ name: 'registry-secrets.yml', type: MetadataFileType.Yaml },
+			{ name: 'registry-secrets.yaml', type: MetadataFileType.Yaml },
+		];
+
+		let bufData: Buffer | undefined;
+		let foundType: MetadataFileType;
+
+		for (const { name, type } of potentials) {
+			if (name in this.metadataFiles) {
+				bufData = this.metadataFiles[name];
+				foundType = type;
+			}
+		}
+
+		if (bufData != null) {
+			// Validate the registry secrets
+			const validator = new RegistrySecretValidator();
+			let secrets: Dictionary<unknown>;
+			try {
+				if (foundType! === MetadataFileType.Yaml) {
+					secrets = jsYaml.safeLoad(bufData.toString());
+				} else {
+					secrets = JSON.parse(bufData.toString());
+				}
+			} catch (e) {
+				throw new RegistrySecretValidationError(e);
+			}
+			validator.validateRegistrySecrets(secrets);
+			addCanonicalDockerHubEntry(secrets as RegistrySecrets);
+			this.registrySecrets = secrets as RegistrySecrets;
+		} else {
+			this.registrySecrets = {};
+		}
 	}
 
 	private addMetadataFile(name: string, data: Buffer) {
 		this.metadataFiles[name] = data;
 	}
 
-	private getMetadataRelativePath(path: string): string | undefined {
+	private getMetadataRelativePath(
+		path: string,
+	): { relativePath: string; metadataDirectory: string } | undefined {
 		for (const metadataDirectory of this.metadataDirectories) {
 			if (PathUtils.contains(metadataDirectory, path)) {
-				return PathUtils.relative(metadataDirectory, path);
+				return {
+					relativePath: PathUtils.relative(metadataDirectory, path),
+					metadataDirectory,
+				};
 			}
 		}
 	}

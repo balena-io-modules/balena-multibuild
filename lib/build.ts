@@ -9,6 +9,7 @@ import { BuildTask } from './build-task';
 import { BuildProcessError } from './errors';
 import { pullExternal } from './external';
 import { LocalImage } from './local-image';
+import { RegistrySecrets } from './registry-secrets';
 
 function taskHooks(
 	task: BuildTask,
@@ -84,9 +85,17 @@ const generateLabels = (task: BuildTask): { labels?: Dictionary<string> } => {
 export function runBuildTask(
 	task: BuildTask,
 	docker: Dockerode,
+	registrySecrets: RegistrySecrets,
 	secrets?: SecretsPopulationMap,
 	buildArgs?: Dictionary<string>,
 ): Promise<LocalImage> {
+	// First merge in the registry secrets (optionally being
+	// overriden by user input) so that they're available for
+	// both pull and build
+	task.dockerOpts = _.merge(
+		{ registryconfig: registrySecrets },
+		task.dockerOpts,
+	);
 	if (task.external) {
 		// Handle this separately
 		return pullExternal(task, docker);

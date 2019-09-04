@@ -19,7 +19,9 @@
  * Tests for the registry-secrets.ts module
  */
 import { expect } from 'chai';
+import * as fs from 'fs';
 import * as _ from 'lodash';
+import { normalize } from 'resin-compose-parse';
 
 import { RegistrySecretValidationError } from '../lib/errors';
 import {
@@ -27,6 +29,8 @@ import {
 	RegistrySecrets,
 	RegistrySecretValidator,
 } from '../lib/registry-secrets';
+
+import { splitBuildStream } from '../lib';
 
 describe('Registry secret JSON validation', () => {
 	const validator = new RegistrySecretValidator();
@@ -119,5 +123,37 @@ describe('RegistrySecretValidator.addCanonicalDockerHubEntry', () => {
 			expect(Object.keys(registrySecrets)).to.have.lengthOf(expectedLength);
 			expect(registrySecrets[canonicalEntry]).to.equal(expectedValue);
 		}
+	});
+});
+
+describe('Registry secret extraction', () => {
+	it('should correctly extract the registry secrets from the metadata directory', async () => {
+		const composition = normalize({
+			version: '2',
+			services: {
+				main: {
+					build: { context: '.' },
+				},
+			},
+		});
+		const tasks = await splitBuildStream(
+			composition,
+			fs.createReadStream('test/test-files/registry-secrets.tar'),
+		);
+
+		expect(tasks).to.have.length(1);
+		expect(tasks[0]).to.have.property('buildMetadata');
+		const metadata = tasks[0].buildMetadata;
+		// Force a parse without having to build
+		metadata.parseMetadata();
+
+		expect(metadata)
+			.to.have.property('registrySecrets')
+			.that.deep.equals({
+				'https://index.docker.io/v1/': {
+					username: 'testuser',
+					password: 'testpassword',
+				},
+			});
 	});
 });

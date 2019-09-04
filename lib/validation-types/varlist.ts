@@ -7,7 +7,7 @@ export interface VarList {
 	[key: string]: string;
 }
 
-const stringRegex = /([^\s=]+?)=(\S+)/;
+const stringRegex = /([^\s=]+?)=(.+)/;
 
 const validate = (value: unknown): value is VarList => {
 	if (_.isArray(value)) {
