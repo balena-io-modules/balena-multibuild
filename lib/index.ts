@@ -247,8 +247,11 @@ export async function performBuilds(
 		buildMetadata,
 		tmpDir,
 	);
+	const hasSecrets = !_.isEmpty(secretMap);
 
-	await populateSecrets(docker, secretMap, architecture, tmpDir);
+	if (hasSecrets) {
+		await populateSecrets(docker, secretMap, architecture, tmpDir);
+	}
 
 	const images = await Bluebird.map(tasks, (task: BuildTask) => {
 		return performSingleBuild(
@@ -260,12 +263,13 @@ export async function performBuilds(
 		);
 	});
 
-	try {
-		await removeSecrets(docker, secretMap, architecture, tmpDir);
-	} catch (e) {
-		throw new SecretRemovalError(e);
+	if (hasSecrets) {
+		try {
+			await removeSecrets(docker, secretMap, architecture, tmpDir);
+		} catch (e) {
+			throw new SecretRemovalError(e);
+		}
 	}
-
 	return images;
 }
 

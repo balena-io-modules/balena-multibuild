@@ -118,9 +118,6 @@ export async function populateSecrets(
 	architecture: string,
 	tmpDir: string,
 ) {
-	if (secrets == null || _.isEmpty(secrets)) {
-		return;
-	}
 	// We create a tar archive of the files that we need
 	const pack = tar.pack();
 	pack.entry(
