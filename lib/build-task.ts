@@ -119,4 +119,9 @@ export interface BuildTask {
 	 * docker image for this host)
 	 */
 	architecture?: string;
+
+	/**
+	 * The container contract for this service
+	 */
+	contract?: Dictionary<unknown>;
 }
