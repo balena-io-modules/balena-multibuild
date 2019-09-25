@@ -30,10 +30,10 @@ enum MetadataFileType {
 
 export class BuildMetadata {
 	public registrySecrets: RegistrySecrets;
-	private metadataFiles: Dictionary<Buffer> = {};
-	private balenaYml: BalenaYml;
+	protected metadataFiles: Dictionary<Buffer> = {};
+	protected balenaYml: BalenaYml;
 
-	public constructor(private metadataDirectories: string[]) {}
+	public constructor(protected metadataDirectories: string[]) {}
 
 	public async extractMetadata(
 		tarStream: Stream.Readable,
@@ -156,7 +156,7 @@ export class BuildMetadata {
 		return vars;
 	}
 
-	private parseRegistrySecrets() {
+	protected parseRegistrySecrets() {
 		const potentials = [
 			{ name: 'registry-secrets.json', type: MetadataFileType.Json },
 			{ name: 'registry-secrets.yml', type: MetadataFileType.Yaml },
@@ -194,11 +194,11 @@ export class BuildMetadata {
 		}
 	}
 
-	private addMetadataFile(name: string, data: Buffer) {
+	protected addMetadataFile(name: string, data: Buffer) {
 		this.metadataFiles[name] = data;
 	}
 
-	private getMetadataRelativePath(
+	protected getMetadataRelativePath(
 		path: string,
 	): { relativePath: string; metadataDirectory: string } | undefined {
 		for (const metadataDirectory of this.metadataDirectories) {
