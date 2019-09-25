@@ -1,3 +1,19 @@
+/**
+ * @license
+ * Copyright 2019 Balena Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as crypto from 'crypto';
 import * as dockerfileTemplate from 'dockerfile-template';
 import * as Dockerode from 'dockerode';
@@ -9,11 +25,7 @@ import { Builder } from 'resin-docker-build';
 import * as tar from 'tar-stream';
 
 import BuildMetadata from '../build-metadata';
-import {
-	BuildSecretMissingError,
-	SecretPopulationError,
-	UnsupportedDockerArchError,
-} from '../errors';
+import { BuildSecretMissingError, SecretPopulationError } from '../errors';
 import { PermissiveVarList, VarList } from '../validation-types/varlist';
 
 export const secretType = t.interface({
@@ -96,22 +108,10 @@ export function generateSecretPopulationMap(
 	return _.omitBy(secretMap, v => _.isEmpty(v.files));
 }
 
-function getAlpineArch(dockerArch: string) {
-	const goArchToAlpineArch: { [key: string]: string } = {
-		arm: 'arm32v7',
-		arm64: 'arm64v8',
-		386: 'i386',
-		amd64: 'amd64',
-	};
-	const alpineArch = goArchToAlpineArch[dockerArch];
-	if (!alpineArch) {
-		throw new UnsupportedDockerArchError(
-			`Unsupported Docker daemon architecuture: "${alpineArch}"`,
-		);
-	}
-	return alpineArch;
-}
-
+/**
+ * @param architecture Result of docker.version().Arch. Currently supported
+ * values are: 'arm', 'arm64', '386', 'amd64'.
+ */
 export async function populateSecrets(
 	docker: Dockerode,
 	secrets: SecretsPopulationMap,
@@ -126,14 +126,10 @@ export async function populateSecrets(
 		},
 		JSON.stringify(secrets),
 	);
-	pack.entry(
-		{ name: 'populate.sh' },
-		await fs.readFile(path.join(__dirname, 'populate.sh')),
-	);
 	const dockerfileContent = dockerfileTemplate.process(
 		await fs.readFile(path.join(__dirname, './Dockerfile'), 'utf8'),
 		{
-			ARCH: getAlpineArch(architecture),
+			ARCH: architecture,
 		},
 	);
 	pack.entry(
@@ -173,6 +169,10 @@ export async function populateSecrets(
 	}
 }
 
+/**
+ * @param architecture Result of docker.version().Arch. Currently supported
+ * values are: 'arm', 'arm64', '386', 'amd64'.
+ */
 export async function removeSecrets(
 	docker: Dockerode,
 	secrets: SecretsPopulationMap,
@@ -186,14 +186,10 @@ export async function removeSecrets(
 		},
 		JSON.stringify(_.map(secrets, ({ tmpDirectory }) => tmpDirectory)),
 	);
-	pack.entry(
-		{ name: 'remove.sh' },
-		await fs.readFile(path.join(__dirname, 'remove.sh')),
-	);
 	const dockerfileContent = dockerfileTemplate.process(
 		await fs.readFile(path.join(__dirname, './Dockerfile.remove'), 'utf8'),
 		{
-			ARCH: getAlpineArch(architecture),
+			ARCH: architecture,
 		},
 	);
 	pack.entry(
