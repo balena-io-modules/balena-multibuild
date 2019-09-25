@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Balena Ltd.
+ * Copyright 2019 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,14 @@ import {
 	SecretsPopulationMap,
 } from './build-secrets';
 import { BuildTask } from './build-task';
-import { BuildProcessError, SecretRemovalError, TarError } from './errors';
+import * as contracts from './contracts';
+import {
+	BuildProcessError,
+	ContractError,
+	MultipleContractsForService,
+	SecretRemovalError,
+	TarError,
+} from './errors';
 import { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
 import { posix, posixContains } from './path-utils';
@@ -77,7 +84,7 @@ export async function fromImageDescriptors(
 
 	const newStream = await buildMetadata.extractMetadata(buildStream);
 
-	return new Promise((resolve, reject) => {
+	return new Promise<BuildTask[]>((resolve, reject) => {
 		// Firstly create a list of BuildTasks based on the composition
 		const tasks = Utils.generateBuildTasks(images, buildMetadata);
 
@@ -101,8 +108,20 @@ export async function fromImageDescriptors(
 				TarUtils.streamToBuffer(stream)
 					.then(buf => {
 						matchingTasks.forEach(task => {
+							const relative = posix.relative(task.context!, header.name);
+
+							// Contract is a special case, but we check
+							// here because we don't want to have to read
+							// the input stream again to find it
+							if (contracts.isContractFile(relative)) {
+								if (task.contract != null) {
+									throw new MultipleContractsForService(task.serviceName);
+								}
+								task.contract = contracts.processContract(buf);
+							}
+
 							const newHeader = _.cloneDeep(header);
-							newHeader.name = posix.relative(task.context!, header.name);
+							newHeader.name = relative;
 							task.buildStream!.entry(newHeader, buf);
 						});
 					})
@@ -110,6 +129,7 @@ export async function fromImageDescriptors(
 						next();
 						return null;
 					})
+					.catch(ContractError, reject)
 					.catch(e => reject(new TarError(e)));
 			} else {
 				TarUtils.drainStream(stream)
@@ -136,6 +156,9 @@ export async function fromImageDescriptors(
 		});
 
 		newStream.pipe(extract);
+	}).then(tasks => {
+		contracts.checkContractNamesUnique(tasks);
+		return tasks;
 	});
 }
 

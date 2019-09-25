@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2018 Balena Ltd.
+ * Copyright 2019 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import * as _ from 'lodash';
 import { TypedError } from 'typed-error';
 
 /**
@@ -83,3 +84,30 @@ export class MultipleBalenaConfigFilesError extends TypedError {
 		super();
 	}
 }
+
+// Add a base class to all contract error so that callers
+// can match again this error, and provide targeted output
+// without needing several different checks
+export class ContractError extends TypedError {}
+
+export class MultipleContractsForService extends ContractError {
+	public constructor(public serviceName: string) {
+		super(`Multiple contracts found for service ${serviceName}`);
+	}
+}
+
+export class NonUniqueContractNameError extends ContractError {
+	public constructor(
+		public nonUniqueNames: { [contractName: string]: string[] },
+	) {
+		super();
+		let message =
+			'Some services have the same contract name, which must be unique:\n';
+		_.each(nonUniqueNames, (serviceNames, name) => {
+			message += `  ${name}: ${serviceNames.join(', ')}`;
+		});
+		this.message = message;
+	}
+}
+
+export class ContractValidationError extends ContractError {}
