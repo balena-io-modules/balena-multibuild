@@ -1,6 +1,3 @@
-FROM %%ARCH%%/alpine:3.10
-
-RUN apk update && apk add bash jq
-
-COPY remove.json remove.sh ./
-RUN bash remove.sh
+FROM balena/%%ARCH%%-balena-multibuild-scripts
+COPY remove.json /usr/src/
+RUN ["/bin/bash", "/usr/src/remove.sh"]

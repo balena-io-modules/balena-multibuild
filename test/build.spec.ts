@@ -14,20 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Bluebird from 'bluebird';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import * as Dockerode from 'dockerode';
 import * as fs from 'fs';
-import * as Path from 'path';
 import * as Compose from 'resin-compose-parse';
-import * as Stream from 'stream';
-import * as tar from 'tar-stream';
-import * as Url from 'url';
+
+import {
+	checkExists,
+	fileToTarPack,
+	getDocker,
+	streamPrinter,
+	TestBuildMetadata,
+} from './build-utils';
 
 import { splitBuildStream } from '../lib/';
 import { runBuildTask } from '../lib/build';
-import BuildMetadata from '../lib/build-metadata';
 import { BuildTask } from '../lib/build-task';
 import { BuildProcessError } from '../lib/errors';
 import { LocalImage } from '../lib/local-image';
@@ -36,52 +37,12 @@ import { resolveTask } from '../lib/resolve';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-let dockerOpts: any;
-if (process.env.CIRCLECI != null) {
-	let ca: string;
-	let cert: string;
-	let key: string;
+const docker = getDocker();
 
-	const certs = ['ca.pem', 'cert.pem', 'key.pem'].map(f =>
-		Path.join(process.env.DOCKER_CERT_PATH!, f),
-	);
-	[ca, cert, key] = certs.map(c => fs.readFileSync(c, 'utf-8'));
-	const parsed = Url.parse(process.env.DOCKER_HOST!);
-
-	dockerOpts = {
-		host: 'https://' + parsed.hostname,
-		port: parsed.port,
-		ca,
-		cert,
-		key,
-		Promise: Bluebird,
-	};
-} else {
-	dockerOpts = { socketPath: '/var/run/docker.sock', Promise: Bluebird };
-}
-
-const docker = new Dockerode(dockerOpts);
-
-const fileToTarPack = (filename: string): tar.Pack => {
-	// A little hacky, but it's fine for the tests
-	return (fs.createReadStream(filename) as any) as tar.Pack;
-};
-
-const checkExists = (name: string) => {
-	return docker.getImage(name).inspect();
-};
-
-const printOutput = process.env.DISPLAY_TEST_OUTPUT === '1';
-const streamPrinter = (stream: Stream.Readable) => {
-	if (printOutput) {
-		stream.on('data', data => console.log(data));
-	}
-};
-const buildMetadata = new (BuildMetadata as any)('/tmp/');
-buildMetadata.balenaYml = {
+const buildMetadata = new TestBuildMetadata(['.balena/', '.resin/'], {
 	buildSecrets: {},
 	buildVariables: {},
-};
+});
 const secretMap = {};
 const buildVars = {};
 
