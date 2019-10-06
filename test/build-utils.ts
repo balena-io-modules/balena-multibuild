@@ -60,7 +60,10 @@ function getDockerOpts(extraOpts?: any): Dockerode.DockerOptions {
 		};
 	} else {
 		dockerOpts = {
-			socketPath: '/var/run/docker.sock',
+			socketPath:
+				process.platform === 'win32'
+					? '//./pipe/docker_engine'
+					: '/var/run/docker.sock',
 			Promise: Bluebird as any,
 		};
 	}

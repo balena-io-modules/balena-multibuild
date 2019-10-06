@@ -39,7 +39,7 @@ const expect = chai.expect;
 
 const docker = getDocker();
 
-const buildMetadata = new TestBuildMetadata(['.balena/', '.resin/'], {
+const buildMetadata = new TestBuildMetadata(['.balena', '.resin'], {
 	buildSecrets: {},
 	buildVariables: {},
 });
