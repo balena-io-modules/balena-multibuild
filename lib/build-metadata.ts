@@ -81,7 +81,7 @@ export class BuildMetadata {
 	}
 
 	public getSecretFile(source: string): Buffer | undefined {
-		return this.metadataFiles[PathUtils.join('secrets', source)];
+		return this.metadataFiles[PathUtils.posix.join('secrets', source)];
 	}
 
 	public parseMetadata() {
@@ -202,9 +202,9 @@ export class BuildMetadata {
 		path: string,
 	): { relativePath: string; metadataDirectory: string } | undefined {
 		for (const metadataDirectory of this.metadataDirectories) {
-			if (PathUtils.contains(metadataDirectory, path)) {
+			if (PathUtils.posixContains(metadataDirectory, path)) {
 				return {
-					relativePath: PathUtils.relative(metadataDirectory, path),
+					relativePath: PathUtils.posix.relative(metadataDirectory, path),
 					metadataDirectory,
 				};
 			}

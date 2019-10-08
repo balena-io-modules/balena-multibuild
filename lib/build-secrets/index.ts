@@ -75,7 +75,10 @@ export function generateSecretPopulationMap(
 
 	for (const serviceName of serviceNames) {
 		const serviceSecret: SecretsPopulationMap[''] = {
-			tmpDirectory: path.join(tmpDir, crypto.randomBytes(10).toString('hex')),
+			tmpDirectory: path.posix.join(
+				tmpDir,
+				crypto.randomBytes(10).toString('hex'),
+			),
 			files: {},
 		};
 
@@ -127,7 +130,7 @@ export async function populateSecrets(
 		JSON.stringify(secrets),
 	);
 	const dockerfileContent = dockerfileTemplate.process(
-		await fs.readFile(path.join(__dirname, './Dockerfile'), 'utf8'),
+		await fs.readFile(path.join(__dirname, 'Dockerfile'), 'utf8'),
 		{
 			ARCH: architecture,
 		},
@@ -187,7 +190,7 @@ export async function removeSecrets(
 		JSON.stringify(_.map(secrets, ({ tmpDirectory }) => tmpDirectory)),
 	);
 	const dockerfileContent = dockerfileTemplate.process(
-		await fs.readFile(path.join(__dirname, './Dockerfile.remove'), 'utf8'),
+		await fs.readFile(path.join(__dirname, 'Dockerfile.remove'), 'utf8'),
 		{
 			ARCH: architecture,
 		},
