@@ -47,6 +47,11 @@ export function processContract(buffer: Buffer): Dictionary<unknown> {
 			`Container contract must have a type of ${CONTRACT_TYPE}`,
 		);
 	}
+	if (contractObj.slug == null) {
+		throw new ContractValidationError(
+			'Container contract must have a slug field',
+		);
+	}
 
 	return contractObj;
 }

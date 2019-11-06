@@ -52,6 +52,7 @@ describe('Container contracts', () => {
 			.that.deep.equals({
 				type: 'sw.container',
 				name: 'container-contract',
+				slug: 'container-contract',
 				requires: [
 					{
 						type: 'sw.os',
@@ -86,6 +87,7 @@ describe('Container contracts', () => {
 			.to.have.property('contract')
 			.that.deep.equals({
 				type: 'sw.container',
+				slug: 'container-one-contract',
 				name: 'container-one-contract',
 				requires: [
 					{
@@ -98,6 +100,7 @@ describe('Container contracts', () => {
 			.to.have.property('contract')
 			.that.deep.equals({
 				type: 'sw.container',
+				slug: 'container-two-contract',
 				name: 'container-two-contract',
 				requires: [
 					{
