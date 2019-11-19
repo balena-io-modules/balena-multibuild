@@ -47,7 +47,7 @@ const secretMap = {};
 const buildVars = {};
 
 describe('Project building', () => {
-	it('should correctly build a standard dockerfile project', () => {
+	it('should correctly build a standard dockerfile project', async () => {
 		const task = {
 			resolved: false,
 			external: false,
@@ -57,20 +57,25 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(
-			(image: LocalImage) => {
-				expect(image)
-					.to.have.property('successful')
-					.that.equals(true);
-				expect(image)
-					.to.have.property('layers')
-					.that.is.an('array');
-				return checkExists(image.name!);
-			},
-		);
+		const image = await runBuildTask(task, docker, secretMap, buildVars);
+		expect(image)
+			.to.have.property('successful')
+			.that.equals(true);
+		expect(image)
+			.to.have.property('layers')
+			.that.is.an('array');
+		expect(image)
+			.to.have.property('baseImageTags')
+			.that.is.an('array')
+			.that.has.length(1);
+		expect(image.baseImageTags[0]).to.be.deep.equal({
+			repo: 'alpine',
+			tag: 'latest',
+		});
+		await checkExists(image.name!);
 	});
 
-	it('should correctly return an image with a build error', () => {
+	it('should correctly return an image with a build error', async () => {
 		const task = {
 			external: false,
 			resolved: false,
@@ -80,23 +85,28 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(
-			(image: LocalImage) => {
-				expect(image)
-					.to.have.property('successful')
-					.that.equals(false);
-				expect(image)
-					.to.have.property('layers')
-					.that.is.an('array')
-					.and.have.length(1);
-				// tslint:disable-next-line:no-unused-expression
-				expect(image).to.have.property('error').that.is.not.null;
-				return checkExists(image.name!);
-			},
-		);
+		const image = await runBuildTask(task, docker, secretMap, buildVars);
+		expect(image)
+			.to.have.property('successful')
+			.that.equals(false);
+		expect(image)
+			.to.have.property('layers')
+			.that.is.an('array')
+			.and.have.length(1);
+		expect(image)
+			.to.have.property('baseImageTags')
+			.that.is.an('array')
+			.that.has.length(1);
+		expect(image.baseImageTags[0]).to.be.deep.equal({
+			repo: 'alpine',
+			tag: 'latest',
+		});
+		// tslint:disable-next-line:no-unused-expression
+		expect(image).to.have.property('error').that.is.not.null;
+		await checkExists(image.name!);
 	});
 
-	it('should correctly return no layers or name when a base image cannot be downloaded', () => {
+	it('should correctly return no layers or name when a base image cannot be downloaded', async () => {
 		const task = {
 			external: false,
 			resolved: false,
@@ -106,19 +116,24 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(
-			(image: LocalImage) => {
-				expect(image).to.not.have.property('name');
-				expect(image)
-					.to.have.property('layers')
-					.that.has.length(0);
-				// tslint:disable-next-line:no-unused-expression
-				expect(image).to.have.property('error').that.is.not.null;
-			},
-		);
+		const image = await runBuildTask(task, docker, secretMap, buildVars);
+		expect(image).to.not.have.property('name');
+		expect(image)
+			.to.have.property('layers')
+			.that.has.length(0);
+		expect(image)
+			.to.have.property('baseImageTags')
+			.that.is.an('array')
+			.that.has.length(1);
+		expect(image.baseImageTags[0]).to.be.deep.equal({
+			repo: 'does-not-exist',
+			tag: 'latest',
+		});
+		// tslint:disable-next-line:no-unused-expression
+		expect(image).to.have.property('error').that.is.not.null;
 	});
 
-	it('should correctly tag an image', () => {
+	it('should correctly tag an image', async () => {
 		const task = {
 			external: false,
 			resolved: false,
@@ -129,12 +144,11 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('name')
-				.that.equals('resin-multibuild-tag');
-			return checkExists('resin-multibuild-tag');
-		});
+		const image = await runBuildTask(task, docker, secretMap, buildVars);
+		expect(image)
+			.to.have.property('name')
+			.that.equals('resin-multibuild-tag');
+		await checkExists('resin-multibuild-tag');
 	});
 
 	it('should correctly set the start and end time', () => {
