@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
-import { Builder, BuildHooks } from 'resin-docker-build';
+import { Builder, BuildHooks, FromTagInfo } from 'resin-docker-build';
 import * as Stream from 'stream';
 
 import { SecretsPopulationMap } from './build-secrets';
@@ -17,35 +17,43 @@ function taskHooks(
 	resolve: (image: LocalImage) => void,
 ): BuildHooks {
 	let startTime: number;
+
+	const setImageProperties = (
+		image: LocalImage,
+		layers: string[],
+		fromTags: FromTagInfo[],
+	) => {
+		image.layers = layers;
+		image.baseImageTags = fromTags;
+		image.startTime = startTime;
+		image.endTime = Date.now();
+		image.dockerfile = task.dockerfile;
+		image.projectType = task.projectType;
+	};
+
 	return {
-		buildSuccess: (imageId: string, layers: string[]) => {
+		buildSuccess: (
+			imageId: string,
+			layers: string[],
+			fromTags: FromTagInfo[],
+		) => {
 			const tag = task.tag != null ? task.tag : imageId;
 			const image = new LocalImage(docker, tag, task.serviceName, {
 				external: false,
 				successful: true,
 			});
-			image.layers = layers;
-			image.startTime = startTime;
-			image.endTime = Date.now();
-			image.dockerfile = task.dockerfile;
-			image.projectType = task.projectType;
-
+			setImageProperties(image, layers, fromTags);
 			resolve(image);
 		},
-		buildFailure: (error: Error, layers: string[]) => {
+		buildFailure: (error: Error, layers: string[], fromTags: FromTagInfo[]) => {
 			const image = new LocalImage(
 				docker,
 				layers[layers.length - 1],
 				task.serviceName,
 				{ external: false, successful: false },
 			);
-			image.layers = layers;
+			setImageProperties(image, layers, fromTags);
 			image.error = error;
-			image.startTime = startTime;
-			image.endTime = Date.now();
-			image.dockerfile = task.dockerfile;
-			image.projectType = task.projectType;
-
 			resolve(image);
 		},
 		buildStream: (stream: Stream.Duplex) => {

@@ -49,6 +49,11 @@ export class LocalImage {
 	public layers?: string[];
 
 	/**
+	 * Base image tags referred by this image build
+	 */
+	public baseImageTags?: Array<{ repo: string; tag: string }>;
+
+	/**
 	 * Was this image built successfully?
 	 *
 	 * Note that in the case of an image not being successfully built,
