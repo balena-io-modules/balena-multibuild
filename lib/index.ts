@@ -18,6 +18,7 @@
 import * as Bluebird from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
+import * as path from 'path';
 import * as Compose from 'resin-compose-parse';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
@@ -44,7 +45,7 @@ import {
 } from './errors';
 import { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
-import { posix, posixContains } from './path-utils';
+import { posixContains } from './path-utils';
 import { RegistrySecrets } from './registry-secrets';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
@@ -108,7 +109,7 @@ export async function fromImageDescriptors(
 				TarUtils.streamToBuffer(stream)
 					.then(buf => {
 						matchingTasks.forEach(task => {
-							const relative = posix.relative(task.context!, header.name);
+							const relative = path.posix.relative(task.context!, header.name);
 
 							// Contract is a special case, but we check
 							// here because we don't want to have to read

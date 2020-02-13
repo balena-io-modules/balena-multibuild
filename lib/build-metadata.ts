@@ -3,6 +3,7 @@ import * as t from 'io-ts';
 import { reporter } from 'io-ts-reporters';
 import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
+import * as Path from 'path';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
@@ -81,7 +82,7 @@ export class BuildMetadata {
 	}
 
 	public getSecretFile(source: string): Buffer | undefined {
-		return this.metadataFiles[PathUtils.posix.join('secrets', source)];
+		return this.metadataFiles[Path.posix.join('secrets', source)];
 	}
 
 	public parseMetadata() {
@@ -204,7 +205,7 @@ export class BuildMetadata {
 		for (const metadataDirectory of this.metadataDirectories) {
 			if (PathUtils.posixContains(metadataDirectory, path)) {
 				return {
-					relativePath: PathUtils.posix.relative(metadataDirectory, path),
+					relativePath: Path.posix.relative(metadataDirectory, path),
 					metadataDirectory,
 				};
 			}

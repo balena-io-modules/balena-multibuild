@@ -16,11 +16,6 @@
  */
 import * as _ from 'lodash';
 import * as path from 'path';
-import { posix } from 'path';
-
-// Export all of node's path functions, so that users of this
-// module need only import this file
-export * from 'path';
 
 const nativeSepRE = new RegExp(_.escapeRegExp(path.sep), 'g');
 const nativeDotDotRE = new RegExp('^\\.\\.$|\\.\\.' + _.escapeRegExp(path.sep));
@@ -50,12 +45,12 @@ export const contains = (path1: string, path2: string): boolean => {
  */
 export const posixContains = (path1: string, path2: string): boolean => {
 	// First normalise the input, to remove any path weirdness
-	path1 = posix.normalize(path1);
-	path2 = posix.normalize(path2);
+	path1 = path.posix.normalize(path1);
+	path2 = path.posix.normalize(path2);
 
 	// Now test if any part of the relative path contains a .. ,
 	// which would tell us that path1 is not part of path2
-	return !/^\.\.$|\.\.\//.test(posix.relative(path1, path2));
+	return !/^\.\.$|\.\.\//.test(path.posix.relative(path1, path2));
 };
 
 /**
