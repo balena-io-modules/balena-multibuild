@@ -17,6 +17,7 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import * as Path from 'path';
 
 import * as PathUtils from '../lib/path-utils';
 
@@ -35,14 +36,14 @@ describe('Path utilities', () => {
 			['test1/test2/', 'test1/test2/test3', 'test3'],
 		];
 		for (let [from, to, expected] of testCases) {
-			expect(PathUtils.posix.relative(from, to)).to.equal(
+			expect(Path.posix.relative(from, to)).to.equal(
 				expected,
 				`expected posix.relative("${from}", "${to}") to equal "${expected}"`,
 			);
 			from = PathUtils.toNativePath(from);
 			to = PathUtils.toNativePath(to);
 			expected = PathUtils.toNativePath(expected);
-			expect(PathUtils.relative(from, to)).to.equal(
+			expect(Path.relative(from, to)).to.equal(
 				expected,
 				`expected native relative("${from}", "${to}") to equal "${expected}"`,
 			);
