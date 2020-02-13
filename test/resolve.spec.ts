@@ -73,4 +73,38 @@ describe('Project resolution', () => {
 			newTask.buildStream.resume();
 		});
 	});
+
+	it('should correctly resolve extra template vars', () => {
+		const task: BuildTask = {
+			external: false,
+			resolved: false,
+			buildStream: (fs.createReadStream(
+				'test/test-files/additional-template-vars.tar',
+			) as any) as Pack,
+			serviceName: 'test',
+			buildMetadata,
+		};
+
+		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+				end: [
+					() => {
+						try {
+							expect(newTask.projectType).to.equal('Dockerfile.template');
+							expect(newTask.resolved).to.equal(true);
+							expect(newTask.dockerfile).to.equal(`test\ntest2\n`);
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					},
+				],
+			};
+			const newTask = resolveTask(task, 'test', 'test', resolveListeners, {
+				ANOTHER_VAR: 'test2',
+			});
+			newTask.buildStream.resume();
+		});
+	});
 });

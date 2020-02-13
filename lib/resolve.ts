@@ -40,6 +40,7 @@ export function resolveTask(
 	architecture: string,
 	deviceType: string,
 	resolveListeners: ResolveListeners,
+	additionalVars: Dictionary<string> = {},
 ): BuildTask {
 	if (task.external) {
 		// No resolution needs to be performed for external images
@@ -73,11 +74,16 @@ export function resolveTask(
 		},
 	);
 
+	const templateVars = {
+		BALENA_SERVICE_NAME: task.serviceName,
+		...additionalVars,
+	};
 	task.buildStream = Resolve.resolveInput(
 		bundle,
 		resolvers,
 		listeners,
 		task.dockerfilePath,
+		templateVars,
 	);
 
 	return task;

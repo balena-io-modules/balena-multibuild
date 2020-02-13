@@ -197,10 +197,17 @@ export function performResolution(
 	architecture: string,
 	deviceType: string,
 	resolveListeners: ResolveListeners,
+	additionalTemplateVars?: Dictionary<string>,
 ): BuildTask[] {
 	return tasks.map(task => {
 		task.architecture = architecture;
-		return resolveTask(task, architecture, deviceType, resolveListeners);
+		return resolveTask(
+			task,
+			architecture,
+			deviceType,
+			resolveListeners,
+			additionalTemplateVars,
+		);
 	});
 }
 
@@ -209,9 +216,16 @@ export function performSingleResolution(
 	architecture: string,
 	deviceType: string,
 	resolveListeners: ResolveListeners,
+	additionalTemplateVars?: Dictionary<string>,
 ): BuildTask {
 	task.architecture = architecture;
-	return resolveTask(task, architecture, deviceType, resolveListeners);
+	return resolveTask(
+		task,
+		architecture,
+		deviceType,
+		resolveListeners,
+		additionalTemplateVars,
+	);
 }
 
 /**
