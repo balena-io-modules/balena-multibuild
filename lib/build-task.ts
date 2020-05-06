@@ -124,4 +124,10 @@ export interface BuildTask {
 	 * The container contract for this service
 	 */
 	contract?: Dictionary<unknown>;
+
+	/**
+	 * Promise to ensure that build task is resolved before
+	 * progressing to next steps in the build process (workaround).
+	 */
+	resolvedPromise?: Promise<void>;
 }

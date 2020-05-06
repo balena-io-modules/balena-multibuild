@@ -27,7 +27,7 @@ function performResolution(
 
 Given a list of build tasks, resolve the projects to a form which the docker
 daemon can build. Currently this function supports all project types which
-[resin-bundle-resole](https://github.com/resin-io-modules/resin-bundle-resolve)
+[resin-bundle-resolve](https://github.com/resin-io-modules/resin-bundle-resolve)
 supports.
 
 Note that this function will also populate the `dockerfile` and `projectType`

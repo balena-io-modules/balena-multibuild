@@ -420,3 +420,50 @@ describe('Specifying a dockerfile', () => {
 		});
 	});
 });
+
+describe('Specifying a dockerfile hook', () => {
+	it('should allow preprocessing of dockerfile', async () => {
+		const composeObj = require('../../test/test-files/stream/docker-compose-specified-dockerfile.json');
+		const comp = Compose.normalize(composeObj);
+
+		const stream = fs.createReadStream(
+			'test/test-files/stream/specified-dockerfile.tar',
+		);
+
+		const tasks = await splitBuildStream(comp, stream);
+		expect(tasks).to.have.length(1);
+
+		// Test preprocessing hook by uppercasing the content.
+		const dockerFilePreprocessHook = content => {
+			return content.toUpperCase();
+		};
+
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(
+				tasks[0],
+				'test',
+				'test',
+				resolveListeners,
+				{},
+				dockerFilePreprocessHook,
+			);
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
+		}).then((image: LocalImage) => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask).to.have.property('projectType', 'Standard Dockerfile');
+			expect(newTask).to.have.property('dockerfilePath', 'test/Dockerfile');
+			expect(newTask).to.have.property('dockerfile', 'correct\n'.toUpperCase());
+
+			expect(image)
+				.to.have.property('error')
+				.that.has.property('message')
+				.that.matches(
+					/Dockerfile parse error line 1: unknown instruction: CORRECT/i,
+				);
+		});
+	});
+});

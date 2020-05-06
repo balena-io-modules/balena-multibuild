@@ -31,6 +31,8 @@ export { ResolveListeners };
  * @param architecture The architecture to resolve this project for
  * @param deviceType The device type to resolve this project for
  * @param resolveListeners Event listeners for tar stream resolution.
+ * @param additionalVars Additional template variables
+ * @param dockerfilePreprocessHook Hook to allow dockerfile preprocessing
  * You should always add at least an 'error' handler, or uncaught errors
  * may crash the app.
  * @returns The input task object, with a few updated fields
@@ -41,14 +43,27 @@ export function resolveTask(
 	deviceType: string,
 	resolveListeners: ResolveListeners,
 	additionalVars: Dictionary<string> = {},
+	dockerfilePreprocessHook?: (content: string) => string,
 ): BuildTask {
 	if (task.external) {
 		// No resolution needs to be performed for external images
 		return task;
 	}
 
+	// Workaround to deal with timing issues when resolution takes longer.
+	// Promise ensures that task is resolved before build process continues.
+	let resolveTaskPromise: () => void;
+	task.resolvedPromise = new Promise(resolve => {
+		resolveTaskPromise = resolve;
+	});
+
 	const dockerfileHook = (content: string) => {
-		task.dockerfile = content;
+		if (dockerfilePreprocessHook) {
+			task.dockerfile = dockerfilePreprocessHook(content);
+			return task.dockerfile;
+		} else {
+			task.dockerfile = content;
+		}
 	};
 
 	const bundle = new Resolve.Bundle(
@@ -65,6 +80,7 @@ export function resolveTask(
 		(resolverName: string) => {
 			task.projectType = resolverName;
 			task.resolved = true;
+			resolveTaskPromise();
 		},
 	);
 
