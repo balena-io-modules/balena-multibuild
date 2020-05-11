@@ -191,6 +191,10 @@ export function buildHasSecrets(tasks: BuildTask[]): boolean {
  * @param resolveListeners Event listeners for tar stream resolution.
  * You should always add at least an 'error' handler, or uncaught errors
  * may crash the app.
+ * @param dockerfilePreprocessHook A hook which can be used
+ * to change the dockerfile after resolution. Note that to
+ * provide a different hook per task, call
+ * performSingleResolution with the hook for each task
  * @returns A list of resolved build tasks
  */
 export function performResolution(
@@ -199,6 +203,7 @@ export function performResolution(
 	deviceType: string,
 	resolveListeners: ResolveListeners,
 	additionalTemplateVars?: Dictionary<string>,
+	dockerfilePreprocessHook?: (dockerfile: string) => string,
 ): BuildTask[] {
 	return tasks.map(task => {
 		task.architecture = architecture;
@@ -208,6 +213,7 @@ export function performResolution(
 			deviceType,
 			resolveListeners,
 			additionalTemplateVars,
+			dockerfilePreprocessHook,
 		);
 	});
 }
@@ -218,6 +224,7 @@ export function performSingleResolution(
 	deviceType: string,
 	resolveListeners: ResolveListeners,
 	additionalTemplateVars?: Dictionary<string>,
+	dockerfilePreprocessHook?: (dockerfile: string) => string,
 ): BuildTask {
 	task.architecture = architecture;
 	return resolveTask(
@@ -226,6 +233,7 @@ export function performSingleResolution(
 		deviceType,
 		resolveListeners,
 		additionalTemplateVars,
+		dockerfilePreprocessHook,
 	);
 }
 
