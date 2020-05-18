@@ -45,6 +45,13 @@ export function resolveTask(
 	additionalVars: Dictionary<string> = {},
 	dockerfilePreprocessHook?: (content: string) => string,
 ): BuildTask {
+	// do this first, to also signal proper platform to pulls
+	// and fall back to old behavior, if no match was found
+	const platform = resolveDockerPlatform(architecture);
+	if (platform) {
+		task.dockerOpts = { platform, ...task.dockerOpts };
+	}
+
 	if (task.external) {
 		// No resolution needs to be performed for external images
 		return task;
@@ -103,4 +110,24 @@ export function resolveTask(
 	);
 
 	return task;
+}
+
+/**
+ * Given a balena architecture string, translate it to the equivalent
+ * docker platform string.
+ */
+function resolveDockerPlatform(balenaArchitecture: string): string | boolean {
+	switch (balenaArchitecture) {
+		case 'amd64':
+			return 'linux/amd64';
+		case 'i386':
+			return 'linux/386';
+		case 'aarch64':
+			return 'linux/arm64';
+		case 'armv7hf':
+			return 'linux/arm/v7';
+		case 'rpi':
+			return 'linux/arm/v6';
+	}
+	return false;
 }
