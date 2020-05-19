@@ -59,7 +59,10 @@ export function generateBuildTasks(
 				img.image.dockerfile != null
 					? { dockerfilePath: img.image.dockerfile }
 					: {},
-				img.image,
+				// It's possible to specify an image name as well as
+				// a build, but that doesn't make sense in a balena
+				// ecosystem, so we remove it
+				_.omit(img.image, 'image'),
 			);
 		}
 	});
