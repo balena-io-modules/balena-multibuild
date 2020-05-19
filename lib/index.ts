@@ -257,6 +257,46 @@ export async function performBuilds(
 	if (tasks.length === 0) {
 		return [];
 	}
+	const buildMetadata = tasks[0].buildMetadata;
+
+	const {
+		secrets: secretMap,
+		regSecrets: registrySecrets,
+		architecture,
+	} = await initializeBuildMetadata(tasks, docker, tmpDir);
+
+	const images = await Bluebird.map(tasks, (task: BuildTask) => {
+		return performSingleBuild(
+			task,
+			docker,
+			registrySecrets,
+			secretMap,
+			buildMetadata.getBuildVarsForService(task.serviceName),
+		);
+	});
+
+	if (!_.isEmpty(secretMap)) {
+		try {
+			await removeSecrets(docker, secretMap, architecture, tmpDir);
+		} catch (e) {
+			throw new SecretRemovalError(e);
+		}
+	}
+	return images;
+}
+
+export async function initializeBuildMetadata(
+	tasks: BuildTask[],
+	docker: Dockerode,
+	tmpDir: string,
+): Promise<{
+	secrets: SecretsPopulationMap;
+	regSecrets: RegistrySecrets;
+	architecture: string;
+}> {
+	if (tasks.length === 0) {
+		return { secrets: {}, regSecrets: {}, architecture: '' };
+	}
 	// This feels a bit dirty, but there doesn't seem another
 	// nicer way to do it given the current setup
 	const buildMetadata = tasks[0].buildMetadata;
@@ -276,24 +316,7 @@ export async function performBuilds(
 		await populateSecrets(docker, secretMap, architecture, tmpDir);
 	}
 
-	const images = await Bluebird.map(tasks, (task: BuildTask) => {
-		return performSingleBuild(
-			task,
-			docker,
-			registrySecrets,
-			secretMap,
-			buildMetadata.getBuildVarsForService(task.serviceName),
-		);
-	});
-
-	if (hasSecrets) {
-		try {
-			await removeSecrets(docker, secretMap, architecture, tmpDir);
-		} catch (e) {
-			throw new SecretRemovalError(e);
-		}
-	}
-	return images;
+	return { secrets: secretMap, regSecrets: registrySecrets, architecture };
 }
 
 /**
@@ -305,7 +328,7 @@ export async function performBuilds(
  * @param docker A handle to a docker daemon, retrieved from Dockerode
  * @return A promise which resolves to a LocalImage
  */
-async function performSingleBuild(
+export async function performSingleBuild(
 	task: BuildTask,
 	docker: Dockerode,
 	registrySecrets: RegistrySecrets,
