@@ -266,6 +266,9 @@ export async function performBuilds(
 	} = await initializeBuildMetadata(tasks, docker, tmpDir);
 
 	const images = await Bluebird.map(tasks, (task: BuildTask) => {
+		if (task.dockerPlatform) {
+			task.dockerOpts = { platform: task.dockerPlatform, ...task.dockerOpts };
+		}
 		return performSingleBuild(
 			task,
 			docker,
@@ -295,7 +298,11 @@ export async function initializeBuildMetadata(
 	architecture: string;
 }> {
 	if (tasks.length === 0) {
-		return { secrets: {}, regSecrets: {}, architecture: '' };
+		return {
+			secrets: {},
+			regSecrets: {},
+			architecture: '',
+		};
 	}
 	// This feels a bit dirty, but there doesn't seem another
 	// nicer way to do it given the current setup
@@ -316,7 +323,11 @@ export async function initializeBuildMetadata(
 		await populateSecrets(docker, secretMap, architecture, tmpDir);
 	}
 
-	return { secrets: secretMap, regSecrets: registrySecrets, architecture };
+	return {
+		secrets: secretMap,
+		regSecrets: registrySecrets,
+		architecture,
+	};
 }
 
 /**
