@@ -55,6 +55,7 @@ export * from './build-task';
 export * from './errors';
 export * from './local-image';
 export * from './registry-secrets';
+export { resolveDockerPlatform } from './resolve';
 export { BalenaYml, ParsedBalenaYml };
 export { PathUtils };
 export { ResolveListeners };

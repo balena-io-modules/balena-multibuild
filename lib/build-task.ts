@@ -121,6 +121,14 @@ export interface BuildTask {
 	architecture?: string;
 
 	/**
+	 * The platform string used used by docker resolve the correct
+	 * image in manifest lists.
+	 * Populated in the resolution step by translating from the
+	 * architecture property.
+	 */
+	dockerPlatform?: string;
+
+	/**
 	 * The container contract for this service
 	 */
 	contract?: Dictionary<unknown>;
