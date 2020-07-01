@@ -29,7 +29,13 @@ export function isContractFile(filename: string): boolean {
 }
 
 export function processContract(buffer: Buffer): Dictionary<unknown> {
-	const contractObj = jsYaml.safeLoad(buffer.toString('utf8'));
+	const parsedBuffer = jsYaml.safeLoad(buffer.toString('utf8'));
+
+	if (parsedBuffer == null || typeof parsedBuffer !== 'object') {
+		throw new ContractValidationError('Container contract must be an object');
+	}
+
+	const contractObj = parsedBuffer as Dictionary<unknown>;
 
 	if (contractObj.name == null) {
 		throw new ContractValidationError(
