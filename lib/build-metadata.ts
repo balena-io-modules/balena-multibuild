@@ -176,8 +176,8 @@ export class BuildMetadata {
 
 		if (bufData != null) {
 			// Validate the registry secrets
-			const validator = new RegistrySecretValidator();
-			let secrets: Dictionary<unknown>;
+			const validator: RegistrySecretValidator = new RegistrySecretValidator();
+			let secrets: unknown;
 			try {
 				if (foundType! === MetadataFileType.Yaml) {
 					secrets = jsYaml.safeLoad(bufData.toString());
@@ -188,8 +188,8 @@ export class BuildMetadata {
 				throw new RegistrySecretValidationError(e);
 			}
 			validator.validateRegistrySecrets(secrets);
-			addCanonicalDockerHubEntry(secrets as RegistrySecrets);
-			this.registrySecrets = secrets as RegistrySecrets;
+			addCanonicalDockerHubEntry(secrets);
+			this.registrySecrets = secrets;
 		} else {
 			this.registrySecrets = {};
 		}
