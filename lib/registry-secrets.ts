@@ -74,15 +74,14 @@ export class RegistrySecretValidator {
 	 * @returns The input object cast to the RegistrySecrets type if validation succeeds
 	 * @throws Throws an error if validation fails
 	 */
-	public validateRegistrySecrets(
-		parsedJson: unknown,
-	): asserts parsedJson is RegistrySecrets {
+	public validateRegistrySecrets(parsedJson: unknown): RegistrySecrets {
 		const valid = this.validateFunction(parsedJson);
 		if (!valid) {
 			throw new RegistrySecretValidationError(
 				this.validator.errorsText(this.validateFunction.errors),
 			);
 		}
+		return parsedJson as RegistrySecrets;
 	}
 
 	/**
@@ -94,8 +93,7 @@ export class RegistrySecretValidator {
 	 */
 	public parseRegistrySecrets(json: string): RegistrySecrets {
 		const secrets: unknown = JSON.parse(json);
-		this.validateRegistrySecrets(secrets);
-		return secrets;
+		return this.validateRegistrySecrets(secrets);
 	}
 }
 
