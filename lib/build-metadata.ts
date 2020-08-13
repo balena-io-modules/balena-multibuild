@@ -177,17 +177,17 @@ export class BuildMetadata {
 		if (bufData != null) {
 			// Validate the registry secrets
 			const validator: RegistrySecretValidator = new RegistrySecretValidator();
-			let secrets: unknown;
+			let maybeSecrets: unknown;
 			try {
 				if (foundType! === MetadataFileType.Yaml) {
-					secrets = jsYaml.safeLoad(bufData.toString());
+					maybeSecrets = jsYaml.safeLoad(bufData.toString());
 				} else {
-					secrets = JSON.parse(bufData.toString());
+					maybeSecrets = JSON.parse(bufData.toString());
 				}
 			} catch (e) {
 				throw new RegistrySecretValidationError(e);
 			}
-			validator.validateRegistrySecrets(secrets);
+			const secrets = validator.validateRegistrySecrets(maybeSecrets);
 			addCanonicalDockerHubEntry(secrets);
 			this.registrySecrets = secrets;
 		} else {
