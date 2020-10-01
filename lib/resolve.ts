@@ -120,6 +120,7 @@ export function resolveDockerPlatform(balenaArchitecture: string): string {
 	switch (balenaArchitecture) {
 		case 'amd64':
 			return 'linux/amd64';
+		case 'i386-nlp':
 		case 'i386':
 			return 'linux/386';
 		case 'aarch64':
