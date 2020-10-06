@@ -124,7 +124,7 @@ export function resolveDockerPlatform(balenaArchitecture: string): string {
 		case 'i386':
 			return 'linux/386';
 		case 'aarch64':
-			return 'linux/arm64';
+			return 'linux/arm64/v8';
 		case 'armv7hf':
 			return 'linux/arm/v7';
 		case 'rpi':
