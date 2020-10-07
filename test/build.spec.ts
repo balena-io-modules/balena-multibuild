@@ -244,14 +244,13 @@ describe('Resolved project building', () => {
 	});
 
 	it('should correctly build a resolved project for a different platform', async function() {
-		if (
-			semver.satisfies(
-				semver.coerce((await docker.version()).ApiVersion),
-				'<1.34.0',
-			)
-		) {
-			this.skip();
-		}
+		const versionOutput = await docker.version();
+		const expectedArch = semver.satisfies(
+			semver.coerce(versionOutput.ApiVersion),
+			'<1.38.0',
+		)
+			? versionOutput.Arch
+			: '386';
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
@@ -276,7 +275,7 @@ describe('Resolved project building', () => {
 			.then((inspect: any) => {
 				expect(inspect)
 					.to.have.property('Architecture')
-					.that.equals('386');
+					.that.equals(expectedArch);
 			});
 	});
 });
