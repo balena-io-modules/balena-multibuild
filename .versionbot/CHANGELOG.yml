@@ -1,4 +1,58 @@
 - commits:
+    - subject: Only use platform if docker host supports api version >=1.38
+      hash: 6769e99cdd54c40b76ea3afa2f4773f6fe96c3cc
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+    - subject: Use the correct armv8 platform string
+      hash: a2f4148fdcede737b7d3702a71d8efdb6680288e
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Tomás Tormo <tomast@balena.io>
+        signed-off-by: Tomás Tormo <tomast@balena.io>
+      author: Tomás Tormo
+    - subject: Resolve docker platform
+      hash: 783f708d6fd6f1894b888e0e0ae25ea268a72270
+      body: |
+        Paritally reverts commit b5633196b5ea2d7d9e159024ab4620407ef02d53.
+
+        This ensures that the build resolves the correct platform for base
+        images it fetches from the registry.
+        Includes unit tests to check the platform translation and the actual
+        build execution.
+
+        This requires running a docker daemon >=18.09.3 and experimental
+        features enabled, to support this tests will only run if a daemon
+        matching this requirement is available.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+    - subject: Pass platform option to build
+      hash: ea82194d86bdc78bd3873691ac7da0496e8f8f6b
+      body: |
+        This builds on 809d502b5adfccd4e9f19220eacf4204cc11da2e
+        by using the translated platform string in the actual builds.
+
+        We make sure that the daemon we're running against has experimental
+        options enabled, which is still required as of docker v18.09.3
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+  version: 4.8.0
+  date: 2020-10-07T13:42:25.374Z
+- commits:
     - subject: Add .version/CHANGELOG.yml for nested changelogs
       hash: 13421b61ff5e33c6b6519338434474440a93c48a
       body: ''
