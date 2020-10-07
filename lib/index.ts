@@ -20,7 +20,6 @@ import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as Compose from 'resin-compose-parse';
-import * as semver from 'semver';
 import * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
@@ -265,17 +264,9 @@ export async function performBuilds(
 		secrets: secretMap,
 		regSecrets: registrySecrets,
 		architecture,
-		apiVersion,
 	} = await initializeBuildMetadata(tasks, docker, tmpDir);
 
 	const images = await Bluebird.map(tasks, (task: BuildTask) => {
-		if (
-			task.dockerPlatform &&
-			apiVersion &&
-			semver.satisfies(apiVersion, '>=1.38.0')
-		) {
-			task.dockerOpts = { platform: task.dockerPlatform, ...task.dockerOpts };
-		}
 		return performSingleBuild(
 			task,
 			docker,
@@ -303,22 +294,18 @@ export async function initializeBuildMetadata(
 	secrets: SecretsPopulationMap;
 	regSecrets: RegistrySecrets;
 	architecture: string;
-	apiVersion: semver.SemVer | null;
 }> {
 	if (tasks.length === 0) {
 		return {
 			secrets: {},
 			regSecrets: {},
 			architecture: '',
-			apiVersion: null,
 		};
 	}
 	// This feels a bit dirty, but there doesn't seem another
 	// nicer way to do it given the current setup
 	const buildMetadata = tasks[0].buildMetadata;
-	const versionOutput = await docker.version();
-	const architecture = versionOutput.Arch;
-	const apiVersion = semver.coerce(versionOutput.ApiVersion);
+	const architecture = (await docker.version()).Arch;
 
 	buildMetadata.parseMetadata();
 	const registrySecrets = buildMetadata.registrySecrets;
@@ -338,7 +325,6 @@ export async function initializeBuildMetadata(
 		secrets: secretMap,
 		regSecrets: registrySecrets,
 		architecture,
-		apiVersion,
 	};
 }
 
