@@ -18,6 +18,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
 import * as Compose from 'resin-compose-parse';
+import * as semver from 'semver';
 
 import {
 	checkExists,
@@ -226,14 +227,56 @@ describe('Resolved project building', () => {
 			const resolveListeners = {
 				error: [reject],
 			};
-			const newTask = resolveTask(task, 'x86', 'intel-nuc', resolveListeners);
+			const newTask = resolveTask(task, 'amd64', 'intel-nuc', resolveListeners);
 			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
-		}).then((image: LocalImage) => {
-			expect(image)
-				.to.have.property('successful')
-				.that.equals(true);
-			return checkExists(image.name!);
-		});
+		})
+			.then((image: LocalImage) => {
+				expect(image)
+					.to.have.property('successful')
+					.that.equals(true);
+				return checkExists(image.name!);
+			})
+			.then((inspect: any) => {
+				expect(inspect)
+					.to.have.property('Architecture')
+					.that.equals('amd64');
+			});
+	});
+
+	it('should correctly build a resolved project for a different platform', async function() {
+		const versionOutput = await docker.version();
+		const expectedArch = semver.satisfies(
+			semver.coerce(versionOutput.ApiVersion),
+			'<1.38.0',
+		)
+			? versionOutput.Arch
+			: '386';
+		const task: BuildTask = {
+			external: false,
+			resolved: false,
+			buildStream: fileToTarPack('test/test-files/platformProject.tar'),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+			buildMetadata,
+		};
+		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			const newTask = resolveTask(task, 'i386', 'qemux86', resolveListeners);
+			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
+		})
+			.then((image: LocalImage) => {
+				expect(image)
+					.to.have.property('successful')
+					.that.equals(true);
+				return checkExists(image.name!);
+			})
+			.then((inspect: any) => {
+				expect(inspect)
+					.to.have.property('Architecture')
+					.that.equals(expectedArch);
+			});
 	});
 });
 
