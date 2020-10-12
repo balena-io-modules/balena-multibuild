@@ -292,13 +292,13 @@ describe('Invalid build input', () => {
 			.then(() => {
 				throw new Error('Error not thrown on null buildStream input');
 			})
-			.catch(BuildProcessError, () => {
-				// This is what we want
-			})
 			.catch(e => {
-				throw new Error(
-					'Incorrect error thrown on null buildStream input: ' + e,
-				);
+				// This is what we want
+				if (!(e instanceof BuildProcessError)) {
+					throw new Error(
+						'Incorrect error thrown on null buildStream input: ' + e,
+					);
+				}
 			});
 	});
 });

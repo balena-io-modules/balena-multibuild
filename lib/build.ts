@@ -1,4 +1,3 @@
-import * as Promise from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import { Builder, BuildHooks, FromTagInfo } from 'resin-docker-build';
