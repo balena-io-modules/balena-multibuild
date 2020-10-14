@@ -258,6 +258,7 @@ describe('Resolved project building', () => {
 			serviceName: 'test',
 			streamHook: streamPrinter,
 			buildMetadata,
+			dockerOpts: { pull: true },
 		};
 		return new Promise((resolve, reject) => {
 			const resolveListeners = {
