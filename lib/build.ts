@@ -1,7 +1,7 @@
-import * as Promise from 'bluebird';
 import * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import { Builder, BuildHooks, FromTagInfo } from 'resin-docker-build';
+import * as semver from 'semver';
 import * as Stream from 'stream';
 
 import { SecretsPopulationMap } from './build-secrets';
@@ -90,20 +90,36 @@ const generateLabels = (task: BuildTask): { labels?: Dictionary<string> } => {
  * @param docker The handle to the docker daemon
  * @return a promise which resolves to a LocalImage which points to the produced image
  */
-export function runBuildTask(
+export async function runBuildTask(
 	task: BuildTask,
 	docker: Dockerode,
 	registrySecrets: RegistrySecrets,
 	secrets?: SecretsPopulationMap,
 	buildArgs?: Dictionary<string>,
 ): Promise<LocalImage> {
-	// First merge in the registry secrets (optionally being
-	// overridden by user input) so that they're available for
-	// both pull and build
-	task.dockerOpts = _.merge(
-		{ registryconfig: registrySecrets },
-		task.dockerOpts,
-	);
+	// check if docker supports propagating which platform to build for
+	// NOTE: docker api version 1.34 actually introduced platform to the
+	// api but it was broken until fixed in
+	// https://github.com/moby/moby/commit/7f334d3acfd7bfde900e16e393662587b9ff74a1
+	// which is why we check for 1.38 here
+	const usePlatformOption: boolean =
+		!!task.dockerPlatform &&
+		semver.satisfies(
+			semver.coerce((await docker.version()).ApiVersion) || '0.0.0',
+			'>=1.38.0',
+		);
+
+	task.dockerOpts = {
+		// First merge in the registry secrets (optionally being
+		// overridden by user input) so that they're available for
+		// both pull and build
+		registryconfig: registrySecrets,
+		// then merge in the target platform to ensure pullExternal
+		// also considers it
+		...(usePlatformOption ? { platform: task.dockerPlatform } : {}),
+		...task.dockerOpts,
+	};
+
 	if (task.external) {
 		// Handle this separately
 		return pullExternal(task, docker);
