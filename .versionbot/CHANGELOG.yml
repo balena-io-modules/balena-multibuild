@@ -1,4 +1,17 @@
 - commits:
+    - subject: Add platform in runBuildTask
+      hash: 05b5119b730dc5dc20a50a17e549a3bb6929d9fa
+      body: |
+        to cover full module api
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+  version: 4.9.0
+  date: 2020-10-14T16:13:39.621Z
+- commits:
     - subject: Only use platform if docker host supports api version >=1.38
       hash: 6769e99cdd54c40b76ea3afa2f4773f6fe96c3cc
       body: ''
