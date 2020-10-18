@@ -109,16 +109,16 @@ export async function runBuildTask(
 			'>=1.38.0',
 		);
 
-	task.dockerOpts = {
+	task.dockerOpts = _.merge(
 		// First merge in the registry secrets (optionally being
 		// overridden by user input) so that they're available for
 		// both pull and build
-		registryconfig: registrySecrets,
+		{ registryconfig: registrySecrets },
 		// then merge in the target platform to ensure pullExternal
 		// also considers it
-		...(usePlatformOption ? { platform: task.dockerPlatform } : {}),
-		...task.dockerOpts,
-	};
+		usePlatformOption ? { platform: task.dockerPlatform } : {},
+		task.dockerOpts,
+	);
 
 	if (task.external) {
 		// Handle this separately
