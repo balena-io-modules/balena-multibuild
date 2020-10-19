@@ -265,6 +265,11 @@ describe('Resolved project building', () => {
 				error: [reject],
 			};
 			const newTask = resolveTask(task, 'i386', 'qemux86', resolveListeners);
+
+			// also test that a `platform: undefined` value in `task.dockerOpts`
+			// does not override a valid value in `task.dockerPlatform`
+			task.dockerOpts.platform = undefined;
+
 			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
 		})
 			.then((image: LocalImage) => {
