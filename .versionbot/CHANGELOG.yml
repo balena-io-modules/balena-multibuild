@@ -1,4 +1,14 @@
 - commits:
+    - subject: Avoid overwriting docker build options with undefined values
+      hash: 7055071d5ab391cb5e9d8f0beb9259e962471aef
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 4.9.1
+  date: 2020-10-19T12:15:45.035Z
+- commits:
     - subject: Add platform in runBuildTask
       hash: 05b5119b730dc5dc20a50a17e549a3bb6929d9fa
       body: |
