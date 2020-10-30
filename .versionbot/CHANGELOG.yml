@@ -1,4 +1,16 @@
 - commits:
+    - subject: >-
+        Allow users' registry secrets (from build tar stream) to override
+        balena's
+      hash: 1231d927e5c91ed27bc3cc479957d13de404255e
+      body: ''
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Paulo Castro
+  version: 4.10.0
+  date: 2020-10-30T02:23:27.960Z
+- commits:
     - subject: Avoid overwriting docker build options with undefined values
       hash: 7055071d5ab391cb5e9d8f0beb9259e962471aef
       body: ''
