@@ -37,7 +37,7 @@ export interface RegistrySecrets {
 
 // This is the only known URL to work with the Dockerode
 // 'registryconfig' option to refer to the Docker Hub
-const CANONICAL_HUB_URL = 'https://index.docker.io/v1/';
+export const CANONICAL_HUB_URL = 'https://index.docker.io/v1/';
 
 /**
  * JSON schema validator for the private registry "secrets" (username and
