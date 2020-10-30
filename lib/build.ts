@@ -110,14 +110,11 @@ export async function runBuildTask(
 		);
 
 	task.dockerOpts = _.merge(
-		// First merge in the registry secrets (optionally being
-		// overridden by user input) so that they're available for
-		// both pull and build
-		{ registryconfig: registrySecrets },
-		// then merge in the target platform to ensure pullExternal
-		// also considers it
 		usePlatformOption ? { platform: task.dockerPlatform } : {},
 		task.dockerOpts,
+		// Merge registry secrets (from the build tar stream) last,
+		// so that users' Dockerhub secrets may override balena's.
+		{ registryconfig: registrySecrets },
 	);
 
 	if (task.external) {
