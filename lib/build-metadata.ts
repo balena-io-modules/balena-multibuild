@@ -139,7 +139,7 @@ export class BuildMetadata {
 				if (foundType! === MetadataFileType.Json) {
 					value = JSON.parse(bufData.toString());
 				} else {
-					value = jsYaml.safeLoad(bufData.toString());
+					value = jsYaml.load(bufData.toString());
 				}
 
 				result = parsedBalenaYml.decode(value);
@@ -197,7 +197,7 @@ export class BuildMetadata {
 			let maybeSecrets: unknown;
 			try {
 				if (foundType! === MetadataFileType.Yaml) {
-					maybeSecrets = jsYaml.safeLoad(bufData.toString());
+					maybeSecrets = jsYaml.load(bufData.toString());
 				} else {
 					maybeSecrets = JSON.parse(bufData.toString());
 				}

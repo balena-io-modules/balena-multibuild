@@ -28,7 +28,7 @@ import {
 } from '../lib/';
 
 const defaultComposition = compose.normalize(
-	jsYaml.safeLoad(compose.defaultComposition()),
+	jsYaml.load(compose.defaultComposition()),
 );
 
 const multipleComposition = compose.normalize({
