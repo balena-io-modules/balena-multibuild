@@ -16,10 +16,10 @@ buildSteps: &buildSteps
         - ./node-*
 
 jobs:
-  'node-8':
+  'node-14':
     docker:
-      - image: circleci/node:8
-    working_directory: ~/node-8
+      - image: circleci/node:14
+    working_directory: ~/node-14
     steps: *buildSteps
 
   'node-10':
@@ -38,6 +38,6 @@ workflows:
   version: 2
   build:
     jobs:
-      - 'node-8'
+      - 'node-14'
       - 'node-10'
       - 'node-12'
