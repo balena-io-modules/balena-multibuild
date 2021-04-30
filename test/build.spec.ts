@@ -256,6 +256,37 @@ describe('Resolved project building', () => {
 					.that.equals(expectedArch);
 			});
 	});
+
+	it.only('should correctly build a resolved project when task.dockerPlatform is "none"', async function () {
+		const task: BuildTask = {
+			external: false,
+			resolved: false,
+			buildStream: fileToTarPack('test/test-files/platformProject.tar'),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+			buildMetadata,
+			dockerOpts: { pull: true },
+			dockerPlatform: 'none',
+		};
+		const image = await new Promise<LocalImage>((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			const newTask = resolveTask(task, 'i386', 'qemux86', resolveListeners);
+
+			// also test that a `platform: undefined` value in `task.dockerOpts`
+			// does not override a valid value in `task.dockerPlatform`
+			task.dockerOpts.platform = undefined;
+
+			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
+		});
+		console.error(`${JSON.stringify(image, null, 4)}`);
+		expect(image).to.have.property('successful').that.equals(true);
+		const imageInspectInfo = await checkExists(image.name!);
+		expect(imageInspectInfo)
+			.to.have.property('Architecture')
+			.that.equals('amd64');
+	});
 });
 
 describe('Invalid build input', () => {
