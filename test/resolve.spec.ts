@@ -28,7 +28,7 @@ describe('Project resolution', () => {
 			buildMetadata,
 		};
 
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			const resolveListeners = {
 				error: [reject],
 				end: [
@@ -84,7 +84,7 @@ describe('Project resolution', () => {
 			buildMetadata,
 		};
 
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			const resolveListeners = {
 				error: [reject],
 				end: [
@@ -118,7 +118,7 @@ describe('Project resolution', () => {
 			buildMetadata,
 		};
 
-		return new Promise((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			const resolveListeners = {
 				error: [reject],
 				end: [
