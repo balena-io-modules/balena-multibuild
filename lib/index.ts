@@ -16,11 +16,11 @@
  */
 
 import * as Bluebird from 'bluebird';
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as Compose from 'resin-compose-parse';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
@@ -34,7 +34,7 @@ import {
 	removeSecrets,
 	SecretsPopulationMap,
 } from './build-secrets';
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 import * as contracts from './contracts';
 import {
 	BuildProcessError,
@@ -43,10 +43,10 @@ import {
 	SecretRemovalError,
 	TarError,
 } from './errors';
-import { LocalImage } from './local-image';
+import type { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
 import { posixContains } from './path-utils';
-import { RegistrySecrets } from './registry-secrets';
+import type { RegistrySecrets } from './registry-secrets';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 

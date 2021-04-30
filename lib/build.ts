@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import { Builder, BuildHooks, FromTagInfo } from 'resin-docker-build';
 import * as semver from 'semver';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 
-import { SecretsPopulationMap } from './build-secrets';
-import { BuildTask } from './build-task';
+import type { SecretsPopulationMap } from './build-secrets';
+import type { BuildTask } from './build-task';
 import { BuildProcessError } from './errors';
 import { pullExternal } from './external';
 import { LocalImage } from './local-image';
-import { RegistrySecrets } from './registry-secrets';
+import type { RegistrySecrets } from './registry-secrets';
 
 function taskHooks(
 	task: BuildTask,

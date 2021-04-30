@@ -16,10 +16,10 @@
  */
 import * as Bluebird from 'bluebird';
 import { DockerProgress } from 'docker-progress';
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 import { BuildProcessError } from './errors';
 import { LocalImage } from './local-image';
 import { getAuthConfigObj } from './registry-secrets';

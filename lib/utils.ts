@@ -17,10 +17,10 @@
 import * as _ from 'lodash';
 import * as tar from 'tar-stream';
 
-import { ImageDescriptor } from 'resin-compose-parse';
+import type { ImageDescriptor } from 'resin-compose-parse';
 
-import BuildMetadata from './build-metadata';
-import { BuildTask } from './build-task';
+import type BuildMetadata from './build-metadata';
+import type { BuildTask } from './build-task';
 
 /**
  * Given a composition, generate the set of build tasks which this module

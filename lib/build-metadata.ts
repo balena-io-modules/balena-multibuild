@@ -21,7 +21,7 @@ import { reporter } from 'io-ts-reporters';
 import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
 import * as Path from 'path';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 
 import { ImageRemovalError } from './errors';
 

@@ -16,7 +16,7 @@
  */
 import * as crypto from 'crypto';
 import * as dockerfileTemplate from 'dockerfile-template';
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 import * as t from 'io-ts';
 import * as _ from 'lodash';
 import { fs } from 'mz';
@@ -24,7 +24,7 @@ import * as path from 'path';
 import { Builder } from 'resin-docker-build';
 import * as tar from 'tar-stream';
 
-import BuildMetadata from '../build-metadata';
+import type BuildMetadata from '../build-metadata';
 import { BuildSecretMissingError, SecretPopulationError } from '../errors';
 import { PermissiveVarList, VarList } from '../validation-types/varlist';
 

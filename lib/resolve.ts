@@ -16,9 +16,9 @@
  */
 import * as _ from 'lodash';
 import * as Resolve from 'resin-bundle-resolve';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 
 import { ResolveListeners } from 'resin-bundle-resolve';
 export { ResolveListeners };

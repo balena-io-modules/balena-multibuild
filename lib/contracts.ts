@@ -18,7 +18,7 @@ import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
 import * as TarUtils from 'tar-utils';
 
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 import { ContractValidationError, NonUniqueContractNameError } from './errors';
 
 export const CONTRACT_TYPE = 'sw.container';
