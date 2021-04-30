@@ -67,3 +67,44 @@ export function generateBuildTasks(
 		}
 	});
 }
+
+/**
+ * Separate string containing registry and image name into its parts.
+ * Example:
+ *   getRegistryAndName('registry.balena-staging.com/resin/rpi')
+ *   -> { registry: "registry.balena-staging.com", imageName: "resin/rpi" }
+ *
+ * This function was copied here from the `docker-toolbelt` module because it
+ * was the only reason for `resin-multibuild` and the balena CLI to import
+ * that module. TODO: modernize the `docker-toolbelt` module, including
+ * deleting legacy code and converting it to TypeScript.
+ */
+export function getRegistryAndName(image: string) {
+	// Matches (registry)/(repo)(optional :tag or @digest)
+	// regex adapted from Docker's source code:
+	// https://github.com/docker/distribution/blob/release/2.7/reference/normalize.go#L62
+	// https://github.com/docker/distribution/blob/release/2.7/reference/regexp.go#L44
+
+	const match = image.match(
+		/^(?:(localhost|.*?[.:].*?)\/)?(.+?)(?::(.*?))?(?:@(.*?))?$/,
+	);
+	if (!match) {
+		throw new Error(`Could not parse image "${image}"`);
+	}
+	const [, registry, imageName, tag, digest] = match;
+	const tagName = !digest && !tag ? 'latest' : tag;
+	const digestMatch = digest?.match(
+		/^[A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*:[0-9a-f-A-F]{32,}$/,
+	);
+	if (!imageName || (digest && !digestMatch)) {
+		throw new Error(
+			'Invalid image name, expected [domain.tld/]repo/image[:tag][@digest] format',
+		);
+	}
+	return {
+		registry,
+		imageName,
+		tagName,
+		digest,
+	};
+}
