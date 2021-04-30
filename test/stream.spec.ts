@@ -41,7 +41,7 @@ const checkIsInStream = (
 		const extract = tar.extract();
 
 		extract.on('entry', (header, stream, next) => {
-			_.remove(filenames, f => f === header.name);
+			_.remove(filenames, (f) => f === header.name);
 
 			stream.on('data', _.noop);
 			stream.on('end', next);
@@ -63,10 +63,10 @@ describe('Stream splitting', () => {
 
 		const stream = fs.createReadStream('test/test-files/stream/project.tar');
 
-		return splitBuildStream(comp, stream).then(tasks => {
+		return splitBuildStream(comp, stream).then((tasks) => {
 			expect(tasks).to.have.length(2);
-			return Bluebird.map(tasks, task => {
-				return checkIsInStream(task.buildStream, 'Dockerfile').then(found => {
+			return Bluebird.map(tasks, (task) => {
+				return checkIsInStream(task.buildStream, 'Dockerfile').then((found) => {
 					expect(found).to.equal(true);
 				});
 			});
@@ -79,10 +79,10 @@ describe('Stream splitting', () => {
 
 		const stream = fs.createReadStream('test/test-files/stream/project.tar');
 
-		return splitBuildStream(comp, stream).then(tasks => {
+		return splitBuildStream(comp, stream).then((tasks) => {
 			expect(tasks).to.have.length(2);
-			return Bluebird.map(tasks, task => {
-				return checkIsInStream(task.buildStream, 'Dockerfile').then(found => {
+			return Bluebird.map(tasks, (task) => {
+				return checkIsInStream(task.buildStream, 'Dockerfile').then((found) => {
 					expect(found).to.equal(true);
 				});
 			});
@@ -97,17 +97,17 @@ describe('Stream splitting', () => {
 			'test/test-files/stream/shared-root-context.tar',
 		);
 
-		return splitBuildStream(comp, stream).then(tasks => {
+		return splitBuildStream(comp, stream).then((tasks) => {
 			expect(tasks).to.have.length(2);
 
-			return Bluebird.map(tasks, task => {
+			return Bluebird.map(tasks, (task) => {
 				if (task.context === './') {
 					return checkIsInStream(task.buildStream, [
 						'Dockerfile',
 						'test1/Dockerfile',
-					]).then(found => expect(found).to.equal(true));
+					]).then((found) => expect(found).to.equal(true));
 				} else {
-					return checkIsInStream(task.buildStream, 'Dockerfile').then(found =>
+					return checkIsInStream(task.buildStream, 'Dockerfile').then((found) =>
 						expect(found).to.equal(true),
 					);
 				}
@@ -116,7 +116,7 @@ describe('Stream splitting', () => {
 	});
 
 	describe('Specifying a Dockerfile', () => {
-		it('should throw an error when a build object does not contain a context and dockerfile', done => {
+		it('should throw an error when a build object does not contain a context and dockerfile', (done) => {
 			const composeObj = require('../../test/test-files/stream/docker-compose-specified-dockerfile-no-context.json');
 			const comp = Compose.normalize(composeObj);
 

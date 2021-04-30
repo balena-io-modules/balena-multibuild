@@ -34,7 +34,7 @@ class StreamOutputParser {
 	public outputLines: string[] = [];
 
 	public captureOutput(stream: Stream.Readable) {
-		stream.on('data', data => this.outputLines.push(data.toString()));
+		stream.on('data', (data) => this.outputLines.push(data.toString()));
 	}
 }
 
@@ -68,19 +68,15 @@ describe('performBuilds()', () => {
 			balenaEngineTmpPath,
 		);
 		const image: LocalImage = images[0];
-		expect(image)
-			.to.have.property('successful')
-			.that.equals(true);
-		expect(image)
-			.to.have.property('layers')
-			.that.is.an('array');
+		expect(image).to.have.property('successful').that.equals(true);
+		expect(image).to.have.property('layers').that.is.an('array');
 
 		const imageInspectInfo = await checkExists(image.name!);
 		// tslint:disable-next-line: no-unused-expression
 		expect(imageInspectInfo).to.be.an('object').that.is.not.empty;
 
 		const relevantLines: string[] = outParser.outputLines.filter(
-			value =>
+			(value) =>
 				value.includes('RUN cat /run/secrets/my-secret.txt') ||
 				value.includes('abc\n'),
 		);

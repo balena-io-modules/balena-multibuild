@@ -60,7 +60,7 @@ export function resolveTask(
 	// Workaround to deal with timing issues when resolution takes longer.
 	// Promise ensures that task is resolved before build process continues.
 	let resolveTaskPromise: () => void;
-	task.resolvedPromise = new Promise(resolve => {
+	task.resolvedPromise = new Promise((resolve) => {
 		resolveTaskPromise = resolve;
 	});
 

@@ -33,7 +33,7 @@ export function generateBuildTasks(
 	images: ImageDescriptor[],
 	buildMetadata: BuildMetadata,
 ): BuildTask[] {
-	return _.map(images, img => {
+	return _.map(images, (img) => {
 		if (_.isString(img.image)) {
 			return {
 				external: true,

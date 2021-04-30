@@ -43,7 +43,7 @@ const convert = (value: unknown): VarList | undefined => {
 	}
 	if (_.isArray(value)) {
 		const varList: VarList = {};
-		_.each(value as string[], str => {
+		_.each(value as string[], (str) => {
 			const match = str.match(stringRegex);
 			if (match == null) {
 				return;
@@ -72,11 +72,11 @@ export const PermissiveVarList = new t.Type<VarList, AcceptedVarList, unknown>(
 );
 
 function validateStringArray(arr: unknown[]): boolean {
-	if (!_.every(arr, a => _.isString(a))) {
+	if (!_.every(arr, (a) => _.isString(a))) {
 		return false;
 	}
 
 	// Perform a regex on every value to make sure it's in the
 	// correct format
-	return _.every(arr as string[], a => stringRegex.test(a));
+	return _.every(arr as string[], (a) => stringRegex.test(a));
 }

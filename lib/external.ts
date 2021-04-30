@@ -78,7 +78,7 @@ export function pullExternal(
 			image.projectType = 'external service';
 			return image;
 		})
-		.catch(e => {
+		.catch((e) => {
 			const image = new LocalImage(docker, null, task.serviceName, {
 				external: true,
 				successful: false,

@@ -136,7 +136,7 @@ export class LocalImage {
 	 */
 	public deleteImage(): Promise<void> {
 		const image = this.getImage();
-		return image.remove().catch(e => {
+		return image.remove().catch((e) => {
 			throw new ImageRemovalError(e);
 		});
 	}

@@ -59,12 +59,8 @@ describe('Project building', () => {
 		};
 
 		const image = await runBuildTask(task, docker, secretMap, buildVars);
-		expect(image)
-			.to.have.property('successful')
-			.that.equals(true);
-		expect(image)
-			.to.have.property('layers')
-			.that.is.an('array');
+		expect(image).to.have.property('successful').that.equals(true);
+		expect(image).to.have.property('layers').that.is.an('array');
 		expect(image)
 			.to.have.property('baseImageTags')
 			.that.is.an('array')
@@ -87,9 +83,7 @@ describe('Project building', () => {
 		};
 
 		const image = await runBuildTask(task, docker, secretMap, buildVars);
-		expect(image)
-			.to.have.property('successful')
-			.that.equals(false);
+		expect(image).to.have.property('successful').that.equals(false);
 		expect(image)
 			.to.have.property('layers')
 			.that.is.an('array')
@@ -119,9 +113,7 @@ describe('Project building', () => {
 
 		const image = await runBuildTask(task, docker, secretMap, buildVars);
 		expect(image).to.not.have.property('name');
-		expect(image)
-			.to.have.property('layers')
-			.that.has.length(0);
+		expect(image).to.have.property('layers').that.has.length(0);
 		expect(image)
 			.to.have.property('baseImageTags')
 			.that.is.an('array')
@@ -146,9 +138,7 @@ describe('Project building', () => {
 		};
 
 		const image = await runBuildTask(task, docker, secretMap, buildVars);
-		expect(image)
-			.to.have.property('name')
-			.that.equals('resin-multibuild-tag');
+		expect(image).to.have.property('name').that.equals('resin-multibuild-tag');
 		await checkExists('resin-multibuild-tag');
 	});
 
@@ -162,13 +152,9 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('startTime')
-				.that.is.a('number');
-			expect(image)
-				.to.have.property('endTime')
-				.that.is.a('number');
+		return runBuildTask(task, docker, secretMap, buildVars).then((image) => {
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 		});
 	});
 
@@ -182,13 +168,9 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('startTime')
-				.that.is.a('number');
-			expect(image)
-				.to.have.property('endTime')
-				.that.is.a('number');
+		return runBuildTask(task, docker, secretMap, buildVars).then((image) => {
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 		});
 	});
 
@@ -202,13 +184,9 @@ describe('Project building', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('startTime')
-				.that.is.a('number');
-			expect(image)
-				.to.have.property('endTime')
-				.that.is.a('number');
+		return runBuildTask(task, docker, secretMap, buildVars).then((image) => {
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 		});
 	});
 });
@@ -231,19 +209,15 @@ describe('Resolved project building', () => {
 			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
 		})
 			.then((image: LocalImage) => {
-				expect(image)
-					.to.have.property('successful')
-					.that.equals(true);
+				expect(image).to.have.property('successful').that.equals(true);
 				return checkExists(image.name!);
 			})
 			.then((inspect: any) => {
-				expect(inspect)
-					.to.have.property('Architecture')
-					.that.equals('amd64');
+				expect(inspect).to.have.property('Architecture').that.equals('amd64');
 			});
 	});
 
-	it('should correctly build a resolved project for a different platform', async function() {
+	it('should correctly build a resolved project for a different platform', async function () {
 		const versionOutput = await docker.version();
 		const expectedArch = semver.satisfies(
 			semver.coerce(versionOutput.ApiVersion),
@@ -273,9 +247,7 @@ describe('Resolved project building', () => {
 			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
 		})
 			.then((image: LocalImage) => {
-				expect(image)
-					.to.have.property('successful')
-					.that.equals(true);
+				expect(image).to.have.property('successful').that.equals(true);
 				return checkExists(image.name!);
 			})
 			.then((inspect: any) => {
@@ -298,7 +270,7 @@ describe('Invalid build input', () => {
 			.then(() => {
 				throw new Error('Error not thrown on null buildStream input');
 			})
-			.catch(e => {
+			.catch((e) => {
 				// This is what we want
 				if (!(e instanceof BuildProcessError)) {
 					throw new Error(
@@ -319,16 +291,10 @@ describe('External images', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('successful')
-				.that.equals(true);
-			expect(image)
-				.to.have.property('startTime')
-				.that.is.a('number');
-			expect(image)
-				.to.have.property('endTime')
-				.that.is.a('number');
+		return runBuildTask(task, docker, secretMap, buildVars).then((image) => {
+			expect(image).to.have.property('successful').that.equals(true);
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 			return checkExists(image.name!);
 		});
 	});
@@ -342,19 +308,13 @@ describe('External images', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('successful')
-				.that.equals(false);
+		return runBuildTask(task, docker, secretMap, buildVars).then((image) => {
+			expect(image).to.have.property('successful').that.equals(false);
 			expect(image).to.not.have.property('name');
 			// tslint:disable-next-line:no-unused-expression
 			expect(image).to.have.property('error').that.is.not.null;
-			expect(image)
-				.to.have.property('startTime')
-				.that.is.a('number');
-			expect(image)
-				.to.have.property('endTime')
-				.that.is.a('number');
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 		});
 	});
 
@@ -387,16 +347,10 @@ describe('External images', () => {
 			buildMetadata,
 		};
 
-		return runBuildTask(task, docker, secretMap, buildVars).then(image => {
-			expect(image)
-				.to.have.property('name')
-				.that.equals('alpine:latest');
-			expect(image)
-				.to.have.property('startTime')
-				.that.is.a('number');
-			expect(image)
-				.to.have.property('endTime')
-				.that.is.a('number');
+		return runBuildTask(task, docker, secretMap, buildVars).then((image) => {
+			expect(image).to.have.property('name').that.equals('alpine:latest');
+			expect(image).to.have.property('startTime').that.is.a('number');
+			expect(image).to.have.property('endTime').that.is.a('number');
 			return checkExists(image.name!);
 		});
 	});
@@ -483,7 +437,7 @@ describe('Specifying a dockerfile hook', () => {
 		expect(tasks).to.have.length(1);
 
 		// Test preprocessing hook by uppercasing the content.
-		const dockerFilePreprocessHook = content => {
+		const dockerFilePreprocessHook = (content) => {
 			return content.toUpperCase();
 		};
 

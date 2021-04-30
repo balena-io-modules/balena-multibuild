@@ -65,7 +65,7 @@ export function processContract(buffer: Buffer): Dictionary<unknown> {
 export function checkContractNamesUnique(tasks: BuildTask[]) {
 	const foundNames: { [contractName: string]: string[] } = {};
 	let unique = true;
-	tasks.forEach(t => {
+	tasks.forEach((t) => {
 		if (t.contract != null) {
 			const name = t.contract.name as string;
 			if (name in foundNames) {
@@ -79,7 +79,7 @@ export function checkContractNamesUnique(tasks: BuildTask[]) {
 
 	if (!unique) {
 		throw new NonUniqueContractNameError(
-			_.pickBy(foundNames, names => names.length > 1),
+			_.pickBy(foundNames, (names) => names.length > 1),
 		);
 	}
 }
