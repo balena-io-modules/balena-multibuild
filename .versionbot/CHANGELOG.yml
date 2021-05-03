@@ -1,4 +1,63 @@
 - commits:
+    - subject: Replace 'import' with 'import type' where possible
+      hash: 6fd832e2b9d9d15909d420d5e4183718f05bfee9
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: 'Update dependencies including js-yaml v4: safeLoad -> load'
+      hash: 2f4b08fecb815c029e9f73745c1c65b84e2e9700
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Update `typescript` and set target to ES2018 in tsconfig.json
+      hash: 339c0a1b9ff2c8a0b3d69aac062a48f21dad6aff
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Update mocha and replace mocha.opts with .mocharc.js
+      hash: 68b2db22e5e10365d89950fb78d3d6f1844ad434
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Move `@types/*` packages to `devDependencies` section
+      hash: 22f4eaa08df168a66b5d36b93098b0709ade5116
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Replace Node v8 with Node v14 in CI tests
+      hash: 863e1124989df97c4f30363e62f18b8336431b5c
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: 'Update @balena/lint and lint-staged, run prettify'
+      hash: d53827d499393571374988a63db7368c66d7d05f
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Add missing license headers and fix some copyright dates
+      hash: cf9444147d162bbbb1154b70dbbcb6f2b0f320fd
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 4.10.1
+  date: 2021-04-30T22:34:19.825Z
+- commits:
     - subject: >-
         Allow users' registry secrets (from build tar stream) to override
         balena's
