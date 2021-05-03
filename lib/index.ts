@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2019 Balena Ltd.
+ * Copyright 2017 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
  */
 
 import * as Bluebird from 'bluebird';
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as path from 'path';
 import * as Compose from 'resin-compose-parse';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
@@ -34,7 +34,7 @@ import {
 	removeSecrets,
 	SecretsPopulationMap,
 } from './build-secrets';
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 import * as contracts from './contracts';
 import {
 	BuildProcessError,
@@ -43,10 +43,10 @@ import {
 	SecretRemovalError,
 	TarError,
 } from './errors';
-import { LocalImage } from './local-image';
+import type { LocalImage } from './local-image';
 import * as PathUtils from './path-utils';
 import { posixContains } from './path-utils';
-import { RegistrySecrets } from './registry-secrets';
+import type { RegistrySecrets } from './registry-secrets';
 import { ResolveListeners, resolveTask } from './resolve';
 import * as Utils from './utils';
 
@@ -98,7 +98,7 @@ export async function fromImageDescriptors(
 			next: () => void,
 		): void => {
 			// Find the build context that this file should belong to
-			const matchingTasks = _.filter(tasks, task => {
+			const matchingTasks = _.filter(tasks, (task) => {
 				if (task.external) {
 					return false;
 				}
@@ -108,8 +108,8 @@ export async function fromImageDescriptors(
 			if (matchingTasks.length > 0) {
 				// Add the file to every matching context
 				TarUtils.streamToBuffer(stream)
-					.then(buf => {
-						matchingTasks.forEach(task => {
+					.then((buf) => {
+						matchingTasks.forEach((task) => {
 							const relative = path.posix.relative(task.context!, header.name);
 
 							// Contract is a special case, but we check
@@ -132,7 +132,7 @@ export async function fromImageDescriptors(
 						return null;
 					})
 					.catch(ContractError, reject)
-					.catch(e => reject(new TarError(e)));
+					.catch((e) => reject(new TarError(e)));
 			} else {
 				TarUtils.drainStream(stream)
 					.then(() => {
@@ -140,25 +140,25 @@ export async function fromImageDescriptors(
 						// return null here to keep bluebird happy
 						return null;
 					})
-					.catch(e => reject(new TarError(e)));
+					.catch((e) => reject(new TarError(e)));
 			}
 		};
 
 		extract.on('entry', entryFn);
 		extract.on('finish', () => {
-			_.each(tasks, task => {
+			_.each(tasks, (task) => {
 				if (!task.external) {
 					task.buildStream!.finalize();
 				}
 			});
 			resolve(tasks);
 		});
-		extract.on('error', e => {
+		extract.on('error', (e) => {
 			reject(new TarError(e));
 		});
 
 		newStream.pipe(extract);
-	}).then(tasks => {
+	}).then((tasks) => {
 		contracts.checkContractNamesUnique(tasks);
 		return tasks;
 	});
@@ -206,7 +206,7 @@ export function performResolution(
 	additionalTemplateVars?: Dictionary<string>,
 	dockerfilePreprocessHook?: (dockerfile: string) => string,
 ): BuildTask[] {
-	return tasks.map(task => {
+	return tasks.map((task) => {
 		task.architecture = architecture;
 		return resolveTask(
 			task,

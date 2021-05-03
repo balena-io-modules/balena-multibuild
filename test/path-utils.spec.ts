@@ -25,7 +25,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Path utilities', () => {
-	it('should correctly create relative paths', done => {
+	it('should correctly create relative paths', (done) => {
 		const testCases = [
 			// [from, to, expected]
 			['.', 'testDirectory', 'testDirectory'],
@@ -51,7 +51,7 @@ describe('Path utilities', () => {
 		done();
 	});
 
-	it('should correctly detect contained paths', done => {
+	it('should correctly detect contained paths', (done) => {
 		const testCases: Array<[string, string, boolean]> = [
 			// [path1, path2, expected]
 			['.', 'test', true],
@@ -79,7 +79,7 @@ describe('Path utilities', () => {
 		done();
 	});
 
-	it('should convert from posix to native and back without loss', done => {
+	it('should convert from posix to native and back without loss', (done) => {
 		const testCases = [
 			['..'],
 			['.'],

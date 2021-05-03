@@ -1,10 +1,27 @@
+/**
+ * @license
+ * Copyright 2019 Balena Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { Either, isLeft } from 'fp-ts/lib/Either';
 import * as t from 'io-ts';
 import { reporter } from 'io-ts-reporters';
 import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
 import * as Path from 'path';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
@@ -122,7 +139,7 @@ export class BuildMetadata {
 				if (foundType! === MetadataFileType.Json) {
 					value = JSON.parse(bufData.toString());
 				} else {
-					value = jsYaml.safeLoad(bufData.toString());
+					value = jsYaml.load(bufData.toString());
 				}
 
 				result = parsedBalenaYml.decode(value);
@@ -180,7 +197,7 @@ export class BuildMetadata {
 			let maybeSecrets: unknown;
 			try {
 				if (foundType! === MetadataFileType.Yaml) {
-					maybeSecrets = jsYaml.safeLoad(bufData.toString());
+					maybeSecrets = jsYaml.load(bufData.toString());
 				} else {
 					maybeSecrets = JSON.parse(bufData.toString());
 				}

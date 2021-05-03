@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2019 Balena Ltd.
+ * Copyright 2017 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ProgressCallback } from 'docker-progress';
-import * as Stream from 'stream';
-import * as tar from 'tar-stream';
-import BuildMetadata from './build-metadata';
+import type { ProgressCallback } from 'docker-progress';
+import type * as Stream from 'stream';
+import type * as tar from 'tar-stream';
+import type BuildMetadata from './build-metadata';
 
 /**
  * A structure representing a list of build tasks to be performed,

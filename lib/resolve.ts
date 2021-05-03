@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2019 Balena Ltd.
+ * Copyright 2017 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
  */
 import * as _ from 'lodash';
 import * as Resolve from 'resin-bundle-resolve';
-import * as Stream from 'stream';
+import type * as Stream from 'stream';
 
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 
 import { ResolveListeners } from 'resin-bundle-resolve';
 export { ResolveListeners };
@@ -60,7 +60,7 @@ export function resolveTask(
 	// Workaround to deal with timing issues when resolution takes longer.
 	// Promise ensures that task is resolved before build process continues.
 	let resolveTaskPromise: () => void;
-	task.resolvedPromise = new Promise(resolve => {
+	task.resolvedPromise = new Promise((resolve) => {
 		resolveTaskPromise = resolve;
 	});
 

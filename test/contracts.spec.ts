@@ -28,7 +28,7 @@ import {
 } from '../lib/';
 
 const defaultComposition = compose.normalize(
-	jsYaml.safeLoad(compose.defaultComposition()),
+	jsYaml.load(compose.defaultComposition()),
 );
 
 const multipleComposition = compose.normalize({
@@ -71,7 +71,7 @@ describe('Container contracts', () => {
 			.then(() => {
 				throw new Error('No error thrown for multiple contract files');
 			})
-			.catch(e => {
+			.catch((e) => {
 				expect(e).to.be.instanceOf(MultipleContractsForService);
 			});
 	});
@@ -120,7 +120,7 @@ describe('Container contracts', () => {
 			.then(() => {
 				throw new Error('No error thrown for same named contracts');
 			})
-			.catch(e => {
+			.catch((e) => {
 				expect(e).to.be.instanceOf(NonUniqueContractNameError);
 				expect(e.nonUniqueNames).to.deep.equal({
 					'container-contract': ['one', 'two'],
@@ -137,7 +137,7 @@ describe('Container contracts', () => {
 			.then(() => {
 				throw new Error('No error thrown for contract without name');
 			})
-			.catch(e => {
+			.catch((e) => {
 				expect(e).to.be.instanceOf(ContractValidationError);
 				expect(e.message).to.equal('Container contract must have a name field');
 			});
@@ -152,7 +152,7 @@ describe('Container contracts', () => {
 			.then(() => {
 				throw new Error('No error thrown for contract without type');
 			})
-			.catch(e => {
+			.catch((e) => {
 				expect(e).to.be.instanceOf(ContractValidationError);
 				expect(e.message).to.equal('Container contract must have a type field');
 			});
@@ -167,7 +167,7 @@ describe('Container contracts', () => {
 			.then(() => {
 				throw new Error('No error thrown for contract with incorrect type');
 			})
-			.catch(e => {
+			.catch((e) => {
 				expect(e).to.be.instanceOf(ContractValidationError);
 				expect(e.message).to.equal(
 					'Container contract must have a type of sw.container',

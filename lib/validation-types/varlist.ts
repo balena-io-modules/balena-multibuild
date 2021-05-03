@@ -1,3 +1,20 @@
+/**
+ * @license
+ * Copyright 2017 Balena Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as t from 'io-ts';
 import * as _ from 'lodash';
 
@@ -26,7 +43,7 @@ const convert = (value: unknown): VarList | undefined => {
 	}
 	if (_.isArray(value)) {
 		const varList: VarList = {};
-		_.each(value as string[], str => {
+		_.each(value as string[], (str) => {
 			const match = str.match(stringRegex);
 			if (match == null) {
 				return;
@@ -55,11 +72,11 @@ export const PermissiveVarList = new t.Type<VarList, AcceptedVarList, unknown>(
 );
 
 function validateStringArray(arr: unknown[]): boolean {
-	if (!_.every(arr, a => _.isString(a))) {
+	if (!_.every(arr, (a) => _.isString(a))) {
 		return false;
 	}
 
 	// Perform a regex on every value to make sure it's in the
 	// correct format
-	return _.every(arr as string[], a => stringRegex.test(a));
+	return _.every(arr as string[], (a) => stringRegex.test(a));
 }

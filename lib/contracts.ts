@@ -18,7 +18,7 @@ import * as jsYaml from 'js-yaml';
 import * as _ from 'lodash';
 import * as TarUtils from 'tar-utils';
 
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 import { ContractValidationError, NonUniqueContractNameError } from './errors';
 
 export const CONTRACT_TYPE = 'sw.container';
@@ -29,7 +29,7 @@ export function isContractFile(filename: string): boolean {
 }
 
 export function processContract(buffer: Buffer): Dictionary<unknown> {
-	const parsedBuffer = jsYaml.safeLoad(buffer.toString('utf8'));
+	const parsedBuffer = jsYaml.load(buffer.toString('utf8'));
 
 	if (parsedBuffer == null || typeof parsedBuffer !== 'object') {
 		throw new ContractValidationError('Container contract must be an object');
@@ -65,7 +65,7 @@ export function processContract(buffer: Buffer): Dictionary<unknown> {
 export function checkContractNamesUnique(tasks: BuildTask[]) {
 	const foundNames: { [contractName: string]: string[] } = {};
 	let unique = true;
-	tasks.forEach(t => {
+	tasks.forEach((t) => {
 		if (t.contract != null) {
 			const name = t.contract.name as string;
 			if (name in foundNames) {
@@ -79,7 +79,7 @@ export function checkContractNamesUnique(tasks: BuildTask[]) {
 
 	if (!unique) {
 		throw new NonUniqueContractNameError(
-			_.pickBy(foundNames, names => names.length > 1),
+			_.pickBy(foundNames, (names) => names.length > 1),
 		);
 	}
 }

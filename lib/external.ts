@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2019 Balena Ltd.
+ * Copyright 2017 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
  */
 import * as Bluebird from 'bluebird';
 import { DockerProgress } from 'docker-progress';
-import * as Dockerode from 'dockerode';
+import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 
-import { BuildTask } from './build-task';
+import type { BuildTask } from './build-task';
 import { BuildProcessError } from './errors';
 import { LocalImage } from './local-image';
 import { getAuthConfigObj } from './registry-secrets';
@@ -78,7 +78,7 @@ export function pullExternal(
 			image.projectType = 'external service';
 			return image;
 		})
-		.catch(e => {
+		.catch((e) => {
 			const image = new LocalImage(docker, null, task.serviceName, {
 				external: true,
 				successful: false,

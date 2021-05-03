@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2019 Balena Ltd.
+ * Copyright 2017 Balena Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 import * as _ from 'lodash';
 import * as tar from 'tar-stream';
 
-import { ImageDescriptor } from 'resin-compose-parse';
+import type { ImageDescriptor } from 'resin-compose-parse';
 
-import BuildMetadata from './build-metadata';
-import { BuildTask } from './build-task';
+import type BuildMetadata from './build-metadata';
+import type { BuildTask } from './build-task';
 
 /**
  * Given a composition, generate the set of build tasks which this module
@@ -33,7 +33,7 @@ export function generateBuildTasks(
 	images: ImageDescriptor[],
 	buildMetadata: BuildMetadata,
 ): BuildTask[] {
-	return _.map(images, img => {
+	return _.map(images, (img) => {
 		if (_.isString(img.image)) {
 			return {
 				external: true,

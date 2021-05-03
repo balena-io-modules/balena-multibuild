@@ -44,10 +44,10 @@ function getDockerOpts(extraOpts?: any): Dockerode.DockerOptions {
 		let cert: string;
 		let key: string;
 
-		const certs = ['ca.pem', 'cert.pem', 'key.pem'].map(f =>
+		const certs = ['ca.pem', 'cert.pem', 'key.pem'].map((f) =>
 			Path.join(process.env.DOCKER_CERT_PATH!, f),
 		);
-		[ca, cert, key] = certs.map(c => fs.readFileSync(c, 'utf-8'));
+		[ca, cert, key] = certs.map((c) => fs.readFileSync(c, 'utf-8'));
 		const parsed = Url.parse(process.env.DOCKER_HOST!);
 
 		dockerOpts = {
@@ -88,7 +88,7 @@ export async function checkExists(
 
 export function streamPrinter(stream: Stream.Readable) {
 	if (printOutput) {
-		stream.on('data', data => console.log(data.toString()));
+		stream.on('data', (data) => console.log(data.toString()));
 	}
 }
 
