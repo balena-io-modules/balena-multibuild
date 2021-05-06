@@ -23,8 +23,6 @@
 
 import * as ajv from 'ajv';
 
-import DockerToolbelt = require('docker-toolbelt');
-
 import { RegistrySecretValidationError } from './errors';
 export { RegistrySecretValidationError } from './errors';
 
@@ -159,9 +157,8 @@ export async function getAuthConfigObj(
 	imageName: string,
 	registryconfig: RegistrySecrets,
 ): Promise<RegistrySecrets | {}> {
-	const { registry } = await new DockerToolbelt({}).getRegistryAndName(
-		imageName,
-	);
+	const { getRegistryAndName } = await import('./utils');
+	const { registry } = getRegistryAndName(imageName);
 	// If the imageName was prefixed by a domain name or IP address,
 	// use it to query the registryconfig and return.
 	if (registry) {

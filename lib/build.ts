@@ -121,6 +121,8 @@ export async function runBuildTask(
 	// which is why we check for 1.38 here
 	const usePlatformOption: boolean =
 		!!task.dockerPlatform &&
+		// workaround for `balena build` with Docker v20.10
+		task.dockerPlatform !== 'none' &&
 		semver.satisfies(
 			semver.coerce((await docker.version()).ApiVersion) || '0.0.0',
 			'>=1.38.0',

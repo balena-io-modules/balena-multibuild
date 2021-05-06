@@ -56,6 +56,7 @@ export * from './errors';
 export * from './local-image';
 export * from './registry-secrets';
 export { resolveDockerPlatform } from './resolve';
+export { getRegistryAndName } from './utils';
 export { BalenaYml, ParsedBalenaYml };
 export { PathUtils };
 export { ResolveListeners };
@@ -318,6 +319,8 @@ export async function initializeBuildMetadata(
 	const hasSecrets = !_.isEmpty(secretMap);
 
 	if (hasSecrets) {
+		// TODO: investigate the purpose of this `populateSecrets`
+		// call. Could it be simply deleted?
 		await populateSecrets(docker, secretMap, architecture, tmpDir);
 	}
 

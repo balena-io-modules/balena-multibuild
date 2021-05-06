@@ -38,8 +38,7 @@ export function pullExternal(
 	task: BuildTask,
 	docker: Dockerode,
 ): Bluebird<LocalImage> {
-	const dockerProgress = new DockerProgress();
-	dockerProgress.docker.modem = docker.modem;
+	const dockerProgress = new DockerProgress({ docker });
 
 	const progressHook = _.isFunction(task.progressHook)
 		? task.progressHook
