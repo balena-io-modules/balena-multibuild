@@ -1,4 +1,23 @@
 - commits:
+    - subject: Bypass Docker image build API 'platform' option if its value is 'none'
+      hash: a98812ba901849eea9ea335b32c7df8ac2fe26a5
+      body: |
+        This allows the balena CLI to work around an issue with Docker v20.10.
+      footer:
+        Change-type: minor
+        change-type: minor
+      author: Paulo Castro
+    - subject: 'Remove dependency on docker-toolbelt, bump docker-progress'
+      hash: 94cd6d902d0ed7d8a9d85549360cc0fc3b745c84
+      body: |
+        Update docker-progress from 4.0.1 to 5.0.0
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 4.11.0
+  date: 2021-05-05T20:07:20.643Z
+- commits:
     - subject: Replace 'import' with 'import type' where possible
       hash: 6fd832e2b9d9d15909d420d5e4183718f05bfee9
       body: ''
