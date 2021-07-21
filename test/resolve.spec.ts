@@ -21,9 +21,9 @@ describe('Project resolution', () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: (fs.createReadStream(
+			buildStream: fs.createReadStream(
 				'test/test-files/templateProject.tar',
-			) as any) as Pack,
+			) as any as Pack,
 			serviceName: 'test',
 			buildMetadata,
 		};
@@ -53,9 +53,9 @@ describe('Project resolution', () => {
 			external: false,
 			resolved: false,
 			serviceName: 'test',
-			buildStream: (fs.createReadStream(
+			buildStream: fs.createReadStream(
 				'test/test-files/failedProject.tar',
-			) as any) as Pack,
+			) as any as Pack,
 			buildMetadata,
 		};
 
@@ -77,9 +77,9 @@ describe('Project resolution', () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: (fs.createReadStream(
+			buildStream: fs.createReadStream(
 				'test/test-files/additional-template-vars.tar',
-			) as any) as Pack,
+			) as any as Pack,
 			serviceName: 'test',
 			buildMetadata,
 		};
@@ -111,9 +111,9 @@ describe('Project resolution', () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: (fs.createReadStream(
+			buildStream: fs.createReadStream(
 				'test/test-files/templateProject.tar',
-			) as any) as Pack,
+			) as any as Pack,
 			serviceName: 'test',
 			buildMetadata,
 		};

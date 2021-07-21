@@ -77,7 +77,7 @@ function getDockerOpts(extraOpts?: any): Dockerode.DockerOptions {
 
 export function fileToTarPack(filename: string): tar.Pack {
 	// A little hacky, but it's fine for the tests
-	return (fs.createReadStream(filename) as any) as tar.Pack;
+	return fs.createReadStream(filename) as any as tar.Pack;
 }
 
 export async function checkExists(
