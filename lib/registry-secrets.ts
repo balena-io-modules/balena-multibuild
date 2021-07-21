@@ -26,6 +26,9 @@ import * as ajv from 'ajv';
 import { RegistrySecretValidationError } from './errors';
 export { RegistrySecretValidationError } from './errors';
 
+import { CANONICAL_HUB_URL } from './constants';
+export { CANONICAL_HUB_URL } from './constants';
+
 export interface RegistrySecrets {
 	[registryAddress: string]: {
 		username: string;
@@ -35,7 +38,6 @@ export interface RegistrySecrets {
 
 // This is the only known URL to work with the Dockerode
 // 'registryconfig' option to refer to the Docker Hub
-export const CANONICAL_HUB_URL = 'https://index.docker.io/v1/';
 
 /**
  * JSON schema validator for the private registry "secrets" (username and
