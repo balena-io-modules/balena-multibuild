@@ -1,4 +1,21 @@
 - commits:
+    - subject: 'chore: Update @balena/lint and re-lint'
+      hash: f4bb8e00e1b61909c4950ba4c160c6a0b00002fc
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Fix accidental 'it.only' left behind in test cases
+      hash: af2c969d6515fcb1bdbf773c3610cba6aeebc855
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 4.11.1
+  date: 2021-07-21T14:02:59.349Z
+- commits:
     - subject: Bypass Docker image build API 'platform' option if its value is 'none'
       hash: a98812ba901849eea9ea335b32c7df8ac2fe26a5
       body: |
