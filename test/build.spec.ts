@@ -257,7 +257,7 @@ describe('Resolved project building', () => {
 			});
 	});
 
-	it.only('should correctly build a resolved project when task.dockerPlatform is "none"', async function () {
+	it('should correctly build a resolved project when task.dockerPlatform is "none"', async function () {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
