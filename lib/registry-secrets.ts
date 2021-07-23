@@ -27,7 +27,6 @@ import { RegistrySecretValidationError } from './errors';
 export { RegistrySecretValidationError } from './errors';
 
 import { CANONICAL_HUB_URL } from './constants';
-export { CANONICAL_HUB_URL } from './constants';
 
 export interface RegistrySecrets {
 	[registryAddress: string]: {
