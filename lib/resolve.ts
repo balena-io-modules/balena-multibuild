@@ -45,15 +45,12 @@ export function resolveTask(
 	additionalVars: Dictionary<string> = {},
 	dockerfilePreprocessHook?: (content: string) => string,
 ): BuildTask {
-	// Workaround for Docker v20.10: skip platform resolution if the
-	// balena CLI sets `dockerPlatform` to 'none'.
-	if (task.dockerPlatform !== 'none') {
-		// set the platform / architecture for pulling multiarch images
-		const platform = resolveDockerPlatform(architecture);
-		if (platform) {
-			task.dockerPlatform = platform;
-		}
+	// set the platform / architecture for pulling multiarch images
+	const platform = resolveDockerPlatform(architecture);
+	if (platform) {
+		task.dockerPlatform = platform;
 	}
+
 	if (task.external) {
 		// No resolution needs to be performed for external images
 		return task;

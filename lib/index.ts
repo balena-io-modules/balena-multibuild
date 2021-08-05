@@ -60,6 +60,7 @@ export { getRegistryAndName } from './utils';
 export { BalenaYml, ParsedBalenaYml };
 export { PathUtils };
 export { ResolveListeners };
+export { CANONICAL_HUB_URL } from './constants';
 
 /**
  * Given a composition and stream which will output a valid tar archive,
