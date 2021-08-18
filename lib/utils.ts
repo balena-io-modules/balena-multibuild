@@ -47,6 +47,22 @@ export function generateBuildTasks(
 			if (img.image.context == null) {
 				throw new Error('Must have a context specified with a Dockerfile');
 			}
+			// It's possible to specify an image name as well as
+			// a build, but that doesn't make sense in a balena
+			// ecosystem, so we remove it.
+			// We also remove anything that goes into dockerOpts
+			const {
+				cache_from: cachefrom,
+				// TODO:
+				// https://github.com/apocas/dockerode/issues/605
+				// https://github.com/apocas/docker-modem/pull/133
+				//
+				// extra_hosts: extrahosts,
+				network: networkmode,
+				shm_size: shmsize,
+				target,
+				...imageProps
+			} = img.image
 			return _.merge(
 				{
 					external: false,
@@ -59,10 +75,21 @@ export function generateBuildTasks(
 				img.image.dockerfile != null
 					? { dockerfilePath: img.image.dockerfile }
 					: {},
-				// It's possible to specify an image name as well as
-				// a build, but that doesn't make sense in a balena
-				// ecosystem, so we remove it
-				_.omit(img.image, 'image'),
+				// Pass through args, context, labels, tag.
+				imageProps,
+				// Pass through build options from composition
+				// translating to dockerode ImageBuildOptions properties
+				{
+					dockerOpts: _.merge(
+						{},
+						cachefrom ? { cachefrom } : {},
+						networkmode ? { networkmode } : {},
+						shmsize ? { shmsize } : {},
+						target ? { target } : {},
+						// extrahosts ? { extrahosts } : {},
+					),
+				},
+				// TODO dockerPlatform (img.platform) ?
 			);
 		}
 	});
