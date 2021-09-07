@@ -567,39 +567,34 @@ describe('Specifying build options', () => {
 		});
 	});
 
-	// TODO:
-	// https://github.com/apocas/dockerode/issues/605
-	// https://github.com/apocas/docker-modem/pull/133
-	//
-	// it('should correctly apply "extra_hosts" configuration', async () => {
-	// 	const stream = fs.createReadStream(
-	// 		'test/test-files/buildOptionsProject.tar',
-	// 	);
+	it('should correctly apply "extra_hosts" configuration', async () => {
+		const stream = fs.createReadStream(
+			'test/test-files/buildOptionsProject.tar',
+		);
 
-	// 	const tasks = (await splitBuildStream(comp, stream)).filter((task) =>
-	// 		task.serviceName === 'extra_hosts' ? true : false,
-	// 	);
+		const tasks = (await splitBuildStream(comp, stream)).filter((task) =>
+			task.serviceName === 'extra_hosts' ? true : false,
+		);
 
-	// 	expect(tasks).to.have.length(1);
+		expect(tasks).to.have.length(1);
 
-	// 	let newTask: BuildTask;
-	// 	await new Promise((resolve, reject) => {
-	// 		const resolveListeners = {
-	// 			error: [reject],
-	// 		};
-	// 		newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
-	// 		resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
-	// 	}).then((image: LocalImage) => {
-	// 		expect(newTask).to.have.property('resolved', true);
-	// 		expect(newTask)
-	// 			.to.have.property('dockerOpts')
-	// 			.that.has.property('extrahosts')
-	// 			.that.deep.equals(['foo:8.8.8.8']);
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
+		}).then((image: LocalImage) => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask)
+				.to.have.property('dockerOpts')
+				.that.has.property('extrahosts')
+				.that.deep.equals(['foo:8.8.8.8']);
 
-	// 		expect(image)
-	// 			.to.not.have.property('error');
-	// 	});
-	// });
+			expect(image).to.not.have.property('error');
+		});
+	});
 
 	it('should correctly apply "target" configuration', async () => {
 		const stream = fs.createReadStream(

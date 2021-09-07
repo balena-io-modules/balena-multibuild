@@ -54,7 +54,7 @@
     "docker-progress": "^5.0.0",
     "dockerfile-ast": "^0.2.1",
     "dockerfile-template": "^0.2.0",
-    "dockerode": "^2.5.8",
+    "dockerode": "^3.3.1",
     "fp-ts": "^2.8.1",
     "io-ts": "^2.2.9",
     "io-ts-reporters": "^1.2.2",

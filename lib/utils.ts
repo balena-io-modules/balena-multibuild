@@ -53,11 +53,7 @@ export function generateBuildTasks(
 			// We also remove anything that goes into dockerOpts
 			const {
 				cache_from: cachefrom,
-				// TODO:
-				// https://github.com/apocas/dockerode/issues/605
-				// https://github.com/apocas/docker-modem/pull/133
-				//
-				// extra_hosts: extrahosts,
+				extra_hosts: extrahosts,
 				network: networkmode,
 				shm_size: shmsize,
 				target,
@@ -86,7 +82,7 @@ export function generateBuildTasks(
 						networkmode ? { networkmode } : {},
 						shmsize ? { shmsize } : {},
 						target ? { target } : {},
-						// extrahosts ? { extrahosts } : {},
+						extrahosts ? { extrahosts } : {},
 					),
 				},
 				// TODO dockerPlatform (img.platform) ?
