@@ -1,4 +1,20 @@
 - commits:
+    - subject: >-
+        Determine when to use the docker 'platform' flag based on composition of
+        Dockerfile and Docker api version.
+      hash: 202ae1eb977b55e01c269439a275c257b02bd1db
+      body: >
+        This change is part of the larger effort to enable mult-arch image
+        support.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Paul Jonathan <pj@balena-io>
+        signed-off-by: Paul Jonathan <pj@balena-io>
+      author: toochevere
+  version: 4.12.0
+  date: 2021-09-16T13:19:10.554Z
+- commits:
     - subject: 'chore: Update @balena/lint and re-lint'
       hash: f4bb8e00e1b61909c4950ba4c160c6a0b00002fc
       body: ''
