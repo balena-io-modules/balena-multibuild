@@ -217,18 +217,23 @@ describe('Resolved project building', () => {
 			});
 	});
 
-	it('should correctly build a resolved project for a different platform', async function () {
-		const versionOutput = await docker.version();
-		const expectedArch = semver.satisfies(
-			semver.coerce(versionOutput.ApiVersion),
-			'<1.38.0',
-		)
-			? versionOutput.Arch
-			: '386';
+	const dockerSupportsPlatform = async () =>
+		semver.satisfies(
+			semver.coerce((await docker.version()).ApiVersion),
+			'>=1.38.0',
+		);
+
+	it('should build using "platform" flag (v2 manifest) on Dockerhub', async () => {
+		if (!(await dockerSupportsPlatform())) {
+			console.log("skipped... Docker does not support 'platform'");
+			return;
+		}
+
+		// NOTE:  This test also covers the case of building for a different platform
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: fileToTarPack('test/test-files/platformProject.tar'),
+			buildStream: fileToTarPack('test/test-files/platformProjectWithV2.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 			buildMetadata,
@@ -251,41 +256,65 @@ describe('Resolved project building', () => {
 				return checkExists(image.name!);
 			})
 			.then((inspect: any) => {
-				expect(inspect)
-					.to.have.property('Architecture')
-					.that.equals(expectedArch);
+				expect(inspect).to.have.property('Architecture').that.equals('386');
 			});
 	});
 
-	it('should correctly build a resolved project when task.dockerPlatform is "none"', async function () {
+	it('should build without "platform" flag (v1 manifest)', async () => {
 		const task: BuildTask = {
 			external: false,
 			resolved: false,
-			buildStream: fileToTarPack('test/test-files/platformProject.tar'),
+			buildStream: fileToTarPack('test/test-files/platformProjectWithV1.tar'),
 			serviceName: 'test',
 			streamHook: streamPrinter,
 			buildMetadata,
 			dockerOpts: { pull: true },
-			dockerPlatform: 'none',
 		};
-		const image = await new Promise<LocalImage>((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			const resolveListeners = {
 				error: [reject],
 			};
-			const newTask = resolveTask(task, 'i386', 'qemux86', resolveListeners);
-
-			// also test that a `platform: undefined` value in `task.dockerOpts`
-			// does not override a valid value in `task.dockerPlatform`
-			task.dockerOpts.platform = undefined;
+			const newTask = resolveTask(task, 'amd64', 'intel-nuc', resolveListeners);
 
 			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
+		})
+			.then((image: LocalImage) => {
+				expect(image).to.have.property('successful').that.equals(true);
+				return checkExists(image.name!);
+			})
+			.then((inspect: any) => {
+				expect(inspect).to.have.property('Architecture').that.equals('amd64');
+			});
+	});
+
+	it('should build using "platform" flag (v2 manifest) on third party registry', async () => {
+		if (!(await dockerSupportsPlatform())) {
+			console.log("skipped... Docker does not support 'platform'");
+			return;
+		}
+
+		const task: BuildTask = {
+			external: false,
+			resolved: false,
+			buildStream: fileToTarPack(
+				'test/test-files/platformProjectWithV2grcio.tar',
+			),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+			buildMetadata,
+			dockerOpts: { pull: true },
+		};
+		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			const newTask = resolveTask(task, 'amd64', 'intel-nuc', resolveListeners);
+
+			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
+		}).then((image: LocalImage) => {
+			expect(image).to.have.property('successful').that.equals(true);
+			return checkExists(image.name!);
 		});
-		console.error(`${JSON.stringify(image, null, 4)}`);
-		expect(image).to.have.property('successful').that.equals(true);
-		const imageInspectInfo = await checkExists(image.name!);
-		expect(imageInspectInfo)
-			.to.have.property('Architecture')
-			.that.equals('amd64');
 	});
 });
 
