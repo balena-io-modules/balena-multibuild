@@ -27,7 +27,7 @@ import { BuildProcessError } from './errors';
 import { pullExternal } from './external';
 import { LocalImage } from './local-image';
 import type { RegistrySecrets } from './registry-secrets';
-import { getManifest, MEDIATYPE_MANIFEST_V1 } from './manifests';
+import { getManifest, MEDIATYPE_MANIFEST_LIST_V2 } from './manifests';
 
 function taskHooks(
 	task: BuildTask,
@@ -240,8 +240,8 @@ export async function runBuildTask(
 //
 //      + In the case of all images having a V2 manifest, we can simply pass the platform flag.
 //
-//      + In the case of having some V1 manifests, don't pass the platform flag.  Warn, but 
-//        let Docker close its eyes and hope for the best.  This opens the possibility for an 
+//      + In the case of having some V1 manifests, don't pass the platform flag.  Warn, but
+//        let Docker close its eyes and hope for the best.  This opens the possibility for an
 //        exec error, but also allows users to continue to use v1 images if they want to / need to.
 //
 async function checkAllowDockerPlatformHandling(
@@ -250,20 +250,18 @@ async function checkAllowDockerPlatformHandling(
 ): Promise<boolean> {
 	let imageReferences: string[];
 
-	const checkHasV1Manifest = async (repository: string) => {
+	const checkHasPlatformInfo = async (repository: string) => {
 		try {
 			const manifest = await getManifest(docker.modem, repository);
-			return manifest.Descriptor.mediaType === MEDIATYPE_MANIFEST_V1;
+			return manifest.Descriptor.mediaType === MEDIATYPE_MANIFEST_LIST_V2;
 		} catch {
 			// eat the exception... yummy!
 		}
 
 		console.log(
-			`Image manifest data unavailable for ${repository}. Platform support will be assumed.`,
+			`Image manifest data unavailable for ${repository}. No support for specifying platform.`,
 		);
-		// at this time, treat any errors as false (no v1 manifest)
-		// This will cause the `--platform` flag to get passed as if the image has
-		// platform support.
+		// at this time, treat any errors as false (no platform support)
 		return false;
 	};
 
@@ -311,32 +309,32 @@ async function checkAllowDockerPlatformHandling(
 		});
 	}
 
-	const v1Images: string[] = [];
-	const v2Images: string[] = [];
+	const imagesWithoutPlatformSupport: string[] = [];
+	const imagesWithPlatformSupport: string[] = [];
 
 	await Promise.all(
 		imageReferences.map(async (r) => {
-			const hasV1Manifest = await checkHasV1Manifest(r);
-			if (hasV1Manifest) {
-				v1Images.push(r);
+			const hasPlatformSupport = await checkHasPlatformInfo(r);
+			if (hasPlatformSupport) {
+				imagesWithPlatformSupport.push(r);
 			} else {
-				v2Images.push(r);
+				imagesWithoutPlatformSupport.push(r);
 			}
 		}),
 	);
 
-	if (v1Images.length === 0) {
-		// Only v2 images, let Docker receive `--platform`
+	if (imagesWithoutPlatformSupport.length === 0) {
+		// All images specify platform, let Docker receive `--platform`
 		return true;
-	} else if (v2Images.length > 0) {
-		// Mixed v1 and v2 images
+	} else if (imagesWithPlatformSupport.length > 0) {
+		// Mixed images
 		console.log(
 			'Warning: Dockerfile contains a mixes images that require a platform selection with ones that do not support it.\n' +
 				'The following images do not support platform selection:\n-' +
-				v1Images.join('\n-') +
+				imagesWithoutPlatformSupport.join('\n-') +
 				'\n\n' +
 				'The following images require platform selection:\n-' +
-				v2Images.join('\n-') +
+				imagesWithPlatformSupport.join('\n-') +
 				'\n\n' +
 				'To avoid a possible build error, the CLI has disabled platform selection. ' +
 				'As a result, the architecture of the machine where the Docker Engine ' +
@@ -345,10 +343,10 @@ async function checkAllowDockerPlatformHandling(
 				'update or replace the images that do not support platform selection.',
 		);
 	} else {
-		// Only old v1 images
+		// Only images without platform support
 		console.log(
 			'Warning: Dockerfile contains a images do not support platform selection.\n-' +
-				v1Images.join('\n-') +
+				imagesWithoutPlatformSupport.join('\n-') +
 				'\n\n' +
 				'To avoid a possible build error, the CLI has disabled platform selection. ' +
 				'As a result, the architecture of the machine where the Docker Engine ' +
