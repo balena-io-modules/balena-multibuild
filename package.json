@@ -1,6 +1,6 @@
 {
   "name": "resin-multibuild",
-  "version": "4.12.0",
+  "version": "4.12.1",
   "description": "Build a docker composition",
   "main": "build/index.js",
   "files": [
@@ -76,6 +76,6 @@
     }
   },
   "versionist": {
-    "publishedAt": "2021-09-16T13:19:10.623Z"
+    "publishedAt": "2021-09-17T00:44:29.685Z"
   }
 }

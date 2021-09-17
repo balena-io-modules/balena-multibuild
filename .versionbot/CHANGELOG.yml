@@ -1,5 +1,19 @@
 - commits:
     - subject: >-
+        Fix broken platform support which was comparing the wrong manifest media
+        type
+      hash: be37812fe1d0feb7e7e01c0ba23e4606abcf9b8e
+      body: ''
+      footer:
+        Signed-off-by: Paul Jonathan <pj@balena.io>
+        signed-off-by: Paul Jonathan <pj@balena.io>
+        Change-type: patch
+        change-type: patch
+      author: Paul Jonathan Zoulin
+  version: 4.12.1
+  date: 2021-09-17T00:44:29.617Z
+- commits:
+    - subject: >-
         Determine when to use the docker 'platform' flag based on composition of
         Dockerfile and Docker api version.
       hash: 202ae1eb977b55e01c269439a275c257b02bd1db
