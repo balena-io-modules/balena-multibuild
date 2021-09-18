@@ -248,7 +248,7 @@ async function checkAllowDockerPlatformHandling(
 	task: BuildTask,
 	docker: Dockerode,
 ): Promise<boolean> {
-	let imageReferences: string[];
+	const imageReferences: string[] = [];
 
 	const debug = task.logger ? task.logger.debug : () => undefined;
 	const warn = task.logger ? task.logger.warn : () => undefined;
@@ -269,7 +269,7 @@ async function checkAllowDockerPlatformHandling(
 	};
 
 	if (task.imageName) {
-		imageReferences = [task.imageName + !!task.tag ? `:${task.tag}` : ''];
+		imageReferences.push(task.imageName);
 	} else {
 		if (!task.dockerfile) {
 			// Sanity check
@@ -289,27 +289,15 @@ async function checkAllowDockerPlatformHandling(
 			debug(`${task.serviceName}: Dockerfile does not reference any images`);
 			return false;
 		}
-		imageReferences = [];
-		fromInstructions.forEach((inst) => {
-			const fromLineArguments = inst.getArguments();
-			if (fromLineArguments.length === 0) {
-				// bail out, no image specified?
-				return;
-			}
-
-			let imgRef = fromLineArguments[0].getValue();
-
-			// hacky way to ignore the --platform flag in the FROM line
-			// In that case, just get the next argument :-p
-			if (imgRef.startsWith('--platform')) {
-				if (fromLineArguments.length < 2) {
-					// bail out, no image specified?
-					return;
+		for (const inst of fromInstructions) {
+			for (const arg of inst.getArguments()) {
+				const val = arg.getValue();
+				if (!val.startsWith('--')) {
+					imageReferences.push(val);
+					break;
 				}
-				imgRef = fromLineArguments[1].getValue();
 			}
-			imageReferences.push(imgRef);
-		});
+		}
 	}
 
 	const imagesWithoutPlatformSupport: string[] = [];
