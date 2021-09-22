@@ -1,4 +1,22 @@
 - commits:
+    - subject: Fix external image references when fetching the image manifest
+      hash: 42766be3d4df67319e34ffcb3cb89af1dd51a4c0
+      body: |
+        Also implement a small refactoring to reduce lines of code.
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: 'Add Logger to BuildTask interface, use logger for multiarch warnings'
+      hash: ade73f3003d3a50340988fca8fea57756711312e
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+  version: 4.12.2
+  date: 2021-09-18T01:15:44.836Z
+- commits:
     - subject: >-
         Fix broken platform support which was comparing the wrong manifest media
         type
