@@ -138,4 +138,14 @@ export interface BuildTask {
 	 * progressing to next steps in the build process (workaround).
 	 */
 	resolvedPromise?: Promise<void>;
+
+	/** Logger to be used for events related to this build task */
+	logger?: Logger;
+}
+
+export interface Logger {
+	debug: (msg: string) => void;
+	error: (msg: string) => void;
+	info: (msg: string) => void;
+	warn: (msg: string) => void;
 }

@@ -248,7 +248,10 @@ async function checkAllowDockerPlatformHandling(
 	task: BuildTask,
 	docker: Dockerode,
 ): Promise<boolean> {
-	let imageReferences: string[];
+	const imageReferences: string[] = [];
+
+	const debug = task.logger ? task.logger.debug : () => undefined;
+	const warn = task.logger ? task.logger.warn : () => undefined;
 
 	const checkHasPlatformInfo = async (repository: string) => {
 		try {
@@ -258,19 +261,21 @@ async function checkAllowDockerPlatformHandling(
 			// eat the exception... yummy!
 		}
 
-		console.log(
-			`Image manifest data unavailable for ${repository}. No support for specifying platform.`,
+		debug(
+			`${task.serviceName}: Image manifest data unavailable for ${repository}`,
 		);
 		// at this time, treat any errors as false (no platform support)
 		return false;
 	};
 
 	if (task.imageName) {
-		imageReferences = [task.imageName + !!task.tag ? `:${task.tag}` : ''];
+		imageReferences.push(task.imageName);
 	} else {
 		if (!task.dockerfile) {
 			// Sanity check
-			console.log('Build task does not have an associated Dockerfile');
+			debug(
+				`${task.serviceName}: Build task does not have an associated Dockerfile`,
+			);
 			return false;
 		}
 		const { DockerfileParser } = await import('dockerfile-ast');
@@ -281,32 +286,18 @@ async function checkAllowDockerPlatformHandling(
 		);
 		if (fromInstructions.length === 0) {
 			// Sanity check
-			console.log(
-				'Build task associated Dockerfile does no reference any images',
-			);
+			debug(`${task.serviceName}: Dockerfile does not reference any images`);
 			return false;
 		}
-		imageReferences = [];
-		fromInstructions.forEach((inst) => {
-			const fromLineArguments = inst.getArguments();
-			if (fromLineArguments.length === 0) {
-				// bail out, no image specified?
-				return;
-			}
-
-			let imgRef = fromLineArguments[0].getValue();
-
-			// hacky way to ignore the --platform flag in the FROM line
-			// In that case, just get the next argument :-p
-			if (imgRef.startsWith('--platform')) {
-				if (fromLineArguments.length < 2) {
-					// bail out, no image specified?
-					return;
+		for (const inst of fromInstructions) {
+			for (const arg of inst.getArguments()) {
+				const val = arg.getValue();
+				if (!val.startsWith('--')) {
+					imageReferences.push(val);
+					break;
 				}
-				imgRef = fromLineArguments[1].getValue();
 			}
-			imageReferences.push(imgRef);
-		});
+		}
 	}
 
 	const imagesWithoutPlatformSupport: string[] = [];
@@ -327,33 +318,26 @@ async function checkAllowDockerPlatformHandling(
 		// All images specify platform, let Docker receive `--platform`
 		return true;
 	} else if (imagesWithPlatformSupport.length > 0) {
-		// Mixed images
-		console.log(
-			'Warning: Dockerfile contains a mixes images that require a platform selection with ones that do not support it.\n' +
-				'The following images do not support platform selection:\n-' +
-				imagesWithoutPlatformSupport.join('\n-') +
-				'\n\n' +
-				'The following images require platform selection:\n-' +
-				imagesWithPlatformSupport.join('\n-') +
-				'\n\n' +
-				'To avoid a possible build error, the CLI has disabled platform selection. ' +
-				'As a result, the architecture of the machine where the Docker Engine ' +
-				'is running will be used to select the platform when pulling upstream images ' +
-				'which may result in "exec format error" at runtime. To avoid this warning, ' +
-				'update or replace the images that do not support platform selection.',
-		);
-	} else {
-		// Only images without platform support
-		console.log(
-			'Warning: Dockerfile contains a images do not support platform selection.\n-' +
-				imagesWithoutPlatformSupport.join('\n-') +
-				'\n\n' +
-				'To avoid a possible build error, the CLI has disabled platform selection. ' +
-				'As a result, the architecture of the machine where the Docker Engine ' +
-				'is running will be used to select the platform when pulling upstream images ' +
-				'which may result in "exec format error" at runtime. To avoid this warning, ' +
-				'update or replace the images that do not support platform selection.',
-		);
+		// Here we know that the service references at least 2 images
+		// (at least 1 with platform support and at least 1 without platform
+		// support). Therefore the service is not an "external image service"
+		// (`task.imageName` must be falsy), and it must have a multi-stage
+		// Dockerfile that references at least 2 images.
+		warn(`\
+Service '${task.serviceName}':
+  Multi-stage Dockerfile found with a mix of base images that require
+  CPU architecture selection and base images that do not support it.
+  The following base images do not support CPU architecture selection:
+  - ${imagesWithoutPlatformSupport.join('\n  - ')}
+  The following base images require CPU architecture selection:
+  - ${imagesWithPlatformSupport.join('\n  - ')}
+  As a result, the CPU architecture of the machine where the Docker Engine
+  is running will be used by default to select base images that require
+  architecture selection. This may result in incorrect architecture selection
+  and "exec format error" at runtime. It is usually possible to override the
+  architecture in the FROM line with e.g. "FROM --platform=linux/arm/v7",
+  or by adding the sha256 digest of the image for a specific architecture
+  with e.g. "FROM debian@sha256:094f57...".`);
 	}
 
 	// Proceeding after warnings.  Docker will _not_ receive `--platform`
