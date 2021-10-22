@@ -17,7 +17,7 @@
 import * as _ from 'lodash';
 import * as tar from 'tar-stream';
 
-import type { ImageDescriptor } from 'resin-compose-parse';
+import type { ImageDescriptor } from '@balena/compose-parse';
 
 import type BuildMetadata from './build-metadata';
 import type { BuildTask } from './build-task';
@@ -26,7 +26,7 @@ import type { BuildTask } from './build-task';
  * Given a composition, generate the set of build tasks which this module
  * will proceed to build.
  *
- * @param composition The composition from resin-compose-parse
+ * @param composition The composition from @balena/compose-parse
  * @returns An array of tasks which make up this multicontainer build
  */
 export function generateBuildTasks(

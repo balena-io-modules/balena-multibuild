@@ -13,7 +13,7 @@ function splitBuildStream(composition: Composition, buildStream: ReadableStream)
 ```
 
 Given a Composition which conforms to the type from
-[resin-compose-parse](https://github.com/resin-io-modules/resin-compose-parse)
+[@balena/compose-parse](https://github.com/balena-io-modules/balena-compose-parse)
 and a stream which will produce a tar archive, split this tar archive into a set
 of build tasks which can then be further processed.
 
@@ -52,7 +52,7 @@ function. The fields for these functions are `streamHook` and `progressHook`.
 ```typescript
 import * as Promise from 'bluebird';
 
-import { Composition, normalize } from 'resin-compose-parse';
+import { Composition, normalize } from '@balena/compose-parse';
 import { splitBuildStream, performBuilds } from '@balena/multibuild';
 
 

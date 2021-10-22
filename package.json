@@ -61,7 +61,7 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.19",
     "resin-bundle-resolve": "^4.3.0",
-    "resin-compose-parse": "^2.4.0",
+    "@balena/compose-parse": "^3.0.0",
     "resin-docker-build": "^1.1.5",
     "semver": "^7.3.5",
     "tar-stream": "^2.1.3",

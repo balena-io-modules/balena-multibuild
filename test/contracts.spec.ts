@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { fs } from 'mz';
 
 import * as jsYaml from 'js-yaml';
-import * as compose from 'resin-compose-parse';
+import * as compose from '@balena/compose-parse';
 
 import {
 	ContractValidationError,
