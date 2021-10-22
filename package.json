@@ -1,5 +1,5 @@
 {
-  "name": "resin-multibuild",
+  "name": "@balena/multibuild",
   "version": "4.12.2",
   "description": "Build a docker composition",
   "main": "build/index.js",
@@ -16,19 +16,19 @@
     "build:common": "npm run clean && npm run lint",
     "copy-secrets": "ncp lib/build-secrets build/build-secrets --filter=\"build-secrets($|.Dockerfile.*)\"",
     "copy-secrets:test": "ncp lib/build-secrets build/lib/build-secrets --filter=\"build-secrets($|.Dockerfile.*)\"",
-    "docgen": "typedoc --ignoreCompilerErrors --out docs --name resin-multibuild --readme README.md lib/",
+    "docgen": "typedoc --ignoreCompilerErrors --out docs --name @balena/multibuild --readme README.md lib/",
     "test": "npm run build:test && mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/resin-io-modules/resin-multibuild.git"
+    "url": "git+https://github.com/balena-io-modules/balena-multibuild.git"
   },
-  "author": "Cameron Diver <cameron@resin.io>",
+  "author": "Balena Inc. <hello@balena.io>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/resin-io-modules/resin-multibuild/issues"
+    "url": "https://github.com/balena-io-modules/balena-multibuild/issues"
   },
-  "homepage": "https://github.com/resin-io-modules/resin-multibuild#readme",
+  "homepage": "https://github.com/balena-io-modules/balena-multibuild#readme",
   "devDependencies": {
     "@balena/lint": "^6.1.1",
     "@types/bluebird": "^3.5.32",
