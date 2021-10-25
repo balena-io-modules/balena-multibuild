@@ -1,4 +1,16 @@
 - commits:
+    - subject: Rename to @balena/multibuild
+      hash: e62e31c9462bb8c7511c527b3c25cb6c1887b961
+      body: ''
+      footer:
+        Change-type: major
+        change-type: major
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+  version: 5.0.0
+  date: 2021-10-25T16:28:16.359Z
+- commits:
     - subject: Fix external image references when fetching the image manifest
       hash: 42766be3d4df67319e34ffcb3cb89af1dd51a4c0
       body: |
