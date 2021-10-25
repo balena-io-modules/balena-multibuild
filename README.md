@@ -1,4 +1,4 @@
-# resin-multibuild
+# balena-multibuild
 
 This module is designed to make it easy to build a composition given a
 representation of this composition, and a tar stream. The output will be several
@@ -53,7 +53,7 @@ function. The fields for these functions are `streamHook` and `progressHook`.
 import * as Promise from 'bluebird';
 
 import { Composition, normalize } from 'resin-compose-parse';
-import { splitBuildStream, performBuilds } from 'resin-multibuild';
+import { splitBuildStream, performBuilds } from '@balena/multibuild';
 
 
 // Get a tar stream and composition from somewhere
