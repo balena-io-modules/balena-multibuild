@@ -50,15 +50,21 @@ export function generateBuildTasks(
 			// It's possible to specify an image name as well as
 			// a build, but that doesn't make sense in a balena
 			// ecosystem, so we remove it.
-			// We also remove anything that goes into dockerOpts
+			// TODO: should we allow image property to resolve:
+			// https://github.com/balena-io/balena-cli/issues/1874
 			const {
+				// We drop network_mode, since it doesn't make sense
+				// for the hosted builder and therefor should be
+				// excluded from the platform in general to ensure
+				// common experience.
+				network,
+				// Finally, take anything that goes into dockerOpts
 				cache_from: cachefrom,
 				extra_hosts: extrahosts,
-				network: networkmode,
 				shm_size: shmsize,
 				target,
 				...imageProps
-			} = img.image
+			} = img.image;
 			return _.merge(
 				{
 					external: false,
@@ -76,16 +82,15 @@ export function generateBuildTasks(
 				// Pass through build options from composition
 				// translating to dockerode ImageBuildOptions properties
 				{
-					dockerOpts: _.merge(
-						{},
-						cachefrom ? { cachefrom } : {},
-						networkmode ? { networkmode } : {},
-						shmsize ? { shmsize } : {},
-						target ? { target } : {},
-						extrahosts ? { extrahosts } : {},
-					),
+					dockerOpts: {
+						...(cachefrom ? { cachefrom } : {}),
+						...(shmsize ? { shmsize } : {}),
+						...(target ? { target } : {}),
+						...(extrahosts ? { extrahosts } : {}),
+					},
 				},
-				// TODO dockerPlatform (img.platform) ?
+				// TODO: There is img.platform, should we allow setting this
+				// to allow overwriting our platform selection logic?
 			);
 		}
 	});

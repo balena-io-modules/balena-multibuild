@@ -535,38 +535,6 @@ describe('Specifying build options', () => {
 	const composeObj = require('../../test/test-files/stream/docker-compose-build-options.json');
 	const comp = Compose.normalize(composeObj);
 
-	it('should correctly apply "network" configuration', async () => {
-		const stream = fs.createReadStream(
-			'test/test-files/buildOptionsProject.tar',
-		);
-
-		const tasks = (await splitBuildStream(comp, stream)).filter((task) =>
-			task.serviceName === 'network' ? true : false,
-		);
-
-		expect(tasks).to.have.length(1);
-
-		let newTask: BuildTask;
-		await new Promise((resolve, reject) => {
-			const resolveListeners = {
-				error: [reject],
-			};
-			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
-			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
-		}).then((image: LocalImage) => {
-			expect(newTask).to.have.property('resolved', true);
-			expect(newTask)
-				.to.have.property('dockerOpts')
-				.that.has.property('networkmode')
-				.that.equals('none');
-
-			expect(image)
-				.to.have.property('error')
-				.that.has.property('message')
-				.that.matches(/command.*ping.*returned a non-zero code: 1/i);
-		});
-	});
-
 	it('should correctly apply "extra_hosts" configuration', async () => {
 		const stream = fs.createReadStream(
 			'test/test-files/buildOptionsProject.tar',
