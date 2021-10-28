@@ -17,7 +17,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import * as Compose from 'resin-compose-parse';
+import * as Compose from '@balena/compose-parse';
 import * as semver from 'semver';
 
 import {
@@ -527,6 +527,100 @@ describe('Specifying a dockerfile hook', () => {
 				.that.matches(
 					/Dockerfile parse error line 1: unknown instruction: CORRECT/i,
 				);
+		});
+	});
+});
+
+describe('Specifying build options', () => {
+	const composeObj = require('../../test/test-files/stream/docker-compose-build-options.json');
+	const comp = Compose.normalize(composeObj);
+
+	it('should correctly apply "extra_hosts" configuration', async () => {
+		const stream = fs.createReadStream(
+			'test/test-files/buildOptionsProject.tar',
+		);
+
+		const tasks = (await splitBuildStream(comp, stream)).filter((task) =>
+			task.serviceName === 'extra_hosts' ? true : false,
+		);
+
+		expect(tasks).to.have.length(1);
+
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
+		}).then((image: LocalImage) => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask)
+				.to.have.property('dockerOpts')
+				.that.has.property('extrahosts')
+				.that.deep.equals(['foo:8.8.8.8']);
+
+			expect(image).to.not.have.property('error');
+		});
+	});
+
+	it('should correctly apply "target" configuration', async () => {
+		const stream = fs.createReadStream(
+			'test/test-files/buildOptionsProject.tar',
+		);
+
+		const tasks = (await splitBuildStream(comp, stream)).filter((task) =>
+			task.serviceName === 'target' ? true : false,
+		);
+
+		expect(tasks).to.have.length(1);
+
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
+		}).then(async (image: LocalImage) => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask)
+				.to.have.property('dockerOpts')
+				.that.has.property('target')
+				.that.equals('stage1');
+
+			expect(image).to.not.have.property('error');
+			const imageInspectInfo = await checkExists(image.name!);
+			expect(imageInspectInfo.Config.Env).to.include('stage=stage1');
+		});
+	});
+
+	it('should correctly apply "cache_from" configuration', async () => {
+		const stream = fs.createReadStream(
+			'test/test-files/buildOptionsProject.tar',
+		);
+
+		const tasks = (await splitBuildStream(comp, stream)).filter((task) =>
+			task.serviceName === 'cache_from' ? true : false,
+		);
+
+		expect(tasks).to.have.length(1);
+
+		let newTask: BuildTask;
+		await new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			newTask = resolveTask(tasks[0], 'test', 'test', resolveListeners);
+			resolve(runBuildTask(tasks[0], docker, secretMap, buildVars));
+		}).then(async (image: LocalImage) => {
+			expect(newTask).to.have.property('resolved', true);
+			expect(newTask)
+				.to.have.property('dockerOpts')
+				.that.has.property('cachefrom')
+				.that.deep.equals(['alpine:latest']);
+
+			expect(image).to.not.have.property('error');
 		});
 	});
 });

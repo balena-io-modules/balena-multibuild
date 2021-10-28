@@ -19,7 +19,7 @@ import * as Bluebird from 'bluebird';
 import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as Compose from 'resin-compose-parse';
+import * as Compose from '@balena/compose-parse';
 import type * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';

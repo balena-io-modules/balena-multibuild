@@ -17,7 +17,7 @@
 import * as _ from 'lodash';
 import * as tar from 'tar-stream';
 
-import type { ImageDescriptor } from 'resin-compose-parse';
+import type { ImageDescriptor } from '@balena/compose-parse';
 
 import type BuildMetadata from './build-metadata';
 import type { BuildTask } from './build-task';
@@ -26,7 +26,7 @@ import type { BuildTask } from './build-task';
  * Given a composition, generate the set of build tasks which this module
  * will proceed to build.
  *
- * @param composition The composition from resin-compose-parse
+ * @param composition The composition from @balena/compose-parse
  * @returns An array of tasks which make up this multicontainer build
  */
 export function generateBuildTasks(
@@ -47,6 +47,19 @@ export function generateBuildTasks(
 			if (img.image.context == null) {
 				throw new Error('Must have a context specified with a Dockerfile');
 			}
+			const {
+				// We drop network_mode, since it doesn't make sense
+				// for the hosted builder and therefore should be
+				// excluded from the platform in general to ensure
+				// common experience.
+				network,
+				// Finally, take anything that goes into dockerOpts
+				cache_from: cachefrom,
+				extra_hosts: extrahosts,
+				shm_size: shmsize,
+				target,
+				...imageProps
+			} = img.image;
 			return _.merge(
 				{
 					external: false,
@@ -59,10 +72,20 @@ export function generateBuildTasks(
 				img.image.dockerfile != null
 					? { dockerfilePath: img.image.dockerfile }
 					: {},
-				// It's possible to specify an image name as well as
-				// a build, but that doesn't make sense in a balena
-				// ecosystem, so we remove it
-				_.omit(img.image, 'image'),
+				// Pass through args, context, labels, tag.
+				imageProps,
+				// Pass through build options from composition
+				// translating to dockerode ImageBuildOptions properties
+				{
+					dockerOpts: {
+						...(cachefrom ? { cachefrom } : {}),
+						...(shmsize ? { shmsize } : {}),
+						...(target ? { target } : {}),
+						...(extrahosts ? { extrahosts } : {}),
+					},
+				},
+				// TODO: There is img.platform, should we allow setting this
+				// to allow overwriting our platform selection logic?
 			);
 		}
 	});

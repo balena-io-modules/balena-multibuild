@@ -21,7 +21,7 @@
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as _ from 'lodash';
-import { normalize } from 'resin-compose-parse';
+import { normalize } from '@balena/compose-parse';
 
 import { RegistrySecretValidationError } from '../lib/errors';
 import {
