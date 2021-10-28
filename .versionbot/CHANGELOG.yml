@@ -1,4 +1,25 @@
 - commits:
+    - subject: Delete leftover comments
+      hash: b074c301cd2afc39755f343a01ab19251524c7a1
+      body: ''
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: Paulo Castro
+    - subject: Pass additional build options to docker
+      hash: fac591058ba3faaa0275b26b9b439a95eee8d9ab
+      body: |
+        This pulls in resin-compose-parse version 2.4.0 which supports
+        build options cache_from, extra_hosts, network and target.
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+  version: 5.1.0
+  date: 2021-10-28T13:12:17.251Z
+- commits:
     - subject: Rename to @balena/multibuild
       hash: e62e31c9462bb8c7511c527b3c25cb6c1887b961
       body: ''
