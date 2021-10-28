@@ -47,14 +47,9 @@ export function generateBuildTasks(
 			if (img.image.context == null) {
 				throw new Error('Must have a context specified with a Dockerfile');
 			}
-			// It's possible to specify an image name as well as
-			// a build, but that doesn't make sense in a balena
-			// ecosystem, so we remove it.
-			// TODO: should we allow image property to resolve:
-			// https://github.com/balena-io/balena-cli/issues/1874
 			const {
 				// We drop network_mode, since it doesn't make sense
-				// for the hosted builder and therefor should be
+				// for the hosted builder and therefore should be
 				// excluded from the platform in general to ensure
 				// common experience.
 				network,
