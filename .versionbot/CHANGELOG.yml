@@ -1,4 +1,44 @@
 - commits:
+    - subject: Inject template variables as build args
+      hash: fbe776e534ff432626b376d796b1f890a323a7af
+      body: >
+        This basically renders Dockerfile.template obsolete, since the same can
+
+        be achieved using build args. We simply pass the same values to the
+
+        docker build and let the user use them. This also includes
+
+        TARGETPLATFORM, which buildx injects:
+
+        https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images
+
+
+        A sample dockerfile could look like this:
+
+        ```
+
+        ARG BALENA_MACHINE_NAME
+
+        FROM balenalib/${BALENA_MACHINE_NAME}-alpine
+
+
+        ARG BALENA_ARCH
+
+        RUN do some thing with ${BALENA_ARCH}
+
+        ```
+
+
+        Closes https://github.com/balena-io-modules/balena-multibuild/issues/67
+      footer:
+        Change-type: minor
+        change-type: minor
+        Signed-off-by: Robert Günzler <robertg@balena.io>
+        signed-off-by: Robert Günzler <robertg@balena.io>
+      author: Robert Günzler
+  version: 5.2.0
+  date: 2021-11-12T15:34:14.052Z
+- commits:
     - subject: Delete leftover comments
       hash: b074c301cd2afc39755f343a01ab19251524c7a1
       body: ''
