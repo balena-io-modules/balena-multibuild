@@ -316,6 +316,34 @@ describe('Resolved project building', () => {
 			return checkExists(image.name!);
 		});
 	});
+
+	it('should build using implicit build args', async () => {
+		if (!(await dockerSupportsPlatform())) {
+			console.log("skipped... Docker does not support 'platform'");
+			return;
+		}
+
+		const task: BuildTask = {
+			external: false,
+			resolved: false,
+			buildStream: fileToTarPack('test/test-files/argsProject.tar'),
+			serviceName: 'test',
+			streamHook: streamPrinter,
+			buildMetadata,
+			dockerOpts: { pull: true },
+		};
+		return new Promise((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+			};
+			const newTask = resolveTask(task, 'amd64', 'intel-nuc', resolveListeners);
+
+			resolve(runBuildTask(newTask, docker, secretMap, buildVars));
+		}).then((image: LocalImage) => {
+			expect(image).to.have.property('successful').that.equals(true);
+			return checkExists(image.name!);
+		});
+	});
 });
 
 describe('Invalid build input', () => {

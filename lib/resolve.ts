@@ -108,6 +108,16 @@ export function resolveTask(
 		templateVars,
 	);
 
+	// inject arguments
+	task.args = {
+		...templateVars,
+		...{
+			BALENA_ARCH: architecture,
+			BALENA_MACHINE_NAME: deviceType,
+			TARGETPLATFORM: platform,
+		},
+	};
+
 	return task;
 }
 
