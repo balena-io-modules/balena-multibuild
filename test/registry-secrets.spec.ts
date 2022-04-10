@@ -21,8 +21,8 @@
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as _ from 'lodash';
-import { normalize } from '@balena/compose-parse';
 
+import { normalize } from '../lib/compose-parse';
 import { RegistrySecretValidationError } from '../lib/errors';
 import {
 	addCanonicalDockerHubEntry,

@@ -19,11 +19,11 @@ import * as Bluebird from 'bluebird';
 import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
 import * as path from 'path';
-import * as Compose from '@balena/compose-parse';
 import type * as Stream from 'stream';
 import * as tar from 'tar-stream';
 import * as TarUtils from 'tar-utils';
 
+import * as Compose from './compose-parse';
 import { runBuildTask } from './build';
 import BuildMetadata from './build-metadata';
 import {
@@ -61,6 +61,13 @@ export { BalenaYml, ParsedBalenaYml };
 export { PathUtils };
 export { ResolveListeners };
 export { CANONICAL_HUB_URL } from './constants';
+
+// FIXME: think of a coherent API instead of merely re-exporting these.
+export * as BundleResolve from './bundle-resolve';
+export * as ComposeParse from './compose-parse';
+export * as DockerBuild from './docker-build';
+export * as DockerfileTemplate from './dockerfile-template';
+export * as Release from './release';
 
 /**
  * Given a composition and stream which will output a valid tar archive,

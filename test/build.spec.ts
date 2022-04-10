@@ -17,7 +17,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-import * as Compose from '@balena/compose-parse';
 import * as semver from 'semver';
 
 import {
@@ -28,9 +27,10 @@ import {
 	TestBuildMetadata,
 } from './build-utils';
 
-import { splitBuildStream } from '../lib/';
+import { splitBuildStream } from '../lib';
 import { runBuildTask } from '../lib/build';
 import { BuildTask } from '../lib/build-task';
+import * as Compose from '../lib/compose-parse';
 import { BuildProcessError } from '../lib/errors';
 import { LocalImage } from '../lib/local-image';
 import { resolveTask } from '../lib/resolve';

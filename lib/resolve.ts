@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 import * as _ from 'lodash';
-import * as Resolve from 'resin-bundle-resolve';
 import type * as Stream from 'stream';
 
 import type { BuildTask } from './build-task';
 
-import { ResolveListeners } from 'resin-bundle-resolve';
+import * as Resolve from './bundle-resolve';
+import { ResolveListeners } from './bundle-resolve';
 export { ResolveListeners };
 
 /**

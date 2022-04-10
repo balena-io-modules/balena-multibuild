@@ -17,8 +17,7 @@
 import * as _ from 'lodash';
 import * as tar from 'tar-stream';
 
-import type { ImageDescriptor } from '@balena/compose-parse';
-
+import type { ImageDescriptor } from './compose-parse';
 import type BuildMetadata from './build-metadata';
 import type { BuildTask } from './build-task';
 

@@ -18,7 +18,6 @@ import { expect } from 'chai';
 import { fs } from 'mz';
 
 import * as jsYaml from 'js-yaml';
-import * as compose from '@balena/compose-parse';
 
 import {
 	ContractValidationError,
@@ -26,6 +25,8 @@ import {
 	NonUniqueContractNameError,
 	splitBuildStream,
 } from '../lib/';
+
+import * as compose from '../lib/compose-parse';
 
 const defaultComposition = compose.normalize(
 	jsYaml.load(compose.defaultComposition()),

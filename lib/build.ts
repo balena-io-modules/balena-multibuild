@@ -17,10 +17,10 @@
 
 import type * as Dockerode from 'dockerode';
 import * as _ from 'lodash';
-import { Builder, BuildHooks, FromTagInfo } from 'resin-docker-build';
 import * as semver from 'semver';
 import type * as Stream from 'stream';
 
+import { Builder, BuildHooks, FromTagInfo } from './docker-build';
 import type { SecretsPopulationMap } from './build-secrets';
 import type { BuildTask } from './build-task';
 import { BuildProcessError } from './errors';
