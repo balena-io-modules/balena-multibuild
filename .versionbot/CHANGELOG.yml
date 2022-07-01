@@ -1,7 +1,18 @@
 - commits:
+    - subject: Add deprecation notice in README
+      hash: fd304cb604092aff281fee4ed331afef93f0a7a2
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+      author: dfunckt
+  version: 5.1.1
+  title: "'Add deprecation notice in README'"
+  date: 2022-07-01T14:27:19.516Z
+- commits:
     - subject: Delete leftover comments
       hash: b074c301cd2afc39755f343a01ab19251524c7a1
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -22,7 +33,7 @@
 - commits:
     - subject: Rename to @balena/multibuild
       hash: e62e31c9462bb8c7511c527b3c25cb6c1887b961
-      body: ''
+      body: ""
       footer:
         Change-type: major
         change-type: major
@@ -40,9 +51,9 @@
         Change-type: patch
         change-type: patch
       author: Paulo Castro
-    - subject: 'Add Logger to BuildTask interface, use logger for multiarch warnings'
+    - subject: Add Logger to BuildTask interface, use logger for multiarch warnings
       hash: ade73f3003d3a50340988fca8fea57756711312e
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -50,11 +61,10 @@
   version: 4.12.2
   date: 2021-09-18T01:15:44.836Z
 - commits:
-    - subject: >-
-        Fix broken platform support which was comparing the wrong manifest media
-        type
+    - subject: Fix broken platform support which was comparing the wrong manifest
+        media type
       hash: be37812fe1d0feb7e7e01c0ba23e4606abcf9b8e
-      body: ''
+      body: ""
       footer:
         Signed-off-by: Paul Jonathan <pj@balena.io>
         signed-off-by: Paul Jonathan <pj@balena.io>
@@ -64,9 +74,8 @@
   version: 4.12.1
   date: 2021-09-17T00:44:29.617Z
 - commits:
-    - subject: >-
-        Determine when to use the docker 'platform' flag based on composition of
-        Dockerfile and Docker api version.
+    - subject: Determine when to use the docker 'platform' flag based on composition
+        of Dockerfile and Docker api version.
       hash: 202ae1eb977b55e01c269439a275c257b02bd1db
       body: >
         This change is part of the larger effort to enable mult-arch image
@@ -80,16 +89,16 @@
   version: 4.12.0
   date: 2021-09-16T13:19:10.554Z
 - commits:
-    - subject: 'chore: Update @balena/lint and re-lint'
+    - subject: "chore: Update @balena/lint and re-lint"
       hash: f4bb8e00e1b61909c4950ba4c160c6a0b00002fc
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
     - subject: Fix accidental 'it.only' left behind in test cases
       hash: af2c969d6515fcb1bdbf773c3610cba6aeebc855
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -105,7 +114,7 @@
         Change-type: minor
         change-type: minor
       author: Paulo Castro
-    - subject: 'Remove dependency on docker-toolbelt, bump docker-progress'
+    - subject: Remove dependency on docker-toolbelt, bump docker-progress
       hash: 94cd6d902d0ed7d8a9d85549360cc0fc3b745c84
       body: |
         Update docker-progress from 4.0.1 to 5.0.0
@@ -118,56 +127,56 @@
 - commits:
     - subject: Replace 'import' with 'import type' where possible
       hash: 6fd832e2b9d9d15909d420d5e4183718f05bfee9
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
-    - subject: 'Update dependencies including js-yaml v4: safeLoad -> load'
+    - subject: "Update dependencies including js-yaml v4: safeLoad -> load"
       hash: 2f4b08fecb815c029e9f73745c1c65b84e2e9700
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
     - subject: Update `typescript` and set target to ES2018 in tsconfig.json
       hash: 339c0a1b9ff2c8a0b3d69aac062a48f21dad6aff
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
     - subject: Update mocha and replace mocha.opts with .mocharc.js
       hash: 68b2db22e5e10365d89950fb78d3d6f1844ad434
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
     - subject: Move `@types/*` packages to `devDependencies` section
       hash: 22f4eaa08df168a66b5d36b93098b0709ade5116
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
     - subject: Replace Node v8 with Node v14 in CI tests
       hash: 863e1124989df97c4f30363e62f18b8336431b5c
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
-    - subject: 'Update @balena/lint and lint-staged, run prettify'
+    - subject: Update @balena/lint and lint-staged, run prettify
       hash: d53827d499393571374988a63db7368c66d7d05f
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
       author: Paulo Castro
     - subject: Add missing license headers and fix some copyright dates
       hash: cf9444147d162bbbb1154b70dbbcb6f2b0f320fd
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -175,11 +184,10 @@
   version: 4.10.1
   date: 2021-04-30T22:34:19.825Z
 - commits:
-    - subject: >-
-        Allow users' registry secrets (from build tar stream) to override
+    - subject: Allow users' registry secrets (from build tar stream) to override
         balena's
       hash: 1231d927e5c91ed27bc3cc479957d13de404255e
-      body: ''
+      body: ""
       footer:
         Change-type: minor
         change-type: minor
@@ -189,7 +197,7 @@
 - commits:
     - subject: Avoid overwriting docker build options with undefined values
       hash: 7055071d5ab391cb5e9d8f0beb9259e962471aef
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -212,7 +220,7 @@
 - commits:
     - subject: Only use platform if docker host supports api version >=1.38
       hash: 6769e99cdd54c40b76ea3afa2f4773f6fe96c3cc
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -221,7 +229,7 @@
       author: Robert Günzler
     - subject: Use the correct armv8 platform string
       hash: a2f4148fdcede737b7d3702a71d8efdb6680288e
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -266,7 +274,7 @@
 - commits:
     - subject: Add .version/CHANGELOG.yml for nested changelogs
       hash: 13421b61ff5e33c6b6519338434474440a93c48a
-      body: ''
+      body: ""
       footer:
         Change-type: patch
         change-type: patch
@@ -275,21 +283,21 @@
   date: 2020-08-20T18:08:00.028Z
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 7d1328f79a4434479c5d3a0e575da1fa31b048c2
       subject: Revert breaking change to `validateRegistrySecrets` from 4.7.1
-  date: '2020-08-13T07:41:55Z'
+  date: 2020-08-13T07:41:55Z
   version: 4.7.2
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 97f340799482fcc1d1ff28fd0b6b60343a13678a
       subject: Update dependencies and fix typings
-  date: '2020-07-27T16:20:04Z'
+  date: 2020-07-27T16:20:04Z
   version: 4.7.1
 - commits:
     - author: Robert Günzler
@@ -304,17 +312,17 @@
         signed-off-by: Robert Günzler <robertg@balena.io>
       hash: b5633196b5ea2d7d9e159024ab4620407ef02d53
       subject: Revert "Propagate target platform to builds"
-  date: '2020-06-12T14:46:23Z'
+  date: 2020-06-12T14:46:23Z
   version: 4.7.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 30bc2540a99710c33e45adf58e1b4660503fe748
       subject: Remove an extra image parameter from docker-compose when buiding
-  date: '2020-05-19T10:55:42Z'
+  date: 2020-05-19T10:55:42Z
   version: 4.6.2
 - commits:
     - author: Cameron Diver
@@ -324,7 +332,7 @@
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: cbebcac8c3c9a5f75d50644ba379ba74868b12dc
       subject: Export performSingleBuild and create initializeBuildMetadata
-  date: '2020-05-19T08:49:24Z'
+  date: 2020-05-19T08:49:24Z
   version: 4.6.1
 - commits:
     - author: Robert Günzler
@@ -341,62 +349,62 @@
         signed-off-by: Robert Günzler <robertg@balena.io>
       hash: 9e75147cfd1a11d0c57d8589a5bc8bd9c5ba43c2
       subject: Propagate target platform to builds
-  date: '2020-05-18T16:50:55Z'
+  date: 2020-05-18T16:50:55Z
   version: 4.6.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 69b143286419a9d819c0014a0f7b389bc93cd817
       subject: Add ability to pass progress hook with perform*Resolution
-  date: '2020-05-11T16:50:26Z'
+  date: 2020-05-11T16:50:26Z
   version: 4.5.1
 - commits:
     - author: Scott Lowe
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Scott Lowe <scott@balena.io>
       hash: 44eb3b35010c322aa16773cd1c3c0739ef1979cc
       subject: Add hook to allow dockerfile preprocessing
-  date: '2020-05-08T14:00:36Z'
+  date: 2020-05-08T14:00:36Z
   version: 4.5.0
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 5e91a83f8c975a07c9096f67b92599e9240abd88
       subject: Update dependencies
-  date: '2020-03-03T16:04:43Z'
+  date: 2020-03-03T16:04:43Z
   version: 4.4.2
 - commits:
     - author: Pagan Gazzard
-      body: ''
+      body: ""
       footers:
         change-type: patch
       hash: 159a090036d4862dd75927b174f98aab9d0d2301
       subject: Update dependencies
-  date: '2020-02-24T14:00:21Z'
+  date: 2020-02-24T14:00:21Z
   version: 4.4.1
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 3c6e9fec69e39af0486e95256e1555dacdd47925
       subject: Allow adding additional Dockerfile template variables
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: d1ee899a29eb27a3bc8f9b2bb34f4e0d36779cf9
       subject: Don't export path from PathUtils
-  date: '2020-02-13T10:29:36Z'
+  date: 2020-02-13T10:29:36Z
   version: 4.4.0
 - commits:
     - author: Roman Mazur
@@ -408,45 +416,43 @@
         signed-off-by: Roman Mazur <roman@balena.io>
       hash: 60e4fbdd969e5dff5e23d0dd51c81b91eb49336e
       subject: Expose base images info on LocalImage
-  date: '2019-11-21T11:25:14Z'
+  date: 2019-11-21T11:25:14Z
   version: 4.3.4
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: c9ffc2de71c66535613d8cbd0d07d685937b5126
       subject: Require a slug in container contracts
-  date: '2019-11-06T12:21:35Z'
+  date: 2019-11-06T12:21:35Z
   version: 4.3.3
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 18f19e6f2bb06d28f82986096637e183d16ac778
       subject: Fix path separator in "build secrets" code (Windows compatibility)
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 1bc22a9c4e1cdd4395a3da2d3dbcadf8950701c4
       subject: Get 'npm test' to pass on Windows + Docker Desktop
-  date: '2019-10-08T16:19:22Z'
+  date: 2019-10-08T16:19:22Z
   version: 4.3.2
 - commits:
     - author: Paulo Castro
       body: >-
         'package-lock.json' cannot be published to the npm registry, and will
 
-        be ignored when npm-installed by packages that depend on
-        resin-multibuild.
+        be ignored when npm-installed by packages that depend on resin-multibuild.
 
-        This can lead to dependency-related errors being masked when
-        resin-multibuild
+        This can lead to dependency-related errors being masked when resin-multibuild
 
         is tested in isolation. Reference:
 
@@ -457,166 +463,164 @@
       hash: 2cbccb6d50ede879ffddcd6fddef220e3b0d44b6
       subject: Remove package-lock.json because it is not recommended for libraries
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 12ede01a708558e926107ceb610386e293bf65e5
       subject: Check for non-empty secrets before calling removeSecrets()
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 05962b111b97064b7d85cb8c374948d39a2bb604
       subject: Add test for performBuilds function (multibuild.spec.ts)
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 72134af56ef6078c0ee3694db8144f7810ec4a8a
       subject: Use pre-built external image for build secret population and removal
-  date: '2019-10-02T13:11:57Z'
+  date: 2019-10-02T13:11:57Z
   version: 4.3.1
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: aee8a9240c5151c0134e71dd91f6ce44faf60ef7
       subject: Add and update license entries
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 669bae9604214d259b937e8c5bf4107e611328bf
       subject: Add support for extracting and reporting container contracts
-  date: '2019-09-25T10:10:44Z'
+  date: 2019-09-25T10:10:44Z
   version: 4.3.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 87f387db0e60b9682306e7b19e631b40187f7802
       subject: Switch prepare to prepublishOnly to avoid builds on npm install
-  date: '2019-09-04T12:18:26Z'
+  date: 2019-09-04T12:18:26Z
   version: 4.2.2
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 6839a93c636806ea983a3803936da23113a39e89
       subject: Ensure the entire build directory gets included in package
-  date: '2019-09-04T10:57:57Z'
+  date: 2019-09-04T10:57:57Z
   version: 4.2.1
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: f68b58a4b953e8388689f57346aca1c3d94ca7fb
       subject: Add registry secret handling code
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 40c60512570478f37ef6e92105798b086da7d75b
       subject: Throw upon encountering multiple metadata directories
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 100b57b89708052f14b47548e8699841cc60e767
       subject: Throw an error when encountering multiple config directories
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 6cbd494929d346fefc9a5133925b928d27e2aa38
       subject: Improve validation error reporting
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 98403231fa64fe94e3e89eda80d0bf512fe603d8
       subject: Allow spaces in build vars regex
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 3551ccf05411fbc4afba7a29e3593003a60acd5e
       subject: Explicitly bump resin-compose-parse
-  date: '2019-09-04T10:37:05Z'
+  date: 2019-09-04T10:37:05Z
   version: 4.2.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
-        depends-on: 'https://github.com/balena-io-modules/resin-bundle-resolve/pull/38'
+        depends-on: https://github.com/balena-io-modules/resin-bundle-resolve/pull/38
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 93c2cdac07c70e26f6c1bed0c8005a52f93a4dd9
       subject: Add single task resolution function to enable better error reporting
-  date: '2019-08-30T11:29:02Z'
+  date: 2019-08-30T11:29:02Z
   version: 4.1.0
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 666d2771c016c7a5e3f862a4f02e00fb979c2c40
-      subject: >-
-        Fix SecretRemovalError when building on different arch than the target
+      subject: Fix SecretRemovalError when building on different arch than the target
         device
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 2110724890ed80ec61c3be7e6f88bf53c7d1c153
-      subject: >-
-        Fix "qemu-execve: no such file or directory" with balena build
-        --emulated
-  date: '2019-08-21T20:28:28Z'
+      subject: 'Fix "qemu-execve: no such file or directory" with balena build
+        --emulated'
+  date: 2019-08-21T20:28:28Z
   version: 4.0.2
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: ef4d93753d289aa5e56cd4a8bc8538505416d546
       subject: Fix build secret metadata filtering and filename list
-  date: '2019-07-15T10:00:44Z'
+  date: 2019-07-15T10:00:44Z
   version: 4.0.1
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: major
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 3373623decf1ca5cda6e536775958255cc85bbde
       subject: Support build secrets and variables from a .balena directory
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: b26b0db8b3aa5d400676572fbceac36a729b6657
       subject: Return copies of metadata and check regex returns
-  date: '2019-07-08T10:40:28Z'
+  date: 2019-07-08T10:40:28Z
   version: 4.0.0
 - commits:
     - author: Paulo Castro
@@ -630,13 +634,13 @@
         `balena push ipAddress` and `balena deploy` to fail on Windows.
       footers:
         change-type: minor
-        connects-to: 'https://github.com/balena-io/balena-cli/issues/1133'
-        depends-on: 'https://github.com/balena-io-modules/resin-bundle-resolve/pull/36'
-        resolves: '#51'
+        connects-to: https://github.com/balena-io/balena-cli/issues/1133
+        depends-on: https://github.com/balena-io-modules/resin-bundle-resolve/pull/36
+        resolves: "#51"
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 3fa3bda67bcdd48c083f85c952a1a5426ff85b43
       subject: Fix tar stream path handling under Windows and bump resin-bundle-resolve
-  date: '2019-04-22T23:35:51Z'
+  date: 2019-04-22T23:35:51Z
   version: 3.1.0
 - commits:
     - author: Pagan Gazzard
@@ -647,7 +651,7 @@
         change-type: major
       hash: 35dba45f74e07b8e5a14ef6031cc5f0aa4aa82fd
       subject: Update resin-bundle-resolve to 4.x
-  date: '2019-04-12T14:54:17Z'
+  date: 2019-04-12T14:54:17Z
   version: 3.0.0
 - commits:
     - author: Paulo Castro
@@ -659,82 +663,82 @@
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: d738478ddb6a3941bd557de4e92459cf81a42461
       subject: Bump docker-progress major version (4.0.0)
-  date: '2019-03-26T17:05:05Z'
+  date: 2019-03-26T17:05:05Z
   version: 2.1.6
 - commits:
     - author: Pablo Carranza Velez
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Pablo Carranza Velez <pablo@balena.io>
       hash: 29552ca1df80e48c0fb9287054e3bd8a4b29274a
       subject: Update resin-compose-parse to v2.0.4
-  date: '2019-03-25T22:12:35Z'
+  date: 2019-03-25T22:12:35Z
   version: 2.1.5
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 05c5ce3437b0c367533432c3609f204ff32bd50e
       subject: Bump resin-lint major version (3.0.1)
-  date: '2019-03-13T14:26:17Z'
+  date: 2019-03-13T14:26:17Z
   version: 2.1.4
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 72a196b7f481c5fc8d6aa754e1195d177091a790
       subject: Bump dependency versions (resin-docker-build and a few others)
-  date: '2019-03-12T21:59:00Z'
+  date: 2019-03-12T21:59:00Z
   version: 2.1.3
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
-        closes: '#34'
+        closes: "#34"
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 2d29bf4fa54d6291691ae3a755e054ed99997036
       subject: Don't use the relative pass when specifying a dockerfile
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: e87633d73f2ba2c27afdf9c016116f226cea3ce8
       subject: Update resin-docker-build to avoid instanceof failures
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: a33a4a98684954325f4d88510df7858366847a40
-      subject: 'Test on node10, and remove deploy step'
-  date: '2019-03-04T16:36:12Z'
+      subject: Test on node10, and remove deploy step
+  date: 2019-03-04T16:36:12Z
   version: 2.1.2
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 099a413a822afde3ee92f3abba57758efd2c1993
       subject: Bump version for resin-bundle-resolve
-  date: '2019-03-01T11:36:03Z'
+  date: 2019-03-01T11:36:03Z
   version: 2.1.1
 - commits:
     - author: Paulo Castro
-      body: ''
+      body: ""
       footers:
         change-type: minor
-        resolves: '#39'
+        resolves: "#39"
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 8f19c03345399ba304573fd074b948b5f59a652d
       subject: Support private registry auth in docker-compose 'image' instruction
-  date: '2019-02-21T12:27:53Z'
+  date: 2019-02-21T12:27:53Z
   version: 2.1.0
 - commits:
     - author: Paulo Castro
@@ -743,106 +747,106 @@
         the performResolution() function, thus not backwards compatible.)
       footers:
         change-type: major
-        connects-to: '#34'
+        connects-to: "#34"
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 82cb3f3b74228996012b6e10caffe2c8d2a53d48
       subject: Add event listeners to support dockerfile selection
-  date: '2019-02-19T15:19:36Z'
+  date: 2019-02-19T15:19:36Z
   version: 2.0.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: major
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 0982d75fc6cc1058a372d4b422bf10f39f02149e
       subject: Allow specifying a dockerfile candidate when building
-  date: '2019-01-11T10:27:59Z'
+  date: 2019-01-11T10:27:59Z
   version: 1.0.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: ec853c20a85ab09f40f45fb85c3659250f2465cd
-      subject: 'cleanup: Add build and doc directories to .gitignore'
+      subject: "cleanup: Add build and doc directories to .gitignore"
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: cbbbc082b65d2a9b71e46c01d0d691f38e00312d
-      subject: 'cleanup: Add @types/tar-stream and remove unused typings'
+      subject: "cleanup: Add @types/tar-stream and remove unused typings"
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 2fe90709bbff7230c4fc377f4be51336a28f8d2e
-      subject: 'update: Update resin-compose-parse and resin-bundle-resolve'
+      subject: "update: Update resin-compose-parse and resin-bundle-resolve"
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 41933e6d0abd8394a9e8b4b7adfcd855ebd799d2
-      subject: 'update: Update typed-error to v3'
+      subject: "update: Update typed-error to v3"
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 9d364f67566394157b42de8d00c43f0464e17b85
-      subject: 'fix: Fix lint error in index.ts'
+      subject: "fix: Fix lint error in index.ts"
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: bc4991f97f947407222344bb90fb4d263dadf30a
-      subject: 'cleanup: Add declaration output, fixup tests and tsconfig, package.json'
-  date: '2018-09-20T12:59:56Z'
+      subject: "cleanup: Add declaration output, fixup tests and tsconfig, package.json"
+  date: 2018-09-20T12:59:56Z
   version: 0.9.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 775b7d55b60c724003cf8c0370c9217ddced2807
-      subject: 'Export a performSingleBuild function, for performing builds individually'
-  date: '2018-05-10T10:27:22Z'
+      subject: Export a performSingleBuild function, for performing builds individually
+  date: 2018-05-10T10:27:22Z
   version: 0.8.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 026a719657e3f178030789e9acd7ad6269d35e9e
       subject: Export PathUtils module to resin-multibuild importers
-  date: '2018-04-30T12:50:22Z'
+  date: 2018-04-30T12:50:22Z
   version: 0.7.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 2b118b7d4ed63749ed27d4f615bb1f44043e93e2
       subject: Don't run tests before deploying for auto-deploy
-  date: '2018-04-24T14:57:39Z'
+  date: 2018-04-24T14:57:39Z
   version: 0.6.1
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 481c76a3254bf58056be6610f6b73d564fadd118
       subject: Setup circle auto npm publishing
-  date: '2018-04-24T12:20:16Z'
+  date: 2018-04-24T12:20:16Z
   version: 0.6.0
 - commits:
     - author: Cameron Diver
@@ -855,11 +859,11 @@
         utilities in the tests.
       footers:
         change-type: patch
-        connects-to: '#27'
+        connects-to: "#27"
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 8c81eacc9a206923ad2b260c3f9cbd2820c66e8c
       subject: Fix path name resolution for overlapping build contexts
-  date: '2018-04-24T11:53:46Z'
+  date: 2018-04-24T11:53:46Z
   version: 0.5.5
 - commits:
     - author: Cameron Diver
@@ -874,61 +878,61 @@
         change-type: patch
       hash: 5ed98980910fff236c2cd4db24fff6598055f4bf
       subject: Revert "Publish only built files"
-  date: '2018-03-28T08:58:03Z'
+  date: 2018-03-28T08:58:03Z
   version: 0.5.4
 - commits:
     - author: Alexis Svinartchouk
-      body: 'Connects-To: #23'
+      body: "Connects-To: #23"
       footers:
         change-type: patch
       hash: 63e44996f42ec55c9c27e67350d619f80c46f872
       subject: Publish .d.ts files
-  date: '2018-03-27T16:37:33Z'
+  date: 2018-03-27T16:37:33Z
   version: 0.5.3
 - commits:
     - author: Alexis Svinartchouk
-      body: 'Connects-To: #21'
+      body: "Connects-To: #21"
       footers:
         change-type: patch
       hash: 52e0534a9c0d1c70c9413a8efd9e2d11bf34fdf3
       subject: Use resin-lint
     - author: Alexis Svinartchouk
-      body: 'Connects-To: #21'
+      body: "Connects-To: #21"
       footers:
         change-type: patch
       hash: 1a03bc658ee83c7379ca6679495ca9e33f0c03f0
       subject: Publish only built files
-  date: '2018-03-20T15:56:50Z'
+  date: 2018-03-20T15:56:50Z
   version: 0.5.2
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: c42d69d151f961d963a1ff66c2622781cbc3a4e1
-      subject: 'Tag image via docker build argument, rather than separately'
-  date: '2017-12-21T15:29:05Z'
+      subject: Tag image via docker build argument, rather than separately
+  date: 2017-12-21T15:29:05Z
   version: 0.5.1
 - commits:
     - author: Akis Kesoglou
-      body: ''
+      body: ""
       footers:
         change-type: minor
       hash: 515bc66571c6eda1d98b5b631ca53d99e40bc2e6
       subject: Provide primitive method to work with images directly
-  date: '2017-12-15T18:28:11Z'
+  date: 2017-12-15T18:28:11Z
   version: 0.5.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
-        connects-to: '#14'
+        connects-to: "#14"
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: e6971574deda5bdf3f41da7a9d4f47c218e67e36
       subject: Indicate project resolution failure with a flag
-  date: '2017-12-14T13:37:17Z'
+  date: 2017-12-14T13:37:17Z
   version: 0.4.0
 - commits:
     - author: Cameron Diver
@@ -938,49 +942,49 @@
         is part of.
       footers:
         change-type: minor
-        connects-to: '#10'
+        connects-to: "#10"
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 88da42f0d40c3d0b4ce2a82fc5051be7bfe151ad
       subject: Allow a build context to be shared between services
-  date: '2017-12-13T11:29:46Z'
+  date: 2017-12-13T11:29:46Z
   version: 0.3.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: ed7904175c464918169a1bbcfd6fd622e27e9c60
       subject: Populate the dockerfile and project type fields of local image
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 6c3a3338d3189dbe0e9dbefbe49f032dcc05f5fb
       subject: Run build before commit
-  date: '2017-12-07T16:24:19Z'
+  date: 2017-12-07T16:24:19Z
   version: 0.2.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 0eaf11ba1fec28ebd18c7059ce9f7e84b2c85214
       subject: Record the start and end time of builds and pulls
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: e3209801166df8f12c5468536df1ed6c6ecd6c71
       subject: Forward the docker opts on docker pull
-  date: '2017-12-07T15:40:25Z'
+  date: 2017-12-07T15:40:25Z
   version: 0.1.2
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@resin.io>
@@ -993,48 +997,48 @@
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: b0486f4565a94e7641006abe6788b4af12f6b0bb
       subject: Fix path resolution when splitting the stream
-  date: '2017-12-07T13:38:38Z'
+  date: 2017-12-07T13:38:38Z
   version: 0.1.1
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: c8338b803f310853c918db4f32c66ba90c5b3ce0
       subject: Add prettier and auto-format hooks
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: patch
         signed-off-by: Cameron Diver <cameron@balena.io>
       hash: 773e68196760bd00d731aa87755b8901703e7aa0
       subject: Run prettier on code
-  date: '2019-01-10T15:47:10Z'
+  date: 2019-01-10T15:47:10Z
   version: 0.11.0
 - commits:
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: c4bfd24f6b414b908b9260adbb24adda4274dd7e
       subject: Add project specific files
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 2ca8b7f243f63872c35a9149222804a87e725a3a
       subject: Add initial build code
     - author: Cameron Diver
-      body: ''
+      body: ""
       footers:
         change-type: minor
         signed-off-by: Cameron Diver <cameron@resin.io>
       hash: 3fa3e58b5cd25e3d92e19129d7246a8d74fa1198
       subject: Add tests for initial code
-  date: '2017-12-06T14:53:40Z'
+  date: 2017-12-06T14:53:40Z
   version: 0.1.0
 - commits:
     - author: Paulo Castro
@@ -1046,6 +1050,6 @@
         change-type: minor
         signed-off-by: Paulo Castro <paulo@balena.io>
       hash: 85472481827a682122b7dccdf92d31ce6d2b48dd
-      subject: 'auth: Add support for private docker registry authentication'
-  date: '2018-12-17T13:55:34Z'
+      subject: "auth: Add support for private docker registry authentication"
+  date: 2018-12-17T13:55:34Z
   version: 0.10.0

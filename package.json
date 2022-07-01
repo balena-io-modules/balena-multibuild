@@ -1,6 +1,6 @@
 {
   "name": "@balena/multibuild",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Build a docker composition",
   "main": "build/index.js",
   "files": [
@@ -74,6 +74,6 @@
     }
   },
   "versionist": {
-    "publishedAt": "2021-10-28T13:12:17.320Z"
+    "publishedAt": "2022-07-01T14:27:19.733Z"
   }
 }
