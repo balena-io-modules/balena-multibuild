@@ -1,5 +1,7 @@
 # balena-multibuild
 
+**DEPRECATED -- This module has been deprecated; please use [balena-compose](https://github.com/balena-io-modules/balena-compose) instead.**
+
 This module is designed to make it easy to build a composition given a
 representation of this composition, and a tar stream. The output will be several
 images present on the given docker daemon.
