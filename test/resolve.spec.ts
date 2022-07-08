@@ -137,4 +137,41 @@ describe('Project resolution', () => {
 			newTask.buildStream.resume();
 		});
 	});
+
+	it('should correctly resolve when usign implicit build args', () => {
+		const task: BuildTask = {
+			external: false,
+			resolved: false,
+			buildStream: fs.createReadStream(
+				'test/test-files/argsProject.tar',
+			) as any as Pack,
+			serviceName: 'test',
+			buildMetadata,
+		};
+
+		return new Promise<void>((resolve, reject) => {
+			const resolveListeners = {
+				error: [reject],
+				end: [
+					() => {
+						try {
+							expect(newTask.dockerPlatform).to.equal('linux/386');
+							expect(newTask.resolved).to.equal(true);
+							expect(newTask.args).to.deep.equal({
+								TARGETPLATFORM: 'linux/386',
+								BALENA_ARCH: 'i386',
+								BALENA_MACHINE_NAME: 'test',
+								BALENA_SERVICE_NAME: 'test',
+							});
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					},
+				],
+			};
+			const newTask = resolveTask(task, 'i386', 'test', resolveListeners);
+			newTask.buildStream.resume();
+		});
+	});
 });
